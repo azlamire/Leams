@@ -21,7 +21,7 @@ interface SubNavigationItem {
 
 
 const exploreItems: NavigationItem[] = [
-    {name: "All categories", icon: <CiChat1 />, href: "Chatting"},
+    {name: "All categories", icon: <CiChat1 />, href: "Categories"},
     {
         name: "Games",
         icon: <CgGames />,
@@ -48,7 +48,7 @@ export function LeftSide() {
                     {exploreItems.map((items, index) => (
                         <li key={index}>
                           {items.options ? (
-                            <details name="Games">
+                            <details>
                                 <summary className="flex flex-row items-center list-none">{items.icon} {items.name}</summary>
                                 {items.options.map((option, index) => (
                                     <li key={index}>

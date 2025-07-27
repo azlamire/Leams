@@ -42,7 +42,7 @@ const exploreItems: NavigationItem[] = [
 
 export function LeftSide() { 
     return(
-        <aside className="w-[12%] flex flex-col justify-between">
+        <aside className="w-[12%] flex flex-col justify-between h-screen">
             <div className="h-full p-5">
                 <ul className="flex flex-col justify-between gap-3 text-[20px] font-semibold">
                     {exploreItems.map((items, index) => (

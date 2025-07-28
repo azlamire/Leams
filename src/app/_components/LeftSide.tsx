@@ -49,7 +49,7 @@ export function LeftSide() {
                         <li key={index}>
                           {items.options ? (
                             <details>
-                                <summary className="flex flex-row items-center list-none">{items.icon} {items.name}</summary>
+                                <summary className="flex flex-row items-center list-none gap-5">{items.icon} {items.name}</summary>
                                 {items.options.map((option, index) => (
                                     <li key={index}>
                                         <Link href={option.href}>

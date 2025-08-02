@@ -1,15 +1,21 @@
-import os
-from fastapi import FastAPI
-from ../scripts/scrapper/main.py import main
-import asyncio, json
+from fastapi import FastAPI, Response
+from fastapi.middleware.cors import CORSMiddleware
+from jose import jwt
+import uvicorn, os
 
-app = FastAPI()
+def main():
+    app = FastAPI()
 
-async def jowly_categories():
-    categories = main()
-    with open(os.path.abspath(f'scrapper/idk.json'),'w') as file:
-        file.write(json.dumps(categories))
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000"],
+        allow_credentials=True,
+    )
+    jwt_secret = os.getenv("SECRET")
+    token = jwt.encode({},jwt_secret)
+    print(token)
+    response = Response()
+    response.set_cookie(ket="access_token", value=token,httponly=True)
 
-@app.get("/")
-def xz()
-    asyncio.create_task
+if __name__ == "__main__":
+    uvicorn.run(main())

@@ -1,8 +1,9 @@
-import TLogo from "../../../public/kick-logo.svg"
+import TLogo from "../../../../public/kick-logo.svg"
 import Image from "next/image"
 import Link from "next/link";
 
-import { FaSearch } from "react-icons/fa";
+import { SignIn } from "./SignIn";
+import { Search } from "./Search";
 
 export function UpSide() {
     return (
@@ -29,22 +30,8 @@ export function UpSide() {
                         <Image src={TLogo} alt="Logo" width={120} height={40} priority />
                     </Link>
                 </div>
-                <div className="flex justify-center items-center">
-                    <div className="relative h-[40px] w-[400px] flex gap-3 border-2 border-gray-700 rounded-full">
-                        <div className="absolute left-3 top-2.5 flex flex-row gap-4">
-                            <FaSearch  />
-                        </div>
-                        <input className="px-10 w-full h-full shadow-sm rounded-full" placeholder="Search" type="search" />
-                    </div>
-                </div>    
-                <div>
-                    <button>
-
-                    </button>
-                    <button>
-
-                    </button>
-                </div>
+                <Search />
+                <SignIn />   
             </div>
         </header>
     )

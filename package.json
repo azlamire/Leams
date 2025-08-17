@@ -11,7 +11,8 @@
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-store": "^0.7.3",
-    "motion": "^12.23.11",
+    "clsx": "^2.1.1",
+    "motion": "^12.23.12",
     "next": "15.3.5",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

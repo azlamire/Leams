@@ -1,2 +1,0 @@
-# jowly
-New streaming platform

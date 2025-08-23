@@ -7,14 +7,16 @@ class Users(SQLModel,table=True):
     id: int | None = Field(default=None,index=True, primary_key=True)
     username: str = Field(default=None)
     password: str = Field(default=None)
-    email: str = Field(default=None)
-    birthday: str = Field(default=None)
-
+    email: str | None = Field(default=None)
+    
 class UserCreate(SQLModel):
     username: str = Field(default=None)
     password: str = Field(default=None)
     email: str = Field(default=None)
     birthday: str = Field(default=None)
+class UserLogin(SQLModel):
+    user_email: str = Field(default=None)
+    password: str = Field(default=None)
 # class Location(SQLModel,table=True):
 #     id: int = Field(default=None, primary_key=True)
 #     username: str = Field(default=None)

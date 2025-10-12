@@ -5,12 +5,20 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "auth0-fastapi>=1.0.0b4",
+    "auth0-python>=4.10.0",
+    "authlib>=1.6.3",
+    "cryptography>=45.0.6",
     "dotenv>=0.9.9",
-    "fastapi[standard]>=0.116.1",
+    "fastapi[all]>=0.115.14",
+    "m2r2>=0.3.4",
     "passlib[bcrypt]>=1.7.4",
     "psycopg[binary,pool]>=3.2.9",
     "pydantic>=2.11.7",
     "pyjwt>=2.10.1",
+    "sphinx>=8.2.3",
     "sqlalchemy>=2.0.42",
     "sqlmodel>=0.0.24",
+    "uvicorn>=0.35.0",
+    "werkzeug>=3.1.3",
 ]

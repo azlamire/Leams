@@ -1,3 +1,10 @@
+"""
+.. note::
+   Это основной модуль проекта.
+
+.. todo::
+   Добавить обработку ошибок при вводе данных.
+"""
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, Response, Request
 from fastapi.exceptions import RequestValidationError
@@ -9,13 +16,16 @@ from datetime import datetime
 
 from sqlmodel import Session, select
 from database.models import IsUser, Users, UserCreate
-from database.smod import create_db_and_tables, get_session
+from database.core import create_db_and_tables, get_session
 import uvicorn, os
 
 from passlib.context import CryptContext
 from contextlib import asynccontextmanager
 
-import jwt_fin
+import register_test
+
+import jwt_fin, oauth
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
@@ -31,13 +41,15 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+app.include_router(register_test.router)
+app.include_router(oauth.router)
 #------------------------------
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    return JSONResponse(
-        status_code=422,
-        content={"conent" : request, "message" : "LOOOOOOOOOOOOOOOOOOOOOOOOX"}
-    )
+# @app.exception_handler(RequestValidationError)
+# async def validation_exception_handler(request: Request, exc: RequestValidationError):
+#     return JSONResponse(
+#         status_code=422,
+#         content={"conent" : request, "message" : "LOOOOOOOOOOOOOOOOOOOOOOOOX"}
+#     )
 class RequestCreateUser(BaseModel):
     username: str
     password: str
@@ -56,14 +68,6 @@ async def has_user(user: IsUser , session: Session = Depends(get_session)):
 @app.get("has_email")
 async def has_email():
     pass
-
-@app.post("/register")
-async def register(request: UserCreate, session: Session = Depends(get_session)):
-    user = Users(**request.dict())
-    session.add(user)
-    session.commit()
-    session.refresh(user)
-    return RedirectResponse(url="http://localhost:3000",status_code=303)
 
 #------------------------------
 @app.post("/auth/")

@@ -26,3 +26,9 @@ class UserLogin(SQLModel):
 #     os: str = Field(default=None)
 class IsUser(SQLModel):
     nickname: str
+
+class UserRequest(SQLModel):
+    id: int | None = Field(default=None,index=True, primary_key=True)
+    username: str = Field(default=None)
+    password: str = Field(default=None)
+    email: str = Field(default=None)

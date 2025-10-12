@@ -1,25 +1,26 @@
 from contextlib import contextmanager
-from datetime import timedelta, datetime
-from time import timezone
+from datetime import timedelta, datetime, timezone
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 from database.models import Users, UserLogin
 from main import app
-from database.smod import get_session
+from database.core import get_session
 from fastapi import status, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from os import getenv
 from typing import Annotated
-import jwt
+import jwt, os
 from jwt.exceptions import InvalidTokenError
+from dotenv import load_dotenv
+load_dotenv("../.env")
 
 SECRET_KEY = open("jwt-private.pem").read()
-ALGORITHM = getenv("ALGORITHM")
+PUBLIC_KEY = open("jwt-public.pem").read()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ALGORITHM = "RS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -35,10 +36,9 @@ class Token(BaseModel):
 
 @app.post("/token")
 def login(request: UserLogin, session: Session = Depends(get_session)):
-    username = request.user_email
-    plain_password = request.password
+    username = request.user_email.strip(" ")
+    plain_password = request.password.strip(" ")
     user = authenticate(username, plain_password, session)
-    return user
     jsonable_format = jsonable_encoder(user)
     if user == False:
         return JSONResponse(
@@ -73,7 +73,7 @@ def login(request: UserLogin, session: Session = Depends(get_session)):
 #
 
 def verify_password(plain_password, hash_password):
-    return pwd_context.verify_password(plain_password,hash_password)
+    return pwd_context.verify(plain_password,hash_password)
 
 def get_user(username: str, session: Session) -> dict | None:
     if "@" in username:
@@ -84,7 +84,6 @@ def get_user(username: str, session: Session) -> dict | None:
 
 def authenticate(username: str,plain_password:str, session:Session):
     user = get_user(username, session)
-    return user
     if user is None:
         return False
     if not verify_password(plain_password,user.password):

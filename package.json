@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.9.0",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-store": "^0.7.3",
     "clsx": "^2.1.1",
@@ -17,7 +18,8 @@
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "typedoc": "^0.28.13"
   },
   "devDependencies": {
     "typescript": "^5",

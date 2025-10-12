@@ -2,7 +2,10 @@ import { time } from "console";
 import type Email from "next-auth/providers/email";
 import { Roboto } from "next/font/google";
 import { useEffect, useRef, useState, type Dispatch, type FormEventHandler, type SetStateAction } from "react";
+import { useRouter } from 'next/navigation'
 import clsx from "clsx";
+import { FaGithubAlt } from "react-icons/fa";
+import { url } from "inspector";
 
 type FormType = {
     name: string;
@@ -12,10 +15,9 @@ type FormType = {
 }
 
 type FormStateType = {
-    email: string
-    password: string;
-    birthday: string;
     username: string;
+    password: string;
+    email: string
 }
 
 const signInForm: FormType[] = [
@@ -48,7 +50,6 @@ const signInForm: FormType[] = [
             })
         }
     },  
-    {name : "birthday", label: "Birthday", type:"date"}, 
 ];
 
 const roboto = Roboto({
@@ -56,13 +57,13 @@ const roboto = Roboto({
   })
 
 export function SignIn() {
+    const router = useRouter()
     const [nickValid, setNickValid] = useState<boolean>(false)
     const [passValid, setPassValid] = useState<boolean>(false)
     const [form, setForm] = useState<FormStateType>({
-        email: "",
-        password: "",
-        birthday: "",
         username: "",
+        password: "",
+        email: "",
     })
 
     const timeoutRefs = useRef<{[key: string]: NodeJS.Timeout}>({})
@@ -80,88 +81,111 @@ export function SignIn() {
         const Content = await response.json();
         console.log(Content);
     }
-    return (
-        <form className="flex flex-col rounded-xl w-full h-[65%] gap-7 mt-10" onSubmit={handleSubmit}>
-            {
-                signInForm.map((item, index) => (
-                    <div key={item.name} className={clsx(
-                        "relative flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
-                            "hover:[--d:100%]" : form[item.name as keyof typeof form] === "",
-                            "[--d:100%] hover:[--d:100%]" : form[item.name as keyof typeof form] !== "",
-                            "[background:linear-gradient(#477023_0_0)_bottom/var(--d,0)_3px_no-repeat]" : nickValid === false && item.name === "username",
-                            "[background:linear-gradient(#ff0000_0_0)_bottom/var(--d,0)_3px_no-repeat]" : nickValid === true && item.name === "username",
-                            "[background:linear-gradient(#bb0000_0_0)_bottom/var(--d,0)_3px_no-repeat]" : passValid === false && item.name === "password",
-                            "[background:linear-gradient(#477020_0_0)_bottom/var(--d,0)_3px_no-repeat]" : passValid === true && item.name === "password",
-                        })}>
-                        <label 
-            
-                        htmlFor=""
-                        //form[item.name as keyof FormStateType]
-                        className={form[item.name as keyof typeof form] === "" && item.name != "birthday" 
-                        ? "absolute duration-300 group-focus-within:-translate-y-6 z-0" 
-                        : "absolute duration-300 -translate-y-6 z-0 "}>
-                            {item.label}
-                        </label>
-                        { 
-                            item.name === "password" ?
 
-                                <input 
+    const GitHubAuth = async () => {
+        const response = await fetch("http://127.0.0.1:8000/auth/github", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
+        const Content = await response.json();
+        router.push(Content)
+    }
+
+    return (
+        <>
+            <form className="flex flex-col rounded-xl w-full h-[65%] gap-7" onSubmit={handleSubmit}>
+                {
+                    signInForm.map((item, index) => (
+                        <div key={item.name} className={clsx(
+                            "relative flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
+                                "hover:[--d:100%]" : form[item.name as keyof typeof form] === "",
+                                "[--d:100%] hover:[--d:100%]" : form[item.name as keyof typeof form] !== "",
+                                "[background:linear-gradient(#477023_0_0)_bottom/var(--d,0)_3px_no-repeat]" : nickValid === false && item.name === "username",
+                                "[background:linear-gradient(#ff0000_0_0)_bottom/var(--d,0)_3px_no-repeat]" : nickValid === true && item.name === "username",
+                                "[background:linear-gradient(#bb0000_0_0)_bottom/var(--d,0)_3px_no-repeat]" : passValid === false && item.name === "password",
+                                "[background:linear-gradient(#477020_0_0)_bottom/var(--d,0)_3px_no-repeat]" : passValid === true && item.name === "password",
+                            })}>
+                            <label 
+                
+                            htmlFor=""
+                            //form[item.name as keyof FormStateType]
+                            className={form[item.name as keyof typeof form] === "" 
+                            ? "absolute duration-300 group-focus-within:-translate-y-6 z-0" 
+                            : "absolute duration-300 -translate-y-6 z-0 "}>
+                                {item.label}
+                            </label>
+                            { 
+                                item.name === "password" ?
+
+                                    <input 
+                                        className="outline-none w-full h-full z-10"
+                                        type="password" 
+                                        required minLength={8}
+                                        id="" 
+                                        autoComplete={item.name}
+                                        onChange={e => {
+                                            console.log(e.target.value);
+                                            setForm({...form, [item.name]: e.target.value})
+                                            e.target.value.length >= 8 && e.target.value.includes("&") ? setPassValid(true) : setPassValid(false);
+                                            console.log(passValid);
+                                        }}
+                                    />
+                                    
+                                    :
+
+                                    <input 
                                     className="outline-none w-full h-full z-10"
-                                    type="password" 
-                                    required minLength={8}
+                                    required
+                                    type={item.type}
                                     id="" 
                                     autoComplete={item.name}
                                     onChange={e => {
-                                        console.log(e.target.value);
-                                        setForm({...form, [item.name]: e.target.value})
-                                        e.target.value.length >= 8 && e.target.value.includes("&") ? setPassValid(true) : setPassValid(false);
-                                        console.log(passValid);
-                                    }}
-                                />
-                                
-                                :
-
-                                <input 
-                                className="outline-none w-full h-full z-10"
-                                required
-                                type={item.type}
-                                id="" 
-                                autoComplete={item.name}
-                                onChange={e => {
-                                    const newValue = e.target.value;
-                                    setForm({...form, [item.name]: newValue});
+                                        const newValue = e.target.value;
+                                        setForm({...form, [item.name]: newValue});
+                                        
+                                        if (timeoutRefs.current[item.name]) {
+                                            console.log(timeoutRefs.current[item.name]);
+                                            clearTimeout(timeoutRefs.current[item.name]);
+                                        }
+                                        
+                                        if (item.on_change && newValue.trim() !== "") {
+                                            timeoutRefs.current[item.name] = setTimeout(() => {
+                                                item.on_change!(newValue, setNickValid);
+                                            }, 1000); 
+                                        }
+                                    }}/>
                                     
-                                    if (timeoutRefs.current[item.name]) {
-                                        console.log(timeoutRefs.current[item.name]);
-                                        clearTimeout(timeoutRefs.current[item.name]);
-                                    }
-                                    
-                                    if (item.on_change && newValue.trim() !== "") {
-                                        timeoutRefs.current[item.name] = setTimeout(() => {
-                                            item.on_change!(newValue, setNickValid);
-                                        }, 1000); 
-                                    }
-                                }}/>
-                                
-                        }
-                        {item.name === "username" && nickValid === true && (
-                            <span className="text-red-500 text-xs absolute -bottom-4 left-0">
-                                Username already exists
-                            </span>
-                        )}
-                        {item.name === "password" && passValid === false && form["password" as keyof FormStateType] !== "" && (
-                            <span className="text-red-500 text-xs absolute -bottom-4 left-0">
-                                Password must be at least 8 characters and contain an "&" character
-                            </span>
-                        )}
-                    </div>  
-                ))
-            }
-            <div className="flex w-full items-center justify-center">
-                <button className={roboto.className + " shadow-md h-[60px] w-[120px] text-[20px] font-stretch-125% font-medium rounded-full cursor-pointer"} type="submit">
-                    Submit
+                            }
+                            {item.name === "username" && nickValid === true && (
+                                <span className="text-red-500 text-xs absolute -bottom-4 left-0">
+                                    Username already exists
+                                </span>
+                            )}
+                            {item.name === "password" && passValid === false && form["password" as keyof FormStateType] !== "" && (
+                                <span className="text-red-500 text-xs absolute -bottom-4 left-0">
+                                    Password must be at least 8 characters and contain an "&" character
+                                </span>
+                            )}
+                        </div>  
+                    ))
+                }
+                <div className="flex w-full items-center justify-center">
+                    <button className={roboto.className + " shadow-md h-[60px] w-[120px] text-[20px] font-stretch-125% font-medium rounded-full cursor-pointer"} type="submit">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+            <div className="cursor-pointer flex justify-center items-center">
+                <button
+                    className="cursor-pointer shadow-none h-[50px] w-[50px] rounded-xl flex items-center justify-center hover:shadow-sm duration-300 active:shadow-md"
+                    onClick={GitHubAuth}
+                    >
+                    <FaGithubAlt size="30px"/>
+                    <p></p>
                 </button>
             </div>
-        </form>
+        </>
     )
 }

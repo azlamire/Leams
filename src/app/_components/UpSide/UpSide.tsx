@@ -26,9 +26,6 @@ export function UpSide() {
                             group-hover:-rotate-47 group-hover:h-[2.4px]"/>
                         </div>
                     </button>
-                    <Link href="/">
-                        <Image src={TLogo} alt="Logo" width={120} height={40} priority />
-                    </Link>
                 </div>
                 <Search />
                 <SignIn />   

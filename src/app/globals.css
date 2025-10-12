@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@theme { 
+  --color-sakura: #c52a5f;
+  --color-bamble: #ffd72a;
+  --color-myown: #0e0e10;
+}

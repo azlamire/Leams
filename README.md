@@ -1,2 +1,2 @@
-# jowly
-New streaming platform
+## Requirements
+- sudo pacman -S postgresql

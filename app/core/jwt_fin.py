@@ -3,9 +3,9 @@ from datetime import timedelta, datetime, timezone
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
-from database.models import Users, UserLogin
+from models.models import Users, UserLogin
 from main import app
-from database.core import get_session
+from db.core import get_session
 from fastapi import status, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -15,6 +15,7 @@ from typing import Annotated
 import jwt, os
 from jwt.exceptions import InvalidTokenError
 from dotenv import load_dotenv
+
 load_dotenv("../.env")
 
 SECRET_KEY = open("jwt-private.pem").read()
@@ -29,6 +30,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 class TokenData(BaseModel):
     username: str | None = None
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -41,10 +43,7 @@ def login(request: UserLogin, session: Session = Depends(get_session)):
     user = authenticate(username, plain_password, session)
     jsonable_format = jsonable_encoder(user)
     if user == False:
-        return JSONResponse(
-            status_code=401,
-            content={"content": jsonable_format}
-        )
+        return JSONResponse(status_code=401, content={"content": jsonable_format})
         # raise HTTPException(
         #     status_code=status.HTTP_401_UNAUTHORIZED,
         #     detail="Incorrect username or password",
@@ -72,8 +71,10 @@ def login(request: UserLogin, session: Session = Depends(get_session)):
 #     return [{"item_id": "Foo", "owner": current_user.username}]
 #
 
+
 def verify_password(plain_password, hash_password):
-    return pwd_context.verify(plain_password,hash_password)
+    return pwd_context.verify(plain_password, hash_password)
+
 
 def get_user(username: str, session: Session) -> dict | None:
     if "@" in username:
@@ -82,14 +83,16 @@ def get_user(username: str, session: Session) -> dict | None:
         result = session.exec(select(Users).where(Users.username == username)).first()
     return result
 
-def authenticate(username: str,plain_password:str, session:Session):
+
+def authenticate(username: str, plain_password: str, session: Session):
     user = get_user(username, session)
     if user is None:
         return False
-    if not verify_password(plain_password,user.password):
+    if not verify_password(plain_password, user.password):
         return False
     return user
-        
+
+
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
@@ -128,5 +131,3 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 #         raise HTTPException(status_code=400, detail="Inactive user")
 #     return current_user
 #
-
-

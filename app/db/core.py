@@ -6,7 +6,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select, table
 from dotenv import load_dotenv
 import os
 
-load_dotenv(".env")
+load_dotenv("../.env")
 engine_url = os.getenv("SYNC_PSQL")
 
 engine = create_engine(engine_url)

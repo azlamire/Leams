@@ -2,9 +2,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 
 
+# HACK: Production do NOT rely on a plain .env file — provide secrets via real environment variables or a secret manager (K8s Secret, AWS Secrets Manager, Vault, etc.).
+# NOTE: These settings is much better than using usual .env cause' 1. getenv() return str | None and pyright give a lot errors 2. Settings is more like typification
+
+
 class JWTSettings(BaseSettings):
-    # HACK:  production do NOT rely on a plain .env file — provide secrets via real environment variables or a secret manager (K8s Secret, AWS Secrets Manager, Vault, etc.).
-    """Usual Settings for auth via GitHub"""
+    """This class include all JWT stuff from .env"""
 
     GITHUB_ID: SecretStr
     GITHUB_SECRET: SecretStr
@@ -14,8 +17,13 @@ class JWTSettings(BaseSettings):
 
 
 class LinksSettings(BaseSettings):
-    # NOTE: This class will be expanded
-    MAIN_PAGE: SecretStr
+    """This class include all links stuff from .env"""
+
+    MAIN_PAGE: str
+    SYNC_PSQL: str
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
 
 # NOTE: Idk but GitSettings doesn't work here's the solution but no answers why https://github.com/pydantic/pydantic/issues/3753, they said about dataclass_transform but link was deleted though their solution is workable 1.git_settings = GitSettings.model_validate({})

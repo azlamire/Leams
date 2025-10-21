@@ -1,13 +1,7 @@
-from typing import Annotated
+from sqlmodel import Session, SQLModel, create_engine
+from schemas.settings import links
 
-from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Session, SQLModel, create_engine, select, table
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv("../.env")
-engine_url = os.getenv("SYNC_PSQL")
+engine_url = links.SYNC_PSQL
 
 engine = create_engine(engine_url)
 

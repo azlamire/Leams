@@ -7,10 +7,11 @@
 """
 
 from contextlib import asynccontextmanager
+from core import register_test, oauth
+from db.core import create_db_and_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from db.core import create_db_and_tables
-from core import register_test, oauth
+from schemas.settings import links
 import uvicorn
 
 
@@ -24,9 +25,9 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=[links.MAIN_PAGE],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Add this
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 

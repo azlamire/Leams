@@ -1,64 +1,17 @@
 "use client"
-import { createPortal } from "react-dom";
-import { store } from "@/shared/store/test";
-import { useStore } from "@tanstack/react-store";
-import { useEffect, useState } from "react";
-import { SignIn } from "./SignIn";
-import cslx from "clsx";
-import { Login } from "./Login";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-
-type RegLogButtsType = {
-	name: string;
-	active: boolean;
-	onClick: () => void;
-	className: string;
-}
-
-const underline: React.CSSProperties = {
-	position: "absolute",
-	bottom: -2,
-	left: 0,
-	right: 0,
-	height: 2,
-	background: "var(--accent)",
-}
+import cslx from "clsx"; import { createPortal } from "react-dom"; import { Login } from "./login-form";
+import { SignIn } from "./signin-form";
+import { store } from "@/shared/store/store";
+import { useStore } from "@tanstack/react-store";
+import { useModal } from "@/hooks/use-modal";
 
 export function MainLogin() {
 	const isLogin = useStore(store, (state) => state.isLogin);
-	const [testing, setTesting] = useState(false)
 	const opened: boolean = useStore(store, (state) => state.openReg);
-	const butRegLog: RegLogButtsType[] = [
-		{
-			name: "Log In", active: isLogin, onClick: () => store.setState(prev => ({ ...prev, isReg: false, isLogin: true })), className: cslx("cursor-pointer", {
-				"border-b-0": isLogin,
-
-			})
-		},
-		{
-			name: "Sign Up", active: !isLogin, onClick: () => store.setState(prev => ({ ...prev, isReg: true, isLogin: false })), className: cslx("cursor-pointer ", {
-				"border-b-0": !isLogin,
-
-			})
-		},
-	]
-	useEffect(() => {
-		if (opened) {
-			document.body.style.overflow = "hidden";
-			const handleKeyDown = (event: KeyboardEvent) => {
-				if (event.key == "Escape") {
-					store.setState(prev => ({ ...prev, openReg: false }));
-				}
-			}
-			document.addEventListener("keydown", handleKeyDown);
-			return () => {
-				document.removeEventListener("keydown", handleKeyDown);
-			};
-		}
-		else if (!opened) {
-			document.body.style.overflow = "auto";
-		}
-	}, [opened]);
+	useModal({
+		isOpen: opened
+	})
 	return (
 		<>
 			{createPortal(
@@ -77,8 +30,7 @@ export function MainLogin() {
 											className="absolute bg-neutral-100 right-0 top-0 rounded-full h-[30px] w-[30px] shadow-xl flex flex-col justify-center items-center 
                                         transition-all duration-300 hover:bg-gray-200 focus:bg-gray-400"
 											onClick={() => store.setState(prev => ({ ...prev, openReg: false }))}>
-											<span
-												className="bg-[#181A1B] h-[4px] w-[100%] block transition-all 
+											<span className="bg-[#181A1B] h-[4px] w-[100%] block transition-all 
                                             duration-300 rotate-50 translate-y-[3px]"></span>
 											<span
 												className="bg-[#181A1B] h-[4px] w-[100%] block transition-all 

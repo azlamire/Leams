@@ -1,5 +1,5 @@
 "use client"
-import { store } from "@/shared/store/test";
+import { store } from "@/shared/store/store";
 export function SignIn() {
 	return (
 		<div className="flex flex-row">

@@ -1,22 +1,25 @@
 "use client"
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import cslx from "clsx"; import { createPortal } from "react-dom"; import { Login } from "./login-form";
-import { SignIn } from "./signin-form";
+import { createPortal } from "react-dom"; import { Login } from "./login-form";
 import { store } from "@/shared/store/store";
-import { useStore } from "@tanstack/react-store";
+import { SignIn } from "./signin-form";
+import { useDom } from "@/hooks/use-dom";
+import { useState } from "react";
 import { useModal } from "@/hooks/use-modal";
+import { useStore } from "@tanstack/react-store";
 
+const sidebarContentEl = document.body
 export function MainLogin() {
 	const isLogin = useStore(store, (state) => state.isLogin);
-	const opened: boolean = useStore(store, (state) => state.openReg);
-	useModal({
-		isOpen: opened
-	})
+	const isAuth: boolean = useStore(store, (state) => state.openReg);
+	const [bodyElement, setBodyElement] = useState<HTMLElement>();
+	useModal({ isOpen: isAuth })
+	useDom({ setState: setBodyElement, tagName: "body" })
 	return (
 		<>
 			{createPortal(
 				<AnimatePresence mode="wait">
-					{opened && (
+					{isAuth && (
 						<motion.div
 							className="fixed inset-0 w-full h-full bg-[#00000090]"
 							initial={{ opacity: 0 }}
@@ -66,7 +69,7 @@ export function MainLogin() {
 						</motion.div>
 					)}
 				</AnimatePresence>,
-				document.body
+				sidebarContentEl
 			)}
 		</>
 	)

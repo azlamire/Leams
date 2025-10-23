@@ -7,56 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
 
-type FormType = {
-	name: string;
-	label: string;
-	type: string;
-	on_change?: (value: string, hook: Dispatch<SetStateAction<boolean | undefined>>) => void;
-}
 
-type FormStateType = {
-	username: string;
-	password: string;
-	email: string
-}
-
-const signInForm: FormType[] = [
-	{
-		name: "username", label: "Username", type: "text",
-		on_change: async (value: string, hook: Dispatch<SetStateAction<boolean | undefined>>) => {
-			const some_request = await fetch("http://127.0.0.1:8000/has_user", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ nickname: value })
-			})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data);
-					console.log(data.invalidUser);
-					hook(data.invalidUser);
-				})
-		}
-	},
-	{ name: "password", label: "Password", type: "password" },
-	{
-		name: "email", label: "Email", type: "email",
-		on_change: async (value: string, hook: Dispatch<SetStateAction<boolean | undefined>>) => {
-			const some_request = await fetch("http://127.0.0.1:8000/has_email", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ Email: value })
-			})
-				.then(response => response.json())
-				.then(data => {
-					hook(data.invalidEmail);
-				})
-		}
-	},
-];
 
 const roboto = Roboto({
 	subsets: ['latin'],

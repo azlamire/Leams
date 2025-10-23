@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { store } from "@/shared/store/store"
+
 interface UseModalOptions {
 	isOpen: boolean
 }
+
+// TODO: When you need to reuse it make something with store
 export function useModal({ isOpen }: UseModalOptions) {
 	useEffect(() => {
 		if (isOpen) {

@@ -1,7 +1,6 @@
 import { Store, useStore } from "@tanstack/react-store";
 
 export const store = new Store({
-    openReg: false,
-    isLogin: false,
-    isReg: false,
+	openReg: false,
+	isLogin: false,
 });

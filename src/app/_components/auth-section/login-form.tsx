@@ -1,10 +1,10 @@
 "use client"
-import { createPortal } from "react-dom";
-import { useState, type FormEventHandler } from "react";
-import { type Dispatch, type SetStateAction } from "react";
+import { BACKEND } from "@/shared/constants";
+import { type FormLoginStateType } from "./types";
 import { Roboto } from "next/font/google";
+import { logInForm } from "./constant";
 import { signIn } from "next-auth/react";
-import clsx from "clsx";
+import { useState, type FormEventHandler } from "react";
 
 const roboto = Roboto({
 	subsets: ['latin'],
@@ -16,10 +16,11 @@ export function Login() {
 		user_email: "",
 		password: "",
 	})
+
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		console.log("Form submitted", form);
 		e.preventDefault();
-		const response = await fetch("http://127.0.0.1:8000/token", {
+		const response = await fetch(BACKEND.AUTH, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -29,6 +30,7 @@ export function Login() {
 		const Content = await response.json();
 		console.log(Content);
 	}
+
 	return (
 		<form className="align-top flex flex-col rounded-xl w-full h-[65%] gap-7 mt-10" onSubmit={handleSubmit}>
 			{logInForm.map((item) => (

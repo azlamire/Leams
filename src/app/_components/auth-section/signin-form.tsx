@@ -1,25 +1,23 @@
-import { Roboto } from "next/font/google";
-import { useRef, useState, type Dispatch, type FormEventHandler, type SetStateAction } from "react";
-import { useRouter } from 'next/navigation'
 import clsx from "clsx";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import { type FormStateType } from "./types";
+import { GitHubAuth, signInForm } from "./constant";
+import { Roboto } from "next/font/google";
+import { useRef, useState, type Dispatch, type FormEventHandler, type SetStateAction } from "react";
+import { useRouter } from 'next/navigation';
+import { BACKEND } from "@/shared/constants";
 
-
-
-const roboto = Roboto({
-	subsets: ['latin'],
-})
+const roboto = Roboto({ subsets: ['latin'] })
 
 export function SignIn() {
-	const router = useRouter()
 	// NOTE: idk is it really worth to make mutliple or remain the big one
+	const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined)
 	const [nickValid, setNickValid] = useState<boolean | undefined>(undefined)
 	const [passValid, setPassValid] = useState<boolean | undefined>(undefined)
 	const [passType, setPassType] = useState<boolean>(true)
-	const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined)
 	const [form, setForm] = useState<FormStateType>({
 		username: "",
 		password: "",
@@ -27,11 +25,13 @@ export function SignIn() {
 	})
 
 	const timeoutRefs = useRef<{ [key: string]: NodeJS.Timeout }>({})
+	const router = useRouter()
 
+	// IDK: Do I need to make this reusabl think in future, OK?
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		console.log("Form submitted", form);
 		e.preventDefault();
-		const response = await fetch("http://127.0.0.1:8000/register", {
+		const response = await fetch(BACKEND.REGISTER, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -42,22 +42,11 @@ export function SignIn() {
 		console.log(Content);
 	}
 
-	const GitHubAuth = async () => {
-		const response = await fetch("http://127.0.0.1:8000/auth/github", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json"
-			},
-		})
-		const Content = await response.json();
-		router.push(Content)
-	}
-
 	return (
 		<>
 			<form className="flex flex-col rounded-xl w-full h-[65%] gap-7" onSubmit={handleSubmit}>
 				{
-					signInForm.map((item, index) => (
+					signInForm.map((item) => (
 						<div key={item.name} className={
 							clsx(
 								"relative flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
@@ -70,7 +59,7 @@ export function SignIn() {
 								"[background:linear-gradient(#ff0000_0_0)_bottom/var(--d,0)_3px_no-repeat]": (nickValid === false && item.name === "username") || (emailValid === false && item.name === "email") || (passValid === false && item.name === "password"),
 							})}>
 							<label
-								//form[item.name as keyof FormStateType]
+								// NOTE:form[item.name as keyof FormStateType]
 								className={form[item.name as keyof typeof form] === ""
 									? "absolute duration-300 group-focus-within:-translate-y-6 z-0"
 									: "absolute duration-300 -translate-y-6 z-0 "
@@ -151,14 +140,14 @@ export function SignIn() {
 			<div className="cursor-pointer flex justify-center items-center gap-7">
 				<button
 					className="cursor-pointer shadow-sm h-[50px] w-[50px] rounded-xl flex items-center justify-center hover:bg-[#efe6de] duration-300 active:shadow-md"
-					onClick={GitHubAuth}
+					onClick={() => GitHubAuth(router)}
 				>
 					<FaGithub size="30px" />
 				</button>
 
 				<button
 					className="cursor-pointer shadow-sm h-[50px] w-[50px] rounded-xl flex items-center justify-center hover:bg-[#efe6de] duration-300 active:shadow-md"
-					onClick={GitHubAuth}
+					onClick={() => GitHubAuth(router)}
 				>
 					<FcGoogle size="30px" />
 				</button>

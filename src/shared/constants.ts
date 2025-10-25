@@ -7,7 +7,10 @@
 // NOTE: as in backend part(BaseSettings) it's just more secure
 import * as z from "zod";
 const backendLinks = z.object({
-	HAS_USER_CHECK: z.string(),
+	HAS_USER_CHECK: z.httpUrl(),
+	GITHUB_AUTH: z.httpUrl(),
+	REGISTER: z.httpUrl(),
+	AUTH: z.httpUrl(),
 })
 
 export const BACKEND = backendLinks.parse(process.env)

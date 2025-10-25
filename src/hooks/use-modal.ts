@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { store } from "@/shared/store/store"
+import { store } from "@/shared/store"
 
 interface UseModalOptions {
 	isOpen: boolean

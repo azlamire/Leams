@@ -1,7 +1,7 @@
 import { BACKEND } from "@/shared/constants";
-import { type Dispatch, type SetStateAction, type FormEventHandler } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import { type RegLogButtsType } from "./types";
-import { type FormLoginType, type FormType, type FormStateType } from "./types";
+import { type FormLoginType, type FormType } from "./types";
 import { store } from "@/shared/store";
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
@@ -10,7 +10,6 @@ export const logInForm: FormLoginType[] = [
 	{ name: "user_email", label: "Username", type: "text", },
 	{ name: "password", label: "Password", type: "password" },
 ];
-
 
 // PERF: Yep, it's for perfomance but unreusable
 export const butRegLog: RegLogButtsType[] = [
@@ -30,7 +29,7 @@ export const butRegLog: RegLogButtsType[] = [
 
 // TODO: Make it reusable when it'll be a case for this
 export const GitHubAuth = async (router: AppRouterInstance) => {
-	const response = await fetch(BACKEND.GITHUB_AUTH, {
+	const response = await fetch(BACKEND.NEXT_PUBLIC_GITHUB_AUTH, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json"
@@ -46,7 +45,7 @@ export const signInForm: FormType[] = [
 	{
 		name: "username", label: "Username", type: "text",
 		on_change: async (value: string, hook: Dispatch<SetStateAction<boolean | undefined>>) => {
-			await fetch(BACKEND.HAS_USER_CHECK, {
+			await fetch(BACKEND.NEXT_PUBLIC_HAS_USER_CHECK, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
@@ -65,21 +64,18 @@ export const signInForm: FormType[] = [
 	{
 		name: "email", label: "Email", type: "email",
 		on_change: async (value: string, hook: Dispatch<SetStateAction<boolean | undefined>>) => {
-			const some_request = await fetch(, {
+			await fetch(BACKEND.NEXT_PUBLIC_HAS_EMAIL_CHECK, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
 				},
 				body: JSON.stringify({ Email: value })
-	})
+			})
 				.then(response => response.json())
-		.then(data => {
-			hook(data.invalidEmail);
-		})
+				.then(data => {
+					hook(data.invalidEmail);
+				})
 		}
 	},
 ];
-
-
-
 

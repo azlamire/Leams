@@ -63,7 +63,6 @@ export function Login() {
 			<div>
 				<button onClick={() => signIn('github')}>Sign in with GitHub</button>
 			</div>
-
 		</form>
 
 	)

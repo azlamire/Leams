@@ -1,4 +1,4 @@
-// DEPRECATED: 
+// DEPRECATED: this file is deprecated
 import { useEffect } from "react";
 import { type Dispatch, type SetStateAction } from "react";
 /*

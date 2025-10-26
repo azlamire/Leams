@@ -1,3 +1,4 @@
+import { BACKEND } from "@/shared/constants";
 import clsx from "clsx";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -6,9 +7,8 @@ import { FaEyeSlash } from "react-icons/fa6";
 import { type FormStateType } from "./types";
 import { GitHubAuth, signInForm } from "./constant";
 import { Roboto } from "next/font/google";
-import { useRef, useState, type Dispatch, type FormEventHandler, type SetStateAction } from "react";
+import { useRef, useState, type FormEventHandler } from "react";
 import { useRouter } from 'next/navigation';
-import { BACKEND } from "@/shared/constants";
 
 const roboto = Roboto({ subsets: ['latin'] })
 

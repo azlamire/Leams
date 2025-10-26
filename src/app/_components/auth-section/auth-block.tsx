@@ -37,7 +37,7 @@ export function MainLogin() {
 								</div>
 								<div className="h-10 w-full flex flex-row shadow-sm-b gap-10 font-bold text-[20px] border-b-3 border-gray-500 z-0 mb-5">
 									<LayoutGroup>
-										{butRegLog.map((item, index) => (
+										{butRegLog.map((item) => (
 											<div key={item.name} className="relative w-[60%] flex flex-row">
 												<button
 													className={item.className}

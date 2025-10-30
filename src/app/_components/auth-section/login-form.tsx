@@ -20,7 +20,7 @@ export function Login() {
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		console.log("Form submitted", form);
 		e.preventDefault();
-		const response = await fetch(BACKEND.AUTH, {
+		const response = await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -31,6 +31,7 @@ export function Login() {
 		console.log(Content);
 	}
 
+	// TODO: make useRef for saving a content even if it's closed or even reloaded 
 	return (
 		<form className="align-top flex flex-col rounded-xl w-full h-[65%] gap-7 mt-10" onSubmit={handleSubmit}>
 			{logInForm.map((item) => (

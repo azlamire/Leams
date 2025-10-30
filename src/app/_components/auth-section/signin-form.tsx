@@ -13,6 +13,8 @@ import { useRouter } from 'next/navigation';
 const roboto = Roboto({ subsets: ['latin'] })
 
 export function SignIn() {
+	// TEST: This is just testing so controll it 
+	let nickInput = useRef("")
 	// NOTE: idk is it really worth to make mutliple or remain the big one
 	const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined)
 	const [nickValid, setNickValid] = useState<boolean | undefined>(undefined)
@@ -31,7 +33,7 @@ export function SignIn() {
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		console.log("Form submitted", form);
 		e.preventDefault();
-		const response = await fetch(BACKEND.REGISTER, {
+		const response = await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -39,6 +41,7 @@ export function SignIn() {
 			body: JSON.stringify(form)
 		})
 		const Content = await response.json();
+		// XXX: Delete on production
 		console.log(Content);
 	}
 
@@ -67,6 +70,8 @@ export function SignIn() {
 								{item.label}
 							</label>
 							<div className="flex flex-row">
+								{/* BUG: JSON.parse: unexpected character at line 1 column 1 of the JSON data*/
+								}
 								<input
 									className="outline-none w-full h-full z-10"
 									type={

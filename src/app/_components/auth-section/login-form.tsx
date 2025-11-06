@@ -27,8 +27,8 @@ export function Login() {
 			},
 			body: JSON.stringify(form)
 		})
-		const Content = await response.json();
-		console.log(Content);
+			// .then((resp) => localStorage.setItem("authToken", resp.json()))
+			.then((resp) => console.log(resp))
 	}
 
 	// TODO: make useRef for saving a content even if it's closed or even reloaded 
@@ -64,7 +64,6 @@ export function Login() {
 			<div>
 				<button onClick={() => signIn('github')}>Sign in with GitHub</button>
 			</div>
-
 		</form>
 
 	)

@@ -54,9 +54,8 @@ export const signInForm: FormType[] = [
 			})
 				.then(response => response.json())
 				.then(data => {
-					console.log(data);
-					console.log(data.invalidUser);
-					hook(data.invalidUser);
+					console.log(data)
+					hook(data.validUser);
 				})
 		}
 	},
@@ -69,11 +68,13 @@ export const signInForm: FormType[] = [
 				headers: {
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({ Email: value })
+				body: JSON.stringify({ email: value })
 			})
 				.then(response => response.json())
 				.then(data => {
-					hook(data.invalidEmail);
+					console.log(data)
+					console.log(data.validEmail);
+					hook(data.validEmail);
 				})
 		}
 	},

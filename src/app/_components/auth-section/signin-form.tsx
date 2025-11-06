@@ -7,7 +7,7 @@ import { FaEyeSlash } from "react-icons/fa6";
 import { type FormStateType } from "./types";
 import { GitHubAuth, signInForm } from "./constant";
 import { Roboto } from "next/font/google";
-import { useRef, useState, type FormEventHandler } from "react";
+import { useEffect, useRef, useState, type FormEventHandler } from "react";
 import { useRouter } from 'next/navigation';
 
 const roboto = Roboto({ subsets: ['latin'] })
@@ -31,19 +31,28 @@ export function SignIn() {
 
 	// IDK: Do I need to make this reusabl think in future, OK?
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
-		console.log("Form submitted", form);
 		e.preventDefault();
-		const response = await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
+		await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
 			},
 			body: JSON.stringify(form)
 		})
-		const Content = await response.json();
-		// XXX: Delete on production
-		console.log(Content);
+			// .then((resp) => localStorage.setItem("authToken", resp.json()))
+			.then(response => response.json())
+			.then(data => {
+				console.log(data)
+				console.log(data.content);
+			})
+			.catch((err) => {
+				alert(err);
+				console.log(err);
+			})
 	}
+	useEffect(() => {
+		console.log(nickValid, passValid, emailValid)
+	}, [nickValid, passValid, emailValid])
 
 	return (
 		<>
@@ -58,7 +67,7 @@ export function SignIn() {
 								// Line sticks when something written
 								"[--d:100%] hover:[--d:100%]": form[item.name as keyof typeof form] !== "",
 								// TODO: Try to make this more optimizable cause' it look ugly
-								"[background:linear-gradient(#477023_0_0)_bottom/var(--d,0)_3px_no-repeat]": (nickValid === false && item.name === "username") || (emailValid === false && item.name === "email") || (passValid === false && item.name === "password"),
+								"[background:linear-gradient(#477023_0_0)_bottom/var(--d,0)_3px_no-repeat]": (nickValid === true && item.name === "username") || (emailValid === true && item.name === "email") || (passValid === true && item.name === "password"),
 								"[background:linear-gradient(#ff0000_0_0)_bottom/var(--d,0)_3px_no-repeat]": (nickValid === false && item.name === "username") || (emailValid === false && item.name === "email") || (passValid === false && item.name === "password"),
 							})}>
 							<label
@@ -86,22 +95,28 @@ export function SignIn() {
 									autoComplete={item.name}
 									onChange={(e: React.ChangeEvent<any>) => {
 										switch (item.name) {
+
 											case "password":
 												setForm({ ...form, [item.name]: e.target.value })
-												e.target.value.length >= 8 && e.target.value.includes("&") && e.target.value != "" ? setPassValid(true) : setPassValid(false);
+												if (e.target.value.trim() != "") {
+													if (e.target.value.length >= 8 && e.target.value.includes("&")) setPassValid(true);
+													else setPassValid(false);
+												} else setPassValid(undefined);
+
 											case "username": case "email":
 												const newValue = e.target.value;
 												setForm({ ...form, [item.name]: newValue });
 
 												if (timeoutRefs.current[item.name]) {
-													console.log(timeoutRefs.current[item.name]);
 													clearTimeout(timeoutRefs.current[item.name]);
 												}
-
-												if (item.on_change && newValue.trim() !== "") {
-													timeoutRefs.current[item.name] = setTimeout(() => {
-														item.on_change!(newValue, item.name === "email" ? setNickValid : setEmailValid);
-													}, 1000);
+												if (newValue.trim() === "") item.name === "email" ? setEmailValid(undefined) : setNickValid(undefined);
+												else {
+													if (item.on_change) {
+														timeoutRefs.current[item.name] = setTimeout(() => {
+															item.on_change!(newValue, item.name === "email" ? setEmailValid : setNickValid);
+														}, 1000);
+													}
 												}
 										}
 									}}
@@ -123,7 +138,7 @@ export function SignIn() {
 										<></>
 								}
 							</div>
-							{item.name === "username" && nickValid === true && (
+							{item.name === "username" && nickValid === false && (
 								<span className="text-red-500 text-xs absolute -bottom-4 left-0">
 									Username already exists
 								</span>

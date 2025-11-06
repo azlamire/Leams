@@ -4,7 +4,6 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 from models.models import Users, UserLogin
-from main import app
 from db.core import get_session
 from fastapi import status, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -18,13 +17,15 @@ from dotenv import load_dotenv
 
 load_dotenv("../.env")
 
-SECRET_KEY = open("jwt-private.pem").read()
-PUBLIC_KEY = open("jwt-public.pem").read()
+SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+PUBLIC_KEY = open("./app/core/jwt-public.pem").read()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-ALGORITHM = "RS256"
+ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# XTODO: YOU MUST MAKE A VALIDATOR FOR EVERYTHING AND LOGGING
 
 
 class TokenData(BaseModel):
@@ -36,25 +37,23 @@ class Token(BaseModel):
     token_type: str
 
 
-@app.post("/token")
 def login(request: UserLogin, session: Session = Depends(get_session)):
     username = request.user_email.strip(" ")
     plain_password = request.password.strip(" ")
     user = authenticate(username, plain_password, session)
     jsonable_format = jsonable_encoder(user)
-    if user == False:
+    if user == False or user is None:
         return JSONResponse(status_code=401, content={"content": jsonable_format})
         # raise HTTPException(
         #     status_code=status.HTTP_401_UNAUTHORIZED,
         #     detail="Incorrect username or password",
         #     headers={"WWW-Authenticate": "Bearer"},
         # )
-
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
+    return JSONResponse(status_code=200, content={"content": access_token})
 
 
 # @app.get("/users/me/", response_model=User)
@@ -73,23 +72,29 @@ def login(request: UserLogin, session: Session = Depends(get_session)):
 
 
 def verify_password(plain_password, hash_password):
-    return pwd_context.verify(plain_password, hash_password)
+    try:
+        return pwd_context.verify(plain_password, hash_password)
+    except:
+        print(plain_password, hash_password)
 
 
-def get_user(username: str, session: Session) -> dict | None:
+# TODO: Make a validator
+def get_user(username: str, session: Session):
+    result = ""
     if "@" in username:
         result = session.exec(select(Users).where(Users.email == username)).first()
     else:
         result = session.exec(select(Users).where(Users.username == username)).first()
-    return result
+    return result if result else None
 
 
 def authenticate(username: str, plain_password: str, session: Session):
     user = get_user(username, session)
     if user is None:
-        return False
+        return None
+    print(plain_password, user.password)
     if not verify_password(plain_password, user.password):
-        return False
+        return None
     return user
 
 
@@ -100,7 +105,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    # TODO: READ ABOUT ALGORITHMS LIEK RS256
+    encoded_jwt = jwt.encode(to_encode, "secret", algorithm="HS256")
     return encoded_jwt
 
 
@@ -111,7 +117,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 #         headers={"WWW-Authenticate": "Bearer"},
 #     )
 #     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         payload = jwt.decode(token, PRIVATE_KEY, algorithms=[ALGORITHM])
 #         username = payload.get("sub")
 #         if username is None:
 #             raise credentials_exception

@@ -6,11 +6,13 @@
    Добавить обработку ошибок при вводе данных.
 """
 
-from contextlib import asynccontextmanager
+from api.routers.checks import check
 from core import register_test, oauth
-from db.core import create_db_and_tables
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from db.core import create_db_and_tables
 from schemas.settings import links
 import uvicorn
 
@@ -33,6 +35,7 @@ app.add_middleware(
 
 app.include_router(register_test.router)
 app.include_router(oauth.router)
+app.include_router(check.router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

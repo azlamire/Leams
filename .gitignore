@@ -1,4 +1,6 @@
 /frontend
 /backend
 /mobile
-
+.env
+jwt-*
+__pycache__/*

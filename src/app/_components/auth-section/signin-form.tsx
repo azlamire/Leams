@@ -42,8 +42,8 @@ export function SignIn() {
 			// .then((resp) => localStorage.setItem("authToken", resp.json()))
 			.then(response => response.json())
 			.then(data => {
-				console.log(data)
-				console.log(data.content);
+				localStorage.setItem("auth_token", data.content);
+
 			})
 			.catch((err) => {
 				alert(err);

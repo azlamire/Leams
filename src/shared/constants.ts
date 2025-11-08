@@ -17,3 +17,7 @@ export const BACKEND = {
 	NEXT_PUBLIC_REGISTER: process.env.NEXT_PUBLIC_REGISTER as string,
 	NEXT_PUBLIC_AUTH: process.env.NEXT_PUBLIC_REGISTER as string,
 } as const
+
+export const AUTH = {
+	NEXT_PUBLIC_AUTH_TOKEN: process.env.NEXT_PUBLIC_AUTH_TOKEN as string,
+} as const 

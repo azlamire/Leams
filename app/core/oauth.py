@@ -1,4 +1,4 @@
-from schemas.settings import JWTSettings
+from schemas.settings import git_settings
 import urllib.parse
 from fastapi import APIRouter
 
@@ -7,7 +7,7 @@ router = APIRouter()
 
 def generate():
     query_params = {
-        "client_id": JWTSettings.GITHUB_ID,
+        "client_id": git_settings.GITHUB_ID,
         "redirect_uri": "http://localhost:3000",
         "response_type": "code",
         "scope": ["read:user", "user:email"],

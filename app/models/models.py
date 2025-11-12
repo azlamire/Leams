@@ -5,6 +5,9 @@ import sqlmodel
 from typing import Optional
 
 
+# IDK: About one big table or having multiple small tables
+# but I do think that needed small tables cause it will be
+# so large data
 class Users(SQLModel, table=True):
     # TODO: OK u can remain until production so try to rewrite
     """
@@ -21,6 +24,14 @@ class Users(SQLModel, table=True):
     username: str = Field(default=None, primary_key=True)
     password: str = Field(default=None)
     email: str = Field(default=None, primary_key=True)
+
+
+class Generals(SQLModel, table=True):
+    username: str = Field(default=None, primary_key=True, foreign_key="users.username")
+    email: str = Field(default=None, primary_key=True, foreign_key="users.email")
+    subs: set = Field(default=None)
+    tags: set = Field(default=None)
+    history: set = Field(default=None)
 
 
 class UserCreate(SQLModel):

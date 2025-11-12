@@ -25,4 +25,10 @@ async def register(request: Users, session: Session = Depends(get_session)):
         UserLogin(user_email=request.username, password=plain_password),
         session=session,
     )
-    return token
+    if token == "":
+        return JSONResponse(status_code=401, content={"content": "error"})
+    response = JSONResponse(
+        status_code=200, content={"content": "Come to the dark side, we have cookies"}
+    )
+    response.set_cookie(key="auth_token", value=token)
+    return response

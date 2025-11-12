@@ -1,0 +1,100 @@
+{
+  "openapi": "3.2.0",
+  "info": {
+    "title": "Contracts",
+    "version": "1.0.1",
+    "description": "My first OpenAPI contracts to link strictly front, back-end parts. Also to give developers and users the whole vision what an endpoint does",
+    "contact": {
+      "name": "Contracts for projects",
+      "url": "https://github.com/Dambarioid/University",
+			"email": "juchiLee@proton.me"
+    },
+
+		"servers": [
+		  {
+				"url": "http://localhost:3000",
+				"description": "Frontend local server"
+		  },
+		  {
+
+				"url": "http://localhost:3000",
+				"description": "Backend local server"
+		  },
+		  {
+
+				"url": "https://staging.gigantic-server.com/v1",
+				"description": "Production server"
+		  }
+		],
+
+    "license": {
+      "name": "GNU Affero General Public License v3.0 or later",
+      "identifier": "AGPL-3.0-or-later",
+			"url": "https://spdx.org/licenses/AGPL-3.0-or-later.html" 
+    }
+  },
+  "paths": {
+    "/auth/github": {
+      "post": {
+        "description": "API for generating and sending GitHub token to sign via this one",
+				"parametrs": [
+						{
+								"name": "router",
+								"required": true,
+								"description": "Router from useRouter() react for pushing github logining"
+						}
+				],
+				"schemas": 
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "GIT_TOKEN"
+                  ],
+                  "properties": {
+                    "GIT_TOKEN": {
+                      "type": "string",
+                      "description": "generated with GitHub OAuth 2.0 helping",
+                      "example": "https://github.com/login/oauth/authorize?client_id=%2A%2A%2A%2A%2A%2A%2A%2A%2A%2A&redirect_uri=http%3A%2F%2Flocalhost%3A3000&response_type=code&scope=%5B%27read%3Auser%27%2C%20%27user%3Aemail%27%5D"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "API for creating new user and after logging it after this",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "GIT_TOKEN"
+                  ],
+                  "properties": {
+                    "GIT_TOKEN": {
+                      "type": "string",
+                      "description": "generated with GitHub OAuth 2.0 helping",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJuaWtpdGEiLCJleHAiOjE3NjI3NjkzNDB9.aBaKQVMaQ84BRwhEGLK3sUUOhtJGxm6t1R6cfO70IwE"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

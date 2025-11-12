@@ -1,4 +1,4 @@
-import { BACKEND } from "@/shared/constants";
+import { BACKEND, AUTH } from "@/shared/constants";
 import clsx from "clsx";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -39,11 +39,10 @@ export function SignIn() {
 			},
 			body: JSON.stringify(form)
 		})
-			// .then((resp) => localStorage.setItem("authToken", resp.json()))
 			.then(response => response.json())
-			.then(data => {
-				localStorage.setItem("auth_token", data.content);
-
+			.then(() => {
+				localStorage.getItem("auth_token");
+				window.location.reload();
 			})
 			.catch((err) => {
 				alert(err);

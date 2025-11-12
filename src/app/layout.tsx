@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { LeftSide } from "./_components/LeftSide";
+import { LeftSide } from "./_components/left-section/left-main";
 import { UpSide } from "./_components/nav-section//UpSide";
 import { MainLogin } from "./_components/auth-section/auth-block";
 

@@ -20,23 +20,28 @@ interface SubNavigationItem {
 };
 
 
+/*
+  TODO: If a person isn't authenticated then he will have
+  the list replacing subscriptions that shows the most popular 
+  streamers in own category
+*/
 const exploreItems: NavigationItem[] = [
 	{ name: "All categories", icon: <CiChat1 />, href: "Categories" },
-	{
-		name: "Games",
-		icon: <CgGames />,
-		options: [
-			{ name: "ALL", href: "Games/ALL" },
-			{ name: "VALORANT", href: "Games/VALORANT" },
-			{ name: "CS", href: "Games/CS" },
-			{ name: "WOW", href: "Games/WOW" },
-			{ name: "VALORANT", href: "Games/VALORANT" },
-		],
-	},
-	{ name: "Chatting", icon: <CiChat1 />, href: "Chatting" },
-	{ name: "Music", icon: <CiMusicNote1 />, href: "Music" },
-	{ name: "Creative", icon: <FaPaintBrush />, href: "Creative" },
-	{ name: "Esports", icon: <MdOutlineSportsEsports />, href: "Esports" },
+	// {
+	// 	name: "Games",
+	// 	icon: <CgGames />,
+	// 	options: [
+	// 		{ name: "ALL", href: "Games/ALL" },
+	// 		{ name: "VALORANT", href: "Games/VALORANT" },
+	// 		{ name: "CS", href: "Games/CS" },
+	// 		{ name: "WOW", href: "Games/WOW" },
+	// 		{ name: "VALORANT", href: "Games/VALORANT" },
+	// 	],
+	// },
+	// { name: "Chatting", icon: <CiChat1 />, href: "Chatting" },
+	// { name: "Music", icon: <CiMusicNote1 />, href: "Music" },
+	// { name: "Creative", icon: <FaPaintBrush />, href: "Creative" },
+	// { name: "Esports", icon: <MdOutlineSportsEsports />, href: "Esports" },
 ];
 
 

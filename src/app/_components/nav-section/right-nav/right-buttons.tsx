@@ -1,6 +1,7 @@
 "use client"
 import { store } from "@/shared/store";
-export function SignIn() {
+import { useEffect } from "react";
+export function RightButtons() {
 	return (
 		<div className="flex flex-row">
 			<div className="flex items-center justify-center">

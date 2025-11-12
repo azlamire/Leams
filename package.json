@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.9.0",
-    "@tanstack/react-query": "^5.83.0",
+    "@tanstack/react-query": "^5.90.7",
     "@tanstack/react-store": "^0.7.3",
+    "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "motion": "^12.23.12",

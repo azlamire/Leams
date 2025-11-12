@@ -1,7 +1,3 @@
-export function getAuthToken() {
-	return localStorage.getItem("auth
+export default function getToken() {
+	return localStorage.getItem("auth_token")
 }
-export function isAuthenticated() {
-	return localStorage.getItem("authtoken");
-}
-

@@ -7,7 +7,7 @@ import { Search } from "./Search";
 
 export function UpSide() {
 	return (
-		<header className="w-full flex flex-row items-center shadow-xs ">
+		<header className="w-full flex flex-row items-center shadow-xs">
 			<div className="flex flex-row justify-between w-full px-4 h-[60px]">
 				<div className="flex items-center gap-3 ">
 					<button className="p-2 group cursor-pointer duration-300 rounded-sm hover:shadow-sm">

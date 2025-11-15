@@ -21,4 +21,5 @@ export const BACKEND = {
 export const AUTH = {
 	NEXT_PUBLIC_AUTH_TOKEN: process.env.NEXT_PUBLIC_AUTH_TOKEN as string,
 	NEXT_PUBLIC_GET_USER: process.env.NEXT_PUBLIC_GET_USER as string,
+	NEXT_PUBLIC_GET_SUBS: process.env.NEXT_PUBLIC_GET_SUBS as string,
 } as const 

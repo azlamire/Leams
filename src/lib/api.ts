@@ -9,7 +9,6 @@ export const api = axios.create({
 	}
 })
 
-document
 api.interceptors.request.use(
 	(config) => {
 		config.headers['X-User-Login'] = 'Dambarioid';

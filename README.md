@@ -1,8 +1,8 @@
-<style> h1:first-of-type { display:none } </style> 
 <a href="http://localhost:3000/">![](./docs/docs/LeamsLogo.png)</a>
 
-### <div style="text-align: center;"> **Leams** — <span style="color: #dd3a44;">A first open-source streaming platform</span> </div>
-
+<p align="center">
+    <em>Leams A first open-source streaming platform</em>
+</p>
 <!-- TODO: Make here own .github-actions -->
 <p align="center">
     <a href="https://github.com/fastapi/fastapi/actions?query=workflow%3ATest+event%3Apush+branch%3Amaster" target="_blank">

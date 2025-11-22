@@ -1,5 +1,5 @@
 <style> h1:first-of-type { display:none } </style> 
-<a href="http://localhost:3000/">![](./LeamsLogo.png)</a>
+<a href="http://localhost:3000/">![](./docs/docs/LeamsLogo.png)</a>
 
 ### <div style="text-align: center;"> **Leams** — <span style="color: #dd3a44;">A first open-source streaming platform</span> </div>
 

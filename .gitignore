@@ -4,3 +4,10 @@
 .env
 jwt-*
 __pycache__/*
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv

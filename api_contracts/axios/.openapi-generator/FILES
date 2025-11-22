@@ -1,0 +1,12 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/AuthGithubPost200Response.md
+docs/DefaultApi.md
+docs/RegisterPost200Response.md
+git_push.sh
+index.ts

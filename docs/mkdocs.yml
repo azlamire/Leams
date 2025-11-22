@@ -1,0 +1,82 @@
+repo_url: https://github.com/azlamire/Leams
+repo_name: azlamire/Leams
+site_name: Leams
+theme:
+  icon:
+    repo: fontawesome/brands/git-alt
+    logo: fontawesome/solid/arrows-turn-to-dots
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.select
+    - navigation.top
+    - navigation.footer
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
+
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: Русский
+      link: /ru
+      lang: ru
+    - name: Suomi
+      link: /fi
+      lang: fi
+
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/azlamire
+
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/cherenkov-ivan-07b827385/
+
+extra_css:
+  - css/test.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - codehilite:
+      guess_lang: false
+
+nav:
+  - Leams: index.md 
+  - Backend:
+    - Overview: backend/overview.md
+    - Bugs: backend/bugs.md
+    - Legacy: backend/legacy.md
+  - Frontend:
+    - Overview: frontend/overview.md
+    - Bugs: frontend/bugs.md
+    - Legacy: frontend/legacy.md
+  - Features: features/features.md

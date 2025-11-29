@@ -31,7 +31,7 @@ export function Default() {
 		<div className="h-auto p-5">
 			<ul className={"flex flex-col justify-between text-[16px]"}>
 				<li>
-					<Link href="Categories" className="flex items-center gap-3 rounded-[10px] p-2">
+					<Link href="/category" className="flex items-center gap-3 rounded-[10px] p-2">
 						<TbCategoryPlus size="20px" /> Categories
 					</Link>
 				</li>

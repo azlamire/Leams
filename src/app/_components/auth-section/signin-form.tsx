@@ -1,3 +1,4 @@
+"use client"
 import { BACKEND, AUTH } from "@/shared/constants";
 import clsx from "clsx";
 import { FaGithub } from "react-icons/fa";

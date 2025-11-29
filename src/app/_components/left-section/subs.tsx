@@ -1,11 +1,10 @@
-"use client"
 import { api } from "@/lib/api";
-import { AUTH } from "@/shared/constants";
+import { MAIN } from "@/shared/constants";
 import { FaUserFriends } from "react-icons/fa";
 
 // XTODO: I really don't like this make with s3
 export function Subs() {
-	const getSubs = api.get(AUTH.NEXT_PUBLIC_GET_SUBS)
+	const getSubs = api.get(MAIN.NEXT_PUBLIC_GET_SUBS)
 		.then(data => console.log(data))
 	return (
 		<div className="w-[80%] border-t-1 pr-5 pt-5 pb-5 pl-1">

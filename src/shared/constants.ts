@@ -20,6 +20,10 @@ export const BACKEND = {
 
 export const AUTH = {
 	NEXT_PUBLIC_AUTH_TOKEN: process.env.NEXT_PUBLIC_AUTH_TOKEN as string,
+} as const
+
+export const MAIN = {
 	NEXT_PUBLIC_GET_USER: process.env.NEXT_PUBLIC_GET_USER as string,
 	NEXT_PUBLIC_GET_SUBS: process.env.NEXT_PUBLIC_GET_SUBS as string,
+	NEXT_PUBLIC_GET_CATEGORIES: process.env.NEXT_PUBLIC_GET_CATEGORIES as string,
 } as const 

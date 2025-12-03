@@ -18,8 +18,8 @@ from dotenv import load_dotenv
 load_dotenv("../.env")
 
 
-SECRET_KEY = open(os.path.abspath(".") + "./jwt-private.pem").read()
-PUBLIC_KEY = open(os.path.abspath(".") + "./app/jwt-public.pem").read()
+SECRET_KEY = open(os.path.abspath(".") + "/app/jwt-private.pem").read()
+PUBLIC_KEY = open(os.path.abspath(".") + "/app/jwt-public.pem").read()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ALGORITHM = "HS256"
 

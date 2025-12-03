@@ -34,9 +34,9 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         raise credentials_exception
 
 
-@router.get("/get_user", response_model=User)
+@router.get("/main/nav/user", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_user)],
     session: Session = Depends(get_session),
 ):
-    session.exec.
+    session.exec()

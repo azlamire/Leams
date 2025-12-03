@@ -1,13 +1,10 @@
-from sqlmodel import Session, select
-from db.core import engine
-from models.models import Users
+import requests, json
 
-with Session(engine) as session:
-    result = session.exec(
-        select(Users).where(Users.email == "refjekfjek@gmail.com")
-    ).first()
-    print(result)
-SECRET_KEY = open("./app/core/jwt-private.pem").read()
-PUBLIC_KEY = open("./app/core/jwt-public.pem").read()
-print(PUBLIC_KEY)
+test = requests.get(
+    "https://api.rawg.io/api/platforms?key=1c99d4bafb034c21997b152404f2609a"
+)
 
+y = json.dumps(test.content.decode("utf-8"), indent=4)
+print(y)
+testing = open("testing.json", "w")
+testing.write(y)

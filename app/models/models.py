@@ -26,12 +26,12 @@ class Users(SQLModel, table=True):
     email: str = Field(default=None, primary_key=True)
 
 
-class Generals(SQLModel, table=True):
-    username: str = Field(default=None, primary_key=True, foreign_key="users.username")
-    email: str = Field(default=None, primary_key=True, foreign_key="users.email")
-    subs: set = Field(default=None)
-    tags: set = Field(default=None)
-    history: set = Field(default=None)
+# class Generals(SQLModel, table=True):
+#     username: str = Field(default=None, primary_key=True, foreign_key="users.username")
+#     email: str = Field(default=None, primary_key=True, foreign_key="users.email")
+#     subs: list = Field(default=None)
+#     tags: list = Field(default=None)
+#     history: list = Field(default=None)
 
 
 class UserCreate(SQLModel):

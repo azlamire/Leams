@@ -7,8 +7,7 @@ export function RightButtons() {
 			<div className="flex items-center justify-center">
 				<button
 					className="w-[100px] h-[40px] shadow-sm text-white bg-[#dd3a44] rounded-sm cursor-pointer font-semibold hover:text-[#373539] hover:text-[#373539] transition-colors text-"
-					onClick={() => {
-					}}>
+					onClick={() => store.setState((prev) => ({ ...prev, openReg: false, isOpen: true }))}>
 					<div >
 						<span className="flex flex-row items-center justify-center gap-2">Sign In</span>
 					</div>
@@ -17,7 +16,8 @@ export function RightButtons() {
 
 			<div className="flex items-center justify-center">
 				<button
-					className="w-[100px] h-[40px] shadow-sm rounded-sm cursor-pointer font-semibold hover:bg-gray-50 transition-colors text-">
+					className="w-[100px] h-[40px] shadow-sm rounded-sm cursor-pointer font-semibold hover:bg-gray-50 transition-colors text-"
+					onClick={() => store.setState((prev) => ({ ...prev, openReg: true, isOpen: true }))}>
 					<div >
 						<span className="flex flex-row items-center justify-center gap-2">Log In</span>
 					</div>

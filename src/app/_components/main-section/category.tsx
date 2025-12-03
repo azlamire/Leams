@@ -3,15 +3,16 @@ import { MAIN } from "@/shared/constants";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
+import Link from "next/link";
 
-export function Subs() {
+export function MainCategory() {
 	const [links, setLinks] = useState<string[]>([])
 	const { ref, inView } = useInView({
 		threshold: 0.5, // процент видимости элемента
 	});
 	useEffect(() => {
 		for (let i = 0; i <= 10; i++) {
-			api.get(MAIN.NEXT_PUBLIC_GET_SUBS + i)
+			api.get(MAIN.NEXT_PUBLIC_GET_CATEGORIES + i)
 				.then(data => data.data)
 				.then((data: string) => {
 					setLinks(prev => [...prev, data])
@@ -22,21 +23,21 @@ export function Subs() {
 	// const info = useQuery({ queryKey: ['todos'], queryFn: () => api.get(MAIN.NEXT_PUBLIC_GET_CATEGORIES) })
 
 	return (
-		<div ref={ref} className="pt-5 pb-5 border-b-1 border-t-1 border-solid">
-			<div className="flex flex-col gap-1">
-				{links.map((category, ind) => (
-					<div key={ind} className="flex flex-row">
-						<div className="w-7 h-7 rounded-full">
-							<img src={category[1][0]} />
-						</div>
-						<div className="ml-2">
-							<p className="text-sm font-medium">{category[0]}</p>
-							<p className="text-xs">{category[1][1]}</p>
-						</div>
+		<div ref={ref} className="flex flex-row w-full justify-between p-2 pl-2">
+			{links.map((category, ind) => (
+				<Link
+					key={ind}
+					className="flex flex-col g-1"
+					href={"/category/" + category[0].replace(/\s+/g, "")}>
+					<div className="w-[120px] h-[160px]">
+						<img src={category[1]} />
 					</div>
-				))}
-
-			</div>
+					<div>
+						<h2 className="text-xs">{category[0]}</h2>
+						<h2 className="text-xs">0 viewers</h2>
+					</div>
+				</Link>
+			))}
 		</div>
 	)
 }

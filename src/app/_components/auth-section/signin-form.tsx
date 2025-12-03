@@ -56,7 +56,7 @@ export function SignIn() {
 
 	return (
 		<>
-			<form className="flex flex-col rounded-xl w-full h-[65%] gap-7" onSubmit={handleSubmit}>
+			<form className="flex flex-col rounded-xl w-full h-[65%] gap-7" onSubmit={handleSubmit} z-15>
 				{
 					signInForm.map((item) => (
 						<div key={item.name} className={
@@ -78,11 +78,11 @@ export function SignIn() {
 								} >
 								{item.label}
 							</label>
-							<div className="flex flex-row">
+							<div className="flex flex-row z-15">
 								{/* BUG: JSON.parse: unexpected character at line 1 column 1 of the JSON data*/
 								}
 								<input
-									className="outline-none w-full h-full z-10"
+									className="outline-none w-full h-full z-20"
 									type={
 										item.name === "password"
 											? passType

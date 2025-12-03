@@ -6,8 +6,8 @@
 */
 // NOTE: as in backend part(BaseSettings) it's just more secure
 /* NOTE: IDK really why developers doesn't write about such thing:
- * https://dev.to/schead/ensuring-environment-variable-integrity-with-zod-in-typescript-3di5/
- */
+	* https://dev.to/schead/ensuring-environment-variable-integrity-with-zod-in-typescript-3di5/
+	*/
 
 // TODO: Make a function for checking on undefined, OK :)?
 export const BACKEND = {
@@ -26,4 +26,5 @@ export const MAIN = {
 	NEXT_PUBLIC_GET_USER: process.env.NEXT_PUBLIC_GET_USER as string,
 	NEXT_PUBLIC_GET_SUBS: process.env.NEXT_PUBLIC_GET_SUBS as string,
 	NEXT_PUBLIC_GET_CATEGORIES: process.env.NEXT_PUBLIC_GET_CATEGORIES as string,
+	NEXT_PUBLIC_GET_STREAMS: process.env.NEXT_PUBLIC_GET_STREAMS as string
 } as const 

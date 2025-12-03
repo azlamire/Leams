@@ -3,7 +3,7 @@
 import { api } from "@/lib/api";
 import Link from "next/link";
 import { MAIN } from "@/shared/constants";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import Image from "next/image";
@@ -12,10 +12,11 @@ export default function Categories() {
 	const [count, setCount] = useState<number>(0);
 	const [links, setLinks] = useState<string[]>([])
 
+	const testing = useRef(null)
 	const { ref, inView } = useInView({
+		root: testing.current,
 		threshold: 1,
 	});
-
 
 	useEffect(() => {
 		for (let i = 2; i <= count; i++) {
@@ -35,13 +36,13 @@ export default function Categories() {
 	}, [inView]);
 
 	return (
-		<div className="w-full">
+		<div className="w-full !overflow-y-scroll">
 			<div>
 
 			</div>
-			<div ref={ref} className="grid grid-cols-7 gap-10">
+			<div ref={ref} className="grid grid-cols-7 gap-4 ">
 				{links.map((link, idx) => (
-					<div className="h-[240px] w-[140px]">
+					<div className="h-[240px] w-[190px]">
 						<Link
 							href={"/category/" + link[0].replace(/\s+/g, "")}
 							key={idx}>

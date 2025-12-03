@@ -40,12 +40,12 @@ export function Login() {
 						htmlFor=""
 						//form[item.name as keyof FormStateType]
 						className={form[item.name as keyof typeof form] === "" && item.name != "birthday"
-							? "absolute duration-300 group-focus-within:-translate-y-6 z-0"
-							: "absolute duration-300 -translate-y-6 z-0 "}>
+							? "absolute duration-300 group-focus-within:-translate-y-6 z-25"
+							: "absolute duration-300 -translate-y-6 z-25 "}>
 						{item.label}
 					</label>
 					<input
-						className="outline-none w-full h-full z-10"
+						className="outline-none w-full h-full z-30"
 						required
 						type={item.type}
 						id=""

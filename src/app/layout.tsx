@@ -6,6 +6,7 @@ import { MainLogin } from "./_components/auth-section/auth-block";
 import { LeftSide } from "./_components/left-section/left-main";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { Rubik } from 'next/font/google'
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -17,6 +18,9 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
+const rubik = Rubik({
+	subsets: ['latin'],
+})
 
 export default function RootLayout({
 	children,
@@ -27,7 +31,7 @@ export default function RootLayout({
 	return (
 		<QueryClientProvider client={queryClient}>
 			<html lang="en">
-				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+				<body className={`${geistSans.variable} ${geistMono.variable} antialiased ${rubik.className}`}>
 					<MainLogin />
 					<div className="h-screen">
 						<UpSide />

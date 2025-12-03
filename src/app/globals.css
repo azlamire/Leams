@@ -25,6 +25,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+* {
+ overflow: hidden;
+}
+
 @theme { 
   --color-sakura: #c52a5f;
   --color-bamble: #ffd72a;

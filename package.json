@@ -9,30 +9,34 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth0/nextjs-auth0": "^4.9.0",
-    "@tanstack/react-query": "^5.90.10",
-    "@tanstack/react-store": "^0.7.3",
+    "@auth0/nextjs-auth0": "^4.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.6",
+    "@tanstack/react-query": "^5.90.12",
+    "@tanstack/react-store": "^0.7.7",
+    "@telegram-auth/react": "^1.0.4",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "hls.js": "^1.6.15",
-    "motion": "^12.23.12",
-    "next-auth": "^4.24.11",
+    "motion": "^12.23.26",
+    "next-auth": "^4.24.13",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^10.0.0",
-    "typedoc": "^0.28.13",
+    "typedoc": "^0.28.15",
     "video.js": "^8.23.4",
-    "zod": "^4.1.12"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "baseline-browser-mapping": "^2.8.32",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^20.19.27",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "baseline-browser-mapping": "^2.9.11",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
   }
 }

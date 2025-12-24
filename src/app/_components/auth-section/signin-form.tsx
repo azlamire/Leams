@@ -1,5 +1,6 @@
 "use client"
 import { BACKEND, AUTH } from "@/shared/constants";
+import { LoginButton } from '@telegram-auth/react';
 import clsx from "clsx";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -163,13 +164,6 @@ export function SignIn() {
 					onClick={() => GitHubAuth(router)}
 				>
 					<FaGithub size="30px" />
-				</button>
-
-				<button
-					className="cursor-pointer shadow-sm h-[50px] w-[50px] rounded-xl flex items-center justify-center hover:bg-[#efe6de] duration-300 active:shadow-md"
-					onClick={() => GitHubAuth(router)}
-				>
-					<FcGoogle size="30px" />
 				</button>
 			</div>
 		</>

@@ -39,6 +39,17 @@ export const GitHubAuth = async (router: AppRouterInstance) => {
 	router.push(Content)
 }
 
+export const AppleAuth = async (router: AppRouterInstance) => {
+	const response = await fetch(BACKEND.NEXT_PUBLIC_GITHUB_AUTH, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		},
+	})
+	const Content = await response.json();
+	router.push(Content)
+}
+
 
 // TODO: I really don't like this remake in future when will work under this
 export const signInForm: FormType[] = [

@@ -1,3 +1,4 @@
+# DEPRECATED:
 # NOTE: This model is just for demonsstratino what would see an user
 import json
 import time

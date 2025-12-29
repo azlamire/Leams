@@ -1,6 +1,8 @@
-from core.settings import git_settings
+from app.core.settings import get_git_settings
 import urllib.parse
 from fastapi import APIRouter
+
+git_settings = get_git_settings()
 
 router = APIRouter()
 

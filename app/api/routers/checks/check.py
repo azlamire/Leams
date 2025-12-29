@@ -1,7 +1,7 @@
-from db.core import get_session
+from app.db.db_core import get_session
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from models.models import Users, IsUser, IsEmail
+from app.models.models import Users, IsUser, IsEmail
 from sqlmodel import Session, select
 
 router = APIRouter()

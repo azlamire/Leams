@@ -8,30 +8,6 @@ from typing import Optional
 # IDK: About one big table or having multiple small tables
 # but I do think that needed small tables cause it will be
 # so large data
-class Users(SQLModel, table=True):
-    # TODO: OK u can remain until production so try to rewrite
-    """
-    id: int | None
-    user_email: str
-    password: str
-    email: str | None
-    """
-
-    # autoincrement: True
-    id: Optional[int] = Field(
-        default=None, primary_key=True, sa_column_kwargs={"autoincrement": True}
-    )
-    username: str = Field(default=None, primary_key=True)
-    password: str = Field(default=None)
-    email: str = Field(default=None, primary_key=True)
-
-
-# class Generals(SQLModel, table=True):
-#     username: str = Field(default=None, primary_key=True, foreign_key="users.username")
-#     email: str = Field(default=None, primary_key=True, foreign_key="users.email")
-#     subs: list = Field(default=None)
-#     tags: list = Field(default=None)
-#     history: list = Field(default=None)
 
 
 class UserCreate(SQLModel):

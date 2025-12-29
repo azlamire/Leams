@@ -54,6 +54,12 @@ async def parse(
 
             try:
                 await page.goto(url, wait_until="load")
+                for i in range(10):
+                    await page.evaluate("""
+                        document.querySelector(".scrollable-area.root-scrollable.root-scrollable__content").scrollTo(0, (document.querySelector(".scrollable-area.root-scrollable.root-scrollable__content").scrollHeight - 600))
+                    """)
+                    await page.wait_for_timeout(2000)
+                await page.screenshot(path="screenshot.png")
             except PlaywrightError as exc:
                 logger.error(
                     "Url is not valid" + "\n" + "Please check the example of this func"

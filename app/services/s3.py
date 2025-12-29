@@ -1,6 +1,8 @@
 from aiobotocore.session import get_session
 from contextlib import asynccontextmanager
-from app.core.settings import s3_settings
+from app.core.settings import get_s3_settings
+
+s3_settings = get_s3_settings()
 
 
 class S3Client:

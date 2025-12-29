@@ -1,5 +1,7 @@
 from sqlmodel import Session, SQLModel, create_engine
-from schemas.settings import links
+from app.core.settings import get_links_settings
+
+links = get_links_settings()
 
 engine_url = links.SYNC_PSQL
 

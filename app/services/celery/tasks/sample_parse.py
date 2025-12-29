@@ -6,7 +6,7 @@ import json
 import asyncio
 
 
-async def get_something(
+async def parse_valid(
     url: str,
     main: tuple[str, str],
     elements: List[Tuple[str, str, Literal["text", "src"], str]],
@@ -28,8 +28,7 @@ async def get_something(
         print(json_format)
 
 
-@celery.task(name="testing")
-def get_test(
+def get_somet_task(
     url: str,
     main: tuple[str, str],
     elements: List[Tuple[str, str, Literal["text", "src"], str]],
@@ -37,7 +36,7 @@ def get_test(
     name_file: str,
 ):
     asyncio.run(
-        get_something(
+        parse_valid(
             url=url,
             main=main,
             elements=elements,
@@ -45,3 +44,7 @@ def get_test(
             name_file=name_file,
         )
     )
+
+
+parse_category = celery.task(name="parse_category")(get_somet_task)
+parse_json_streams = celery.task(name="parse_json_streams")(get_somet_task)

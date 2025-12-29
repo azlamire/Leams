@@ -1,11 +1,11 @@
 from bcrypt import hashpw
-from core.jwt_fin import login
-from db.core import get_session
+from app.services.auth.jwt_fin import login
+from app.db.db_core import get_session
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from core.hash_pas import hash_password
+from app.utils.hash_pas import hash_password
 from passlib.hash import bcrypt
-from models.models import Users, UserLogin
+from app.models.models import Users, UserLogin
 from sqlmodel import Session
 
 

@@ -52,7 +52,17 @@ class LinksSettings(BaseSettings):
 
 # NOTE: Idk but GitSettings doesn't work here's the solution but no answers why https://github.com/pydantic/pydantic/issues/3753, they said about dataclass_transform but link was deleted though their solution is workable 1.git_settings = GitSettings.model_validate({})
 # BUG: With field and lru_cache doesn't work properly so remain like this
-git_settings = JWTSettings.model_validate({})
-links = LinksSettings.model_validate({})
-s3_settings = S3Settings.model_validate({})
-redis_settings = RedisSettings.model_validate({})
+def get_git_settings():
+    return JWTSettings.model_validate({})
+
+
+def get_links_settings():
+    return LinksSettings.model_validate({})
+
+
+def get_s3_settings():
+    return S3Settings.model_validate({})
+
+
+def get_redis_settings():
+    return RedisSettings.model_validate({})

@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/main/categories{id}")
 async def get_categories(id: int):
     content = await S3Client(bucket_name="testing").get_file(
-        name_file="categories.json"
+        name_file=" CategoriesPohoto/"
     )
     return content
 
@@ -21,3 +21,14 @@ async def get_categories(id: int):
 async def get_subs(id: int):
     content = await S3Client(bucket_name="testing").get_file(name_file="DemoSubs.json")
     return content
+
+
+@router.get("/main/streams{id}")
+async def get_streams(id: int):
+    # // TODO: hardcoded link though, solve it
+    with open("streams.json", "r") as testing:
+        test = json.load(testing)
+        try:
+            return list(test.items())[id]
+        except:
+            return JSONResponse(status_code=404, content={"content": ""})

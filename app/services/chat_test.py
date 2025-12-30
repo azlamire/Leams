@@ -1,5 +1,5 @@
 from fastapi import APIRouter, WebSocket
-from app.db.db_core import get_session
+from app.db.db_core import get_async_session
 
 router = APIRouter()
 

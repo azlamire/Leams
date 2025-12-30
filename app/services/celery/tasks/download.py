@@ -4,6 +4,7 @@ from app.services.s3 import S3Client
 from typing import List, Tuple, Literal
 import json
 import asyncio
+import httpx
 
 
 async def parse_valid(
@@ -11,7 +12,6 @@ async def parse_valid(
     main: tuple[str, str],
     elements: List[Tuple[str, str, Literal["text", "src"], str]],
     bucket_name: str,
-    name_file: str,
 ):
     something_dict = await parse(
         url=url,
@@ -21,10 +21,16 @@ async def parse_valid(
     # NOTE: I know that's not correct but just for viewers and None's theme read about it
 
     if not isinstance(something_dict, type(None)):
-        json_format = json.dumps(something_dict, sort_keys=True, indent=4)
-        await S3Client(bucket_name=bucket_name).upload_file(
-            file=json_format, name_file=name_file
-        )
+        async with httpx.AsyncClient() as client:
+            for i in something_dict.values():
+                resp = await client.get(i.get("image"))
+                resp.raise_for_status()
+                content = resp.content
+                await S3Client(bucket_name=bucket_name).upload_file(
+                    file=content,
+                    name_file="CategoriesPohoto/" + i.get("name").lower(),
+                    content_type="image/webp",
+                )
 
 
 def get_somet_task(
@@ -32,7 +38,6 @@ def get_somet_task(
     main: tuple[str, str],
     elements: List[Tuple[str, str, Literal["text", "src"], str]],
     bucket_name: str,
-    name_file: str,
 ):
     asyncio.run(
         parse_valid(
@@ -40,10 +45,8 @@ def get_somet_task(
             main=main,
             elements=elements,
             bucket_name=bucket_name,
-            name_file=name_file,
         )
     )
 
 
-parse_category = celery.task(name="parse_category")(get_somet_task)
-parse_json_streams = celery.task(name="parse_json_streams")(get_somet_task)
+download_categories = celery.task(name="download_categories")(get_somet_task)

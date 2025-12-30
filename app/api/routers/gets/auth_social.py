@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.auth.oauth import generate_github, generate_apple
+from app.services.auth.oauth import generate_github, generate_apple
 
 router = APIRouter()
 

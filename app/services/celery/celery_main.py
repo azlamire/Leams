@@ -15,4 +15,4 @@ celery = Celery(
 )
 
 import app.services.celery.beat_config
-import app.services.celery.tasks.sample_parse
+from app.services.celery.tasks import sample_parse, download

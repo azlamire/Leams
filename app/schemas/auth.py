@@ -1,4 +1,6 @@
 from fastapi_users import schemas
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
+from sqlalchemy.orm import DeclarativeBase
 import uuid
 
 
@@ -11,4 +13,12 @@ class UserCreate(schemas.BaseUserCreate):
 
 
 class UserUpdate(schemas.BaseUserUpdate):
+    pass
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class User(SQLAlchemyBaseUserTableUUID, Base):
     pass

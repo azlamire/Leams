@@ -71,7 +71,7 @@ async def parse(
                 tag,
                 {"class": class_name},
             )
-            # IDK: Links is one huge str and still can be iterated many times
+            # IDK: Linkk is one huge str and still can be iterated many times
 
             count = 0
             for link in links:

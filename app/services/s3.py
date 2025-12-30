@@ -25,14 +25,16 @@ class S3Client:
 
     async def upload_file(
         self,
-        file: str,
+        file,
         name_file: str,
+        content_type: str = "application/octet-stream",
     ):
         async with self.get_client() as client:
             await client.put_object(
                 Bucket=self.bucket_name,
                 Key=name_file,
                 Body=file,
+                ContentType=content_type,
             )  # type: ignore
 
     async def get_file(self, name_file: str):

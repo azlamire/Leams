@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from app.db.db_core import create_db_and_tables
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.settings import get_links_settings
+from app.models import auth
 import uvicorn
 from app.routers import router
 
@@ -12,7 +13,8 @@ links = get_links_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    await create_db_and_tables()
+
     yield
 
 

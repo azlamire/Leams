@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date
+
 from sqlalchemy.orm import relationship
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 
@@ -18,7 +19,7 @@ class ChatMessages(Base):
 
 
 class Moderators(Base):
-    __tablename__ = "messages"
+    __tablename__ = "moderators"
     id = Column(Integer, primary_key=True, index=True)
     nickname = relationship("users", back_populates="owner")
-    peered_to = Column(
+    peered_to = Column(String, default=False)

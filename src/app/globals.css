@@ -30,6 +30,7 @@ body {
 }
 
 @theme { 
+	--color-leams:  #dd3a44;
   --color-sakura: #c52a5f;
   --color-bamble: #ffd72a;
   --color-myown: #0e0e10;

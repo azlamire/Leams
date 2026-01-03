@@ -16,7 +16,7 @@ export const BACKEND = {
 	NEXT_PUBLIC_GITHUB_AUTH: process.env.NEXT_PUBLIC_GITHUB_AUTH as string,
 	NEXT_PUBLIC_APPLE_AUTH: process.env.NEXT_PUBLIC_APPLE_AUTH as string,
 	NEXT_PUBLIC_REGISTER: process.env.NEXT_PUBLIC_REGISTER as string,
-	NEXT_PUBLIC_AUTH: process.env.NEXT_PUBLIC_REGISTER as string,
+	NEXT_PUBLIC_AUTH: process.env.NEXT_PUBLIC_AUTH as string,
 } as const
 
 export const AUTH = {

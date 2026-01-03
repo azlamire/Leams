@@ -22,7 +22,7 @@ type FormStateType = {
 
 
 type FormLoginStateType = {
-	user_email: string
+	username: string
 	password: string;
 }
 

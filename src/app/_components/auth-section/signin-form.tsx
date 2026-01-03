@@ -34,7 +34,7 @@ export function SignIn() {
 	// IDK: Do I need to make this reusabl think in future, OK?
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
+		await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -43,6 +43,7 @@ export function SignIn() {
 		})
 			.then(response => response.json())
 			.then(() => {
+				console.log("SIGN IN FORM")
 				localStorage.getItem("auth_token");
 				window.location.reload();
 			})
@@ -57,12 +58,12 @@ export function SignIn() {
 
 	return (
 		<>
-			<form className="flex flex-col rounded-xl w-full h-[65%] gap-7" onSubmit={handleSubmit} z-15>
+			<form className="flex flex-col rounded-xl w-full h-[65%] gap-7" onSubmit={handleSubmit}>
 				{
 					signInForm.map((item) => (
 						<div key={item.name} className={
 							clsx(
-								"relative flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
+								"flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
 								// For appearing a line when hovering
 								"hover:[--d:100%]": form[item.name as keyof typeof form] === "",
 								// Line sticks when something written

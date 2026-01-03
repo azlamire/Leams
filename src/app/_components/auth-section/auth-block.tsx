@@ -7,11 +7,12 @@ import { SignIn } from "./signin-form";
 import { useModal } from "@/hooks/use-modal";
 import { useStore } from "@tanstack/react-store";
 import { butRegLog } from "./constant";
+import { useEffect } from "react";
 
 export function MainLogin() {
 	const isOpen: boolean = useStore(store, (state) => state.isOpen);
 	useModal({ isOpen: isOpen });
-
+	const reg: boolean = useStore(store, (state) => state.openReg);
 	return (
 		<Portal selector="body">
 			<AnimatePresence mode="wait">
@@ -27,10 +28,11 @@ export function MainLogin() {
 							<div className="relative w-[26%] bg-[#efe6de] shadow-xl rounded-lg flex text-[#373539] items-center flex-col p-5 gap-8">
 								<div className="relative h-10 w-full">
 									<button
-										className="absolute bg-neutral-100 right-0 top-0 rounded-full h-[30px] w-[30px] shadow-xl flex flex-col justify-center items-center"
+										className="absolute bg-[#dd3a44] right-0 top-0 rounded-full h-[33px] w-[33px] shadow-sm flex flex-col justify-center items-center "
 										onClick={() => store.setState((prev) => ({ ...prev, isOpen: false }))}
 									>
-										<span className="bg-[#181A1B] h-[4px] w-full block transition-all"></span>
+										<span className="absolute bg-white h-[2.6px] w-[55%] block transition-all rotate-45 "></span>
+										<span className="absolute bg-white h-[2.6px] w-[55%] block transition-all -rotate-45 "></span>
 									</button>
 								</div>
 								<div className="h-10 w-full flex flex-row shadow-sm-b gap-10 font-bold text-[20px] border-b-3 border-gray-500 z-0 mb-5">
@@ -54,7 +56,7 @@ export function MainLogin() {
 										))}
 									</LayoutGroup>
 								</div>
-								{store.state.openReg ? <Login /> : <SignIn />}
+								{reg ? <SignIn /> : <Login />}
 							</div>
 						</div>
 					</motion.div>

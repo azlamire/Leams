@@ -1,23 +1,15 @@
 "use client"
-import VideoPlayer from "./test";
-import { motion } from "motion/react";
+import { Video } from "./(stream)/_video/video";
+import { Chat } from "./(stream)/chat";
 export default function mainVideo() {
+	// TODO: Make here everything resizable with profiles
 	return (
 		<div className="h-full w-full">
 
-			<div className="chat">
-
+			<div className="flex flex-row">
+				<Video />
+				<Chat />
 			</div>
-
-			<div>
-
-			</div>
-
-			<motion.div
-				drag>
-				<VideoPlayer src="http://localhost:80/hls/test.m3u8" />
-			</motion.div>
-
-		</div>
+		</div >
 	)
 }

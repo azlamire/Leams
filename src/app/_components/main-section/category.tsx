@@ -8,7 +8,7 @@ import Link from "next/link";
 export function MainCategory() {
 	const [links, setLinks] = useState<string[]>([])
 	const { ref, inView } = useInView({
-		threshold: 0.5, // процент видимости элемента
+		threshold: 0.5,
 	});
 	useEffect(() => {
 		for (let i = 0; i <= 10; i++) {

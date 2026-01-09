@@ -1,0 +1,89 @@
+= Leams — Open-Source Streaming Platform =
+
+'''Leams''' — первая открытая платформа для live-стриминга.
+
+== Project Goals ==
+
+=== Short-term ===
+* Provide a minimal, working streaming experience (broadcast + viewer playback)
+* Build a clean web UI and a simple streaming backend API
+* Publish clear docs and a contributor-friendly repo
+
+=== Mid-term ===
+* Add robust chat, moderation tools, and channel settings
+* Implement authentication and creator monetization options (subscriptions, tips)
+* Offer optional, transparent ad models that creators opt into
+
+=== Long-term ===
+* Support federated / decentralized streaming and content portability
+* Provide a plugin system or API so communities can customize rules and UX
+* Build a sustainable governance model that protects creators
+
+----
+
+== Key Features (Planned) ==
+
+* Live streaming (RTMP ingest / WebRTC support)
+* Low-latency viewer playback
+* Persistent channel pages with VODs
+* Chat with moderation controls and roles
+* Creator dashboards: stream key, stats, monetization options
+* Privacy-first defaults and opt-in telemetry
+* Developer-friendly APIs and extensible architecture
+
+----
+
+== Roadmap / Milestones ==
+
+# '''M1''' — MVP: RTMP ingest, simple player, channel pages, basic chat
+# '''M2''' — UX & Auth: user accounts, channel settings, stream management
+# '''M3''' — Moderation & Monetization: roles, mod tools, tips/subscriptions
+# '''M4''' — Extensibility: plugins, third-party integrations, API docs
+# '''M5''' — Federation & Portability: cross-platform streaming/identity options
+
+----
+
+== Quick Installation ==
+
+<syntaxhighlight lang="bash">
+sudo pacman -S docker
+cd ~/
+git clone https://github.com/azlamire/Leams
+sudo docker compose up
+</syntaxhighlight>
+
+----
+
+== Contribution ==
+
+You're welcome to contribute. Suggested ways to help:
+
+# Open issues for bugs, missing features, or design suggestions
+# Submit PRs for small improvements (README, docs, UI fixes)
+# Implement an outlined milestone (pick an issue labeled "help wanted" / "good first issue")
+
+=== Links ===
+
+* [https://github.com/azlamire/Leams/issues Report a Bug]
+* [https://github.com/azlamire/Leams/issues/new Request a Feature]
+* [https://discord.gg/leams Join our Discord]
+
+----
+
+== Documentation ==
+
+* [[Installation|Установка и настройка]] (RU)
+* [[Architecture|Архитектура проекта]] (RU)
+* [[API_Overview|API Documentation]] (RU)
+* [[Streaming_Setup|Настройка стриминга]] (RU)
+* [[FAQ|FAQ]] (RU)
+* [[Contributing|Contributing Guide]] (RU)
+
+----
+
+== License ==
+
+This project is licensed under the terms of the [https://spdx.org/licenses/AGPL-3.0-or-later.html AGPL-3.0-or-later] license.
+
+[[Category:Documentation]]
+[[Category:Main]]

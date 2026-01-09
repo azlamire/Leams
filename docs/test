@@ -1,0 +1,289 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\makeatletter
+\renewcommand\@biblabel[1]{#1.}
+\makeatother
+\newcommand{\myrule}[1]{\rule{#1}{0.4pt}}
+\newcommand{\sign}[2][~]{{\small\myrule{#2}\\[-0.7em]\makebox[#2]{\it #1}}}
+\usepackage[top=20mm, left=30mm, right=10mm, bottom=20mm, nohead]{geometry}
+\usepackage{indentfirst}
+\renewcommand{\baselinestretch}{1.50}
+\usepackage[labelsep=endash]{caption} 
+\captionsetup[table]{skip=1ex}
+\setlength{\tabcolsep}{1em}
+\lstset{
+    language=LaTeX,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4
+}
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+\renewcommand{\baselinestretch}{1}
+{\large
+{\sc Петрозаводский государственный университет\\
+Институт математики и информационных технологий\\
+	Кафедра Информатики и математического обеспечения
+}
+}
+\end{center}
+\begin{center} 
+Направление подготовки бакалавриата \\
+09.03.04 Программная инженерия \\
+Профиль направления подготовки бакалавриата \\
+``Системное и прикладное программное обеспечение''
+\end{center}
+\vfill
+\begin{center}
+{\normalsize Отчет по учебной ознакомительной практике} \\
+\medskip
+{\Large \sc{(13.1) Процедура thebibliography (13.2) BibTEX}} \\
+\end{center}
+\medskip
+
+\begin{flushright}
+\parbox{11cm}{%
+\renewcommand{\baselinestretch}{1.2}
+\normalsize
+Выполнил:\\
+студент группы 22207
+\begin{flushright}
+	И.Ю. Черенков \sign[подпись]{4cm}
+\end{flushright}
+
+Место прохождения практики: \\
+Кафедра Информатики и математического обеспечения 
+Период прохождения практики: \\
+08.09.25-28.12.25 \\
+
+
+Руководитель:\\
+{Ю.А. Богоявленский, к.т.н., доцент}
+\begin{flushright}
+\sign[подпись]{4cm}
+\end{flushright}
+
+
+Итоговая оценка
+\begin{flushright}
+  \sign[оценка]{4cm}
+\end{flushright}
+}
+\end{flushright}
+
+\vfill
+
+\begin{center}
+\large
+    Петрозаводск --- 2025
+\end{center}
+
+\newpage
+
+\tableofcontents
+\section*{Введение}
+\addcontentsline{toc}{section}{Введение}
+
+Цель практики: \\
+\begin{itemize}
+    \item закрепление и углубление теоретических знаний, полученных обучающимися в процессе обучения;
+    \item приобретение навыков и опыта практической работы по реализации и поддержке жизненного цикла программных систем: управлению процессами разработки требований, оценки рисков, проектирования, конструирования, тестирования, сопровождения программных систем, контролю за ходом реализации программных проектов, стратегическому планированию развития программных систем, оценке эффективности профессиональных коммуникаций внутри предприятия или организации.
+\end{itemize}
+
+Задачи учебной практики: 
+\begin{enumerate}
+    \item Знакомство с темой и постановкой задач исследования.
+    \item Поиск, обзор и анализ научной литературы по теме работы.
+    \item Анализ и интерпретация полученных результатов.
+    \ite Оформление полного отчёта с использованием макропакета LaTeX.
+\end{enumerate}
+
+\section{Обзор тем thebibliography и BibTEX}
+
+\subsection{thebibliography}
+
+\subsubsection{Библиография и цитирование литературы в LaTeX}
+
+Список литературы - важный элемент научной публикации. В LaTeX для ручного формирования списка и цитирования используется специальная процедура — thebibliography.
+
+Основы процедуры thebibliography:
+\begin{itemize}
+    \item Процедура печатает список пронумерованных записей литературы, в которых указывается автор, название, место и время публикации, источник и т.д.
+    \item Создается с помощью окружения:
+\end{itemize}
+
+\begin{lstlisting}[language=Latex]
+\begin{thebibliography}{9}
+  ...
+\end{thebibliography}
+\end{lstlisting}
+
+\subsubsection{Оформление записей: bibitem }
+Каждая запись начинается с:
+\begin{lstlisting}[language=Latex]
+\bibitem[mark]{key}
+\end{lstlisting}
+mark (опционально) — как будет подписан элемент (например, [X:93]); \\
+key — уникальный идентификатор записи, по которому производится цитирование.
+
+Вариант со ссылкой в тексте:
+\begin{lstlisting}[language=Latex]
+... \cite{key} ...
+\end{lstlisting}
+Пример:
+\begin{lstlisting}[language=Latex]
+\begin{thebibliography}{99}
+  \bibitem[Smith:86]{Smith:86}
+    \emph{A. B. Smith.} Cucumbers on the Windowsill. Uryupinsk, 1986.
+\end{thebibliography}
+\end{lstlisting}
+Одна команда \verb|\cite{key1, key2}| может ссылаться на несколько записей, разделяя их запятой.
+Опциональный аргумент позволяет ссылаться на страницы:
+\verb|\cite[с.23]{key}|.
+Формат списка зависит от класса документа и может быть изменён через параметры и пакеты (например, natbib, cite).
+\subsubsection{Расширенные возможности и параметры}
+Команда \verb|\newblock| используется для логического разделения частей записи (работает как вертикальный пробел).
+
+В параметрах класса можно настраивать:
+\begin{itemize}
+    \item \verb|\bibindent| — отступ блока;
+    \item \verb|\refname|, \verb|\bibname| — название раздела ("Библиография", "Литература").
+\end{itemize}
+
+Например:
+\begin{lstlisting}[language=Latex]
+    \renewcommand{\bibname}{Bibliography}
+\end{lstlisting}
+
+
+\subsection{BibTEX}
+\subsubsection{История}
+BibTeX разработан Ореном Паташником (Oren Patashnik) и Лесли Лампортом (Leslie Lamport). Позже Нилом Кемпсоном (Niel Kempson) и Алехандро Агилар-Сьерра (Alejandro Aguilar-Sierra) создана международная версия bibtex8, которая:
+\begin{itemize}
+\item Поддерживает 8-битные кодировки (включая кириллицу).
+\item Работает с языками, отличными от английского.
+\end{itemize}
+
+\subsubsection{Что такое BibTeX}
+BibTeX — это отдельная программа, работающая совместно с LaTeX, для автоматического управления библиографией. \\
+Она:
+\begin{itemize}
+\item Собирает библиографические данные из специальной базы (.bib-файлов).
+\item Сортирует записи по заданным правилам (по алфавиту, по порядку цитирования и т.д.).
+\item Форматирует список литературы в соответствии с выбранным библиографическим стилем. 
+\end{itemize}
+Преимущества BibTeX:
+\begin{itemize}
+\item Разделение данных и оформления: библиографические данные хранятся отдельно от текста документа.
+\item Переиспользование: одну базу .bib можно использовать в разных работах.
+\item Гибкость стилей: легко менять оформление списка литературы, изменив одну команду.
+\item Автоматизация: BibTeX сам выбирает из базы только процитированные источники и формирует список.
+\end{itemize}
+\subsubsection{Процесс компиляции}
+Типичный процесс компиляции документа с BibTeX:
+\begin{lstlisting}
+    bibtex8 --csfile cp1251.csf manual.aux
+\end{lstlisting}
+Где:
+\begin{itemize}
+\item manual.aux — служебный файл, создаваемый компилятором LaTeX.
+\item cp1251.csf — файл настроек с русскими буквами, упорядоченными по алфавиту (кодировка Windows-1251).
+\end{itemize}
+\subsubsection{Библиографическая база данных}
+База данных BibTeX — это текстовый файл с расширением .bib, содержащий записи (entries) разных типов источников (книги, статьи, отчёты и т.д.). \\
+Пример записи:
+\begin{lstlisting}
+@book{Smith86,
+  author    = {A. B. Smith},
+  title     = {Cucumbers on the Windowsill},
+  publisher = {Uryupinsk},
+  year      = {1986}
+}
+\end{lstlisting}
+Где bib-files — список имён .bib-файлов без расширения, разделённых запятыми.
+\begin{lstlisting}
+\bibliography{bib-files}
+\end{lstlisting}
+Использование в документе
+\begin{lstlisting}
+\bibliographystyle{plain}
+\bibliography{mhd,wall}
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|\bibliographystyle|{... } — выбирает стиль оформления (.bst-файл).
+    \item \verb|\bibliography|{...} — указывает файлы базы данных.
+\end{itemize}
+Важно: команда \bibliography должна идти после \bibliographystyle, иначе BibTeX не будет знать, какой стиль применять.
+\subsubsection{notice команда}
+\begin{itemize}
+\item \verb|\nocite{key}| — включает источник в список литературы без явного цитирования в тексте.
+\item \verb|\nocite{*}| — включает все записи из базы данных в список литературы, даже если они не цитируются в документе.
+
+\end{itemize}
+
+Эта команда может располагаться в любом месте после 
+\newpage
+\subsubsection{Библиографические стили}
+    \begin{table}[h]
+    \centering
+        \begin{tabular}{|c|c|}
+            \hline
+            plain & Сортировка по алфавиту, нумерация последовательная \\ \hline
+            unsrt & Несортирующий — по порядку появления \verb|\cite| в тексте \\ \hline
+            alpha & Алфавитный — метки из фамилии + год  \\ \hline
+            abbrv & Аббревиатурный — имена, месяцы, журналы сокращены \\ \hline
+        \end{tabular}
+    \end{table}
+\subsubsection{Специализированные стили для русского языка}
+Максим Поляков разработал несколько стилей для соответствия ГОСТ 7.80-00 (принят в 2000 году):
+\begin{itemize}
+\item gost780s — сортирующий стиль, аналог plain.
+\item gost780u — несортирующий стиль, аналог unsrt.
+\end{itemize}
+
+Эти стили позволяют правильно сортировать записи на русском языке (с ключом --csfile).
+\begin{document}.
+
+\subsubsection{Пакеты для расширения возможностей BibTeX}
+natbib — самый популярный пакет для работы с библиографией:
+
+\begin{itemize}
+\item Расширяет возможности команды \cite.
+\item Поддерживает собственные стили: abbrvnat, plainnat, unsrtnat.
+\item Класс revtex4 уже включает natbib.
+
+\end{itemize}
+\section{ Обзор тем выпускных работ }
+
+\section{Умения, навыки, опыт, приобретенные в период практики.}
+\begin{itemize}
+    \item Поиск и обзор научной и специализированной литературы по теме исследования;
+    \item Анализ и структурирование полученной информации из различных источников;
+    \item Подготовка научных отчётов, их оформление с помощью макропакета LaTeX;
+    \item Составление списков литературы с использованием BibTeX и автоматизация оформления библиографии;
+    \item Приобретение навыков работы с современными программными средствами для научной и инженерной деятельности;
+
+
+\end{itemize}
+
+
+\begin{thebibliography}{100}
+
+\bibitem{kotelnikov2004} Котельников, И. А. LaTeX по-русски [Электронный ресурс]. / И.~А. Котельников, П.~З. Чеботаев. — 3-е изд., перераб. и доп. — Новосибирск : Сибирский хронограф, 2004. — 496 с. — URL: https://www.researchgate.net/publication/235255954\_LaTeX\_po-russki
+\end{thebibliography}
+
+\end{document}
+

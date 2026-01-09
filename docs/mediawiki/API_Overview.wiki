@@ -1,0 +1,424 @@
+= API Documentation =
+
+== Обзор API ==
+
+Leams предоставляет RESTful API построенный на FastAPI, с автоматической генерацией документации OpenAPI/Swagger.
+
+'''Base URL''': <code>https://api.leams.com/v1</code> (production) или <code>http://localhost:8000</code> (development)
+
+'''API Documentation:'''
+* Swagger UI: <code>/docs</code>
+* ReDoc: <code>/redoc</code>
+* OpenAPI Schema: <code>/openapi.json</code>
+
+----
+
+== Аутентификация ==
+
+API использует JWT (JSON Web Tokens) для аутентификации.
+
+=== Получение токенов ===
+
+'''Endpoint''': <code>POST /auth/login</code>
+
+'''Request:'''
+<syntaxhighlight lang="json">
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+</syntaxhighlight>
+
+'''Response:'''
+<syntaxhighlight lang="json">
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 1800
+}
+</syntaxhighlight>
+
+=== Использование токенов ===
+
+Добавьте токен в заголовок Authorization для защищенных эндпоинтов:
+
+<syntaxhighlight lang="http">
+Authorization: Bearer <access_token>
+</syntaxhighlight>
+
+'''Пример с curl:'''
+<syntaxhighlight lang="bash">
+curl -H "Authorization: Bearer eyJhbGci..." \
+     https://api.leams.com/v1/user/profile
+</syntaxhighlight>
+
+=== Обновление токена ===
+
+'''Endpoint''': <code>POST /auth/refresh</code>
+
+'''Request:'''
+<syntaxhighlight lang="json">
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+</syntaxhighlight>
+
+----
+
+== Основные эндпоинты ==
+
+=== Authentication & Users ===
+
+==== Регистрация ====
+<syntaxhighlight lang="http">
+POST /auth/register
+Content-Type: application/json
+
+{
+  "username": "newstreamer",
+  "email": "streamer@example.com",
+  "password": "securepass123"
+}
+</syntaxhighlight>
+
+'''Response''' (201 Created):
+<syntaxhighlight lang="json">
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "username": "newstreamer",
+  "email": "streamer@example.com",
+  "created_at": "2025-12-08T10:30:00Z",
+  "is_verified": false
+}
+</syntaxhighlight>
+
+==== Получение профиля ====
+<syntaxhighlight lang="http">
+GET /user/profile
+Authorization: Bearer <token>
+</syntaxhighlight>
+
+'''Response''' (200 OK):
+<syntaxhighlight lang="json">
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "username": "coolstreamer",
+  "display_name": "Cool Streamer",
+  "avatar_url": "https://cdn.leams.com/avatars/abc123.jpg",
+  "bio": "Gaming streamer focused on FPS games",
+  "follower_count": 1250,
+  "following_count": 89,
+  "stream_key": "live_sk_abc123xyz",
+  "is_partner": false,
+  "created_at": "2024-01-15T08:00:00Z"
+}
+</syntaxhighlight>
+
+==== Обновление профиля ====
+<syntaxhighlight lang="http">
+PATCH /user/profile
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "display_name": "New Display Name",
+  "bio": "Updated bio",
+  "avatar_url": "https://cdn.leams.com/avatars/new.jpg"
+}
+</syntaxhighlight>
+
+----
+
+=== Streams ===
+
+==== Список live стримов ====
+<syntaxhighlight lang="http">
+GET /streams/live?limit=20&offset=0&category=gaming
+</syntaxhighlight>
+
+'''Query Parameters:'''
+* <code>limit</code> (int, default: 20): Количество результатов
+* <code>offset</code> (int, default: 0): Смещение для пагинации
+* <code>category</code> (string, optional): Фильтр по категории
+* <code>language</code> (string, optional): Фильтр по языку
+
+'''Response''' (200 OK):
+<syntaxhighlight lang="json">
+{
+  "total": 156,
+  "limit": 20,
+  "offset": 0,
+  "streams": [
+    {
+      "id": "stream_123",
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "username": "coolstreamer",
+      "title": "Playing CS2 Ranked",
+      "category": "Counter-Strike 2",
+      "viewer_count": 1234,
+      "thumbnail_url": "https://cdn.leams.com/thumbnails/stream_123.jpg",
+      "started_at": "2025-12-08T14:30:00Z",
+      "language": "en",
+      "is_mature": false,
+      "tags": ["fps", "competitive", "english"]
+    }
+  ]
+}
+</syntaxhighlight>
+
+==== Информация о стриме ====
+<syntaxhighlight lang="http">
+GET /streams/{stream_id}
+</syntaxhighlight>
+
+==== Создание/обновление стрима ====
+<syntaxhighlight lang="http">
+PUT /streams
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Morning stream - Chill gameplay",
+  "category": "Just Chatting",
+  "description": "Relaxing morning stream",
+  "tags": ["english", "chill", "morning"],
+  "is_mature": false
+}
+</syntaxhighlight>
+
+----
+
+=== VODs (Video on Demand) ===
+
+==== Список VODs пользователя ====
+<syntaxhighlight lang="http">
+GET /users/{username}/vods?limit=10&offset=0
+</syntaxhighlight>
+
+'''Response''' (200 OK):
+<syntaxhighlight lang="json">
+{
+  "total": 45,
+  "vods": [
+    {
+      "id": "vod_789",
+      "title": "Epic CS2 Comeback - Full Match",
+      "thumbnail_url": "https://cdn.leams.com/vods/vod_789_thumb.jpg",
+      "duration": 7234,
+      "view_count": 5678,
+      "created_at": "2025-12-07T20:00:00Z",
+      "video_url": "https://cdn.leams.com/vods/vod_789/index.m3u8"
+    }
+  ]
+}
+</syntaxhighlight>
+
+----
+
+=== Following & Subscriptions ===
+
+==== Follow пользователя ====
+<syntaxhighlight lang="http">
+POST /users/{username}/follow
+Authorization: Bearer <token>
+</syntaxhighlight>
+
+'''Response''' (201 Created):
+<syntaxhighlight lang="json">
+{
+  "following": true,
+  "followed_at": "2025-12-08T15:30:00Z"
+}
+</syntaxhighlight>
+
+==== Unfollow пользователя ====
+<syntaxhighlight lang="http">
+DELETE /users/{username}/follow
+Authorization: Bearer <token>
+</syntaxhighlight>
+
+'''Response''' (204 No Content)
+
+----
+
+=== Chat ===
+
+==== Получение истории чата ====
+<syntaxhighlight lang="http">
+GET /chat/{stream_id}/messages?limit=100&before={message_id}
+</syntaxhighlight>
+
+==== WebSocket подключение к чату ====
+<pre>
+wss://chat.leams.com/stream/{stream_id}?token={jwt_token}
+</pre>
+
+'''Отправка сообщения:'''
+<syntaxhighlight lang="json">
+{
+  "type": "message",
+  "data": {
+    "message": "Hello chat!"
+  }
+}
+</syntaxhighlight>
+
+'''Получение сообщения:'''
+<syntaxhighlight lang="json">
+{
+  "type": "message",
+  "data": {
+    "id": "msg_002",
+    "user": {
+      "username": "viewer456",
+      "display_name": "Viewer 456"
+    },
+    "message": "Hello!",
+    "timestamp": "2025-12-08T15:46:00Z"
+  }
+}
+</syntaxhighlight>
+
+----
+
+=== Search ===
+
+==== Поиск стримов и пользователей ====
+<syntaxhighlight lang="http">
+GET /search?q=counter+strike&type=streams,users&limit=20
+</syntaxhighlight>
+
+'''Query Parameters:'''
+* <code>q</code> (string, required): Поисковый запрос
+* <code>type</code> (string, default: "streams,users"): Типы результатов
+* <code>limit</code> (int, default: 20): Количество результатов
+
+----
+
+== Rate Limits ==
+
+{| class="wikitable"
+! Endpoint Type !! Limit
+|-
+| Authenticated || 1000 requests / hour
+|-
+| Unauthenticated || 100 requests / hour
+|-
+| Search || 30 requests / minute
+|-
+| Chat messages || 20 messages / 30 seconds
+|}
+
+'''Rate Limit Headers:'''
+<syntaxhighlight lang="http">
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 987
+X-RateLimit-Reset: 1701180000
+</syntaxhighlight>
+
+----
+
+== HTTP Status Codes ==
+
+{| class="wikitable"
+! Code !! Meaning
+|-
+| 200 || OK - Успешный запрос
+|-
+| 201 || Created - Ресурс создан
+|-
+| 204 || No Content - Успех без тела ответа
+|-
+| 400 || Bad Request - Неверные параметры
+|-
+| 401 || Unauthorized - Требуется аутентификация
+|-
+| 403 || Forbidden - Доступ запрещен
+|-
+| 404 || Not Found - Ресурс не найден
+|-
+| 429 || Too Many Requests - Rate limit превышен
+|-
+| 500 || Internal Server Error - Ошибка сервера
+|}
+
+----
+
+== Error Response Format ==
+
+<syntaxhighlight lang="json">
+{
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "The request parameters are invalid",
+    "details": {
+      "field": "email",
+      "issue": "Invalid email format"
+    }
+  }
+}
+</syntaxhighlight>
+
+----
+
+== Webhooks ==
+
+Для получения событий в реальном времени, настройте webhooks в настройках разработчика.
+
+=== События ===
+
+* <code>stream.online</code> - Стрим начался
+* <code>stream.offline</code> - Стрим завершился
+* <code>user.follow</code> - Новый подписчик
+* <code>user.subscribe</code> - Новая подписка
+
+'''Пример payload:'''
+<syntaxhighlight lang="json">
+{
+  "event": "stream.online",
+  "timestamp": "2025-12-08T16:00:00Z",
+  "data": {
+    "user_id": "user_123",
+    "username": "coolstreamer",
+    "stream_id": "stream_999",
+    "title": "Back online!"
+  }
+}
+</syntaxhighlight>
+
+----
+
+== SDK и Libraries ==
+
+* '''Python''': <code>pip install leams-sdk</code>
+* '''JavaScript/TypeScript''': <code>npm install @leams/sdk</code>
+* '''Go''': <code>go get github.com/leams/leams-go</code>
+
+'''Пример использования (Python):'''
+<syntaxhighlight lang="python">
+from leams import LeamsClient
+
+client = LeamsClient(access_token="your_token")
+
+# Получить live стримы
+streams = client.streams.get_live(limit=10)
+
+# Обновить информацию о стриме
+client.streams.update(
+    title="New Stream Title",
+    category="Gaming"
+)
+</syntaxhighlight>
+
+----
+
+== Дополнительные ресурсы ==
+
+* [https://github.com/azlamire/leams-examples Примеры кода]
+* [https://postman.leams.com Postman Collection]
+* [[GraphQL API]] (экспериментально)
+* [[API Changelog]]
+
+[[Category:Documentation]]
+[[Category:API]]

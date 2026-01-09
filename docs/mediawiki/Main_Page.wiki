@@ -1,0 +1,111 @@
+= Главная страница документации Leams =
+
+'''Leams''' — это открытая платформа для live-стриминга, построенная на современном технологическом стеке.
+
+== Быстрые ссылки ==
+
+* [[Installation|Установка и настройка]]
+* [[Architecture|Архитектура проекта]]
+* [[API Overview|API документация]]
+* [[Streaming Setup|Настройка стриминга]]
+* [[FAQ|Часто задаваемые вопросы]]
+* [[Contributing|Руководство для контрибьюторов]]
+
+== Ключевые особенности ==
+
+* ✓ '''Open Source''' — полностью открытый исходный код под MIT лицензией
+* ✓ '''Self-Hosting''' — возможность развернуть на собственных серверах
+* ✓ '''Modern Stack''' — FastAPI, Next.js, PostgreSQL, Redis
+* ✓ '''Low Latency''' — поддержка WebRTC для минимальной задержки
+* ✓ '''Adaptive Streaming''' — автоматическое переключение качества (HLS)
+* ✓ '''Real-time Chat''' — WebSocket чат с модерацией
+* ✓ '''VOD Support''' — автоматическое сохранение записей стримов
+
+== Быстрый старт ==
+
+<syntaxhighlight lang="bash">
+# Клонирование репозитория
+git clone https://github.com/azlamire/Leams.git
+cd Leams
+
+# Запуск через Docker Compose
+docker-compose up -d
+
+# Доступ к приложению
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# API Docs: http://localhost:8000/docs
+</syntaxhighlight>
+
+Подробнее: [[Installation|Руководство по установке]]
+
+== Технологический стек ==
+
+=== Backend ===
+* [https://fastapi.tiangolo.com/ FastAPI] — современный web framework для Python
+* [https://www.postgresql.org/ PostgreSQL] — реляционная база данных
+* [https://redis.io/ Redis] — in-memory кэш и брокер сообщений
+* [https://www.rabbitmq.com/ RabbitMQ] — message broker
+* [https://www.elastic.co/elasticsearch Elasticsearch] — полнотекстовый поиск
+* [https://aws.amazon.com/s3/ S3/MinIO] — объектное хранилище
+
+=== Frontend ===
+* [https://react.dev/ React 19] — UI библиотека
+* [https://nextjs.org/ Next.js] — React framework с SSR
+* [https://www.typescriptlang.org/ TypeScript] — типизированный JavaScript
+* [https://tailwindcss.com/ Tailwind CSS] — utility-first CSS framework
+* [https://tanstack.com/query/latest TanStack Query] — data fetching и кэширование
+
+=== Streaming ===
+* '''RTMP''' — nginx-rtmp для приема потоков
+* '''HLS''' — для адаптивного стриминга
+* '''WebRTC''' — для low-latency стриминга (экспериментально)
+* '''FFmpeg''' — транскодирование видео
+
+== Документация ==
+
+=== Для пользователей ===
+* [[Installation|Установка]]
+* [[Streaming Setup|Настройка стриминга]]
+* [[FAQ|FAQ]]
+
+=== Для разработчиков ===
+* [[Architecture|Архитектура]]
+* [[API Overview|API Documentation]]
+* [[Development Guidelines|Development Guidelines]]
+* [[Contributing|Contributing Guide]]
+
+=== Backend ===
+* [[Backend Overview|Backend Overview]]
+* [[Backend Bugs|Known Bugs]]
+* [[Backend Legacy|Legacy Code]]
+
+=== Frontend ===
+* [[Frontend Overview|Frontend Overview]]
+* [[Frontend Bugs|Known Bugs]]
+* [[Frontend Legacy|Legacy Code]]
+
+== Сообщество ==
+
+* '''GitHub''': [https://github.com/azlamire/Leams github.com/azlamire/Leams]
+* '''Discord''': [https://discord.gg/leams discord.gg/leams]
+* '''Документация''': [https://docs.leams.com docs.leams.com]
+* '''Email''': support@leams.com
+
+== Лицензия ==
+
+Leams распространяется под [[License|MIT License]].
+
+== Вклад в проект ==
+
+Мы приветствуем вклад от сообщества! Пожалуйста, ознакомьтесь с [[Contributing|руководством для контрибьюторов]].
+
+Способы помочь проекту:
+* Сообщать об ошибках
+* Предлагать новые функции
+* Улучшать документацию
+* Вносить код
+* Помогать другим пользователям
+
+[[Category:Documentation]]
+[[Category:Main]]

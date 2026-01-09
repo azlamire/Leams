@@ -1,0 +1,393 @@
+= Настройка стриминга =
+
+== Обзор ==
+
+Leams поддерживает несколько протоколов стриминга для обеспечения низкой задержки и высокого качества трансляций.
+
+=== Поддерживаемые протоколы ===
+
+{| class="wikitable"
+! Протокол !! Латентность !! Качество !! Поддержка браузеров
+|-
+| '''RTMP''' || 3-5s || Высокое || Требует плеер
+|-
+| '''HLS''' || 6-30s || Высокое || Все современные
+|-
+| '''WebRTC''' || <1s || Среднее-Высокое || Chrome, Firefox, Safari
+|-
+| '''DASH''' || 6-30s || Высокое || Все современные
+|}
+
+----
+
+== Настройка RTMP стриминга ==
+
+=== Для стримеров (OBS Studio) ===
+
+==== 1. Получение Stream Key ====
+
+Войдите в ваш аккаунт Leams и перейдите в Dashboard:
+
+<pre>
+https://leams.com/dashboard/stream-settings
+</pre>
+
+Ваш Stream Key выглядит примерно так:
+<pre>
+live_sk_abc123xyz789def456
+</pre>
+
+⚠️ '''Важно''': Никогда не делитесь вашим Stream Key публично!
+
+==== 2. Настройка OBS Studio ====
+
+'''Шаг 1''': Откройте OBS Studio → Settings → Stream
+
+'''Шаг 2''': Выберите настройки:
+<pre>
+Service: Custom
+Server: rtmp://ingest.leams.com/live
+Stream Key: [ваш stream key]
+</pre>
+
+'''Шаг 3''': Настройте Output (Output → Output Mode: Advanced):
+
+<pre>
+Encoder: x264 (или NVENC/AMD если есть GPU)
+Rate Control: CBR
+Bitrate: 
+  - 1080p60: 6000 Kbps
+  - 1080p30: 4500 Kbps
+  - 720p60: 4500 Kbps
+  - 720p30: 3000 Kbps
+Keyframe Interval: 2
+CPU Usage Preset: veryfast (для x264)
+Profile: high
+Tune: zerolatency
+</pre>
+
+'''Шаг 4''': Настройте Video:
+
+<pre>
+Base Resolution: 1920x1080
+Output Resolution: 1920x1080 (или 1280x720)
+FPS: 60 (или 30)
+</pre>
+
+'''Шаг 5''': Настройте Audio:
+
+<pre>
+Sample Rate: 48 kHz
+Channels: Stereo
+Bitrate: 160 kbps
+</pre>
+
+==== 3. Тестирование соединения ====
+
+Нажмите "Start Streaming" в OBS. Если всё настроено правильно:
+
+* ✓ OBS покажет зелёный индикатор
+* ✓ На Leams Dashboard появится "🔴 LIVE"
+* ✓ Зрители смогут видеть ваш стрим с задержкой ~5-10 секунд
+
+=== Для стримеров (Streamlabs Desktop) ===
+
+<pre>
+Stream Type: Streaming Services
+Service: Custom RTMP
+RTMP URL: rtmp://ingest.leams.com/live
+Stream Key: [ваш stream key]
+</pre>
+
+=== Для стримеров (XSplit) ===
+
+<pre>
+Outputs → Add Output → Custom RTMP
+Name: Leams
+RTMP URL: rtmp://ingest.leams.com/live/[stream_key]
+</pre>
+
+----
+
+== Рекомендуемые настройки битрейта ==
+
+=== Видео битрейт ===
+
+{| class="wikitable"
+! Разрешение !! FPS !! Битрейт (Kbps) !! Интернет (Upload)
+|-
+| 1920x1080 || 60 || 6000 || 8+ Mbps
+|-
+| 1920x1080 || 30 || 4500 || 6+ Mbps
+|-
+| 1280x720 || 60 || 4500 || 6+ Mbps
+|-
+| 1280x720 || 30 || 3000 || 4+ Mbps
+|-
+| 854x480 || 30 || 2000 || 3+ Mbps
+|}
+
+=== Аудио битрейт ===
+
+<pre>
+Музыка/подкасты: 256 kbps
+Обычный стрим: 160 kbps
+Низкая пропускная способность: 128 kbps
+</pre>
+
+----
+
+== Настройка HLS (для просмотра) ==
+
+HLS автоматически генерируется из RTMP потока. Никаких дополнительных настроек не требуется.
+
+=== Adaptive Bitrate Streaming ===
+
+Leams автоматически создаёт несколько качеств:
+
+<pre>
+1080p60 - 6000 Kbps
+720p60  - 4500 Kbps
+720p30  - 3000 Kbps
+480p30  - 2000 Kbps
+360p30  - 1000 Kbps
+</pre>
+
+Плеер автоматически выбирает оптимальное качество на основе:
+* Скорости интернета зрителя
+* Размера окна плеера
+* Производительности устройства
+
+----
+
+== WebRTC стриминг (Low Latency) ==
+
+⚠️ '''Экспериментальная функция'''
+
+Для стриминга с минимальной задержкой (<1s) используйте WebRTC.
+
+=== Настройка в OBS (через WHIP) ===
+
+'''Требования:'''
+* OBS Studio 30.0+
+* Плагин OBS-WHIP
+
+'''Настройка:'''
+<pre>
+Service: WHIP
+Server: https://webrtc.leams.com/whip
+Bearer Token: [ваш access token]
+</pre>
+
+=== Для просмотра ===
+
+Включите "Low Latency Mode" в настройках плеера на странице стрима.
+
+----
+
+== Настройка RTMP сервера (для self-hosted) ==
+
+=== nginx-rtmp конфигурация ===
+
+<syntaxhighlight lang="nginx">
+rtmp {
+    server {
+        listen 1935;
+        chunk_size 4096;
+        
+        application live {
+            live on;
+            record off;
+            
+            # Аутентификация
+            on_publish http://backend:8000/api/streams/verify;
+            on_publish_done http://backend:8000/api/streams/end;
+            
+            # HLS настройки
+            hls on;
+            hls_path /tmp/hls;
+            hls_fragment 2s;
+            hls_playlist_length 10s;
+            hls_nested on;
+            
+            # Adaptive bitrate
+            hls_variant _high BANDWIDTH=6000000;
+            hls_variant _mid BANDWIDTH=3000000;
+            hls_variant _low BANDWIDTH=1000000;
+            
+            # DASH (опционально)
+            dash on;
+            dash_path /tmp/dash;
+            dash_fragment 2s;
+            
+            # Запись VODs
+            record all;
+            record_path /var/rec;
+            record_unique on;
+            record_suffix -%Y%m%d-%H%M%S.flv;
+            
+            # Callback'и
+            on_record_done http://backend:8000/api/vods/process;
+        }
+    }
+}
+
+http {
+    server {
+        listen 8080;
+        
+        # HLS
+        location /hls {
+            types {
+                application/vnd.apple.mpegurl m3u8;
+                video/mp2t ts;
+            }
+            root /tmp;
+            add_header Cache-Control no-cache;
+            add_header Access-Control-Allow-Origin *;
+        }
+        
+        # DASH
+        location /dash {
+            root /tmp;
+            add_header Cache-Control no-cache;
+            add_header Access-Control-Allow-Origin *;
+        }
+    }
+}
+</syntaxhighlight>
+
+=== Запуск nginx-rtmp в Docker ===
+
+<syntaxhighlight lang="yaml">
+# docker-compose.yml
+services:
+  rtmp:
+    image: alfg/nginx-rtmp
+    ports:
+      - "1935:1935"
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./hls:/tmp/hls
+      - ./recordings:/var/rec
+    restart: unless-stopped
+</syntaxhighlight>
+
+----
+
+== Video Transcoding ==
+
+=== FFmpeg конфигурация ===
+
+<syntaxhighlight lang="bash">
+ffmpeg -i rtmp://localhost/live/stream_key \
+  -c:v libx264 -preset veryfast -tune zerolatency \
+  -b:v 6000k -maxrate 6000k -bufsize 12000k \
+  -s 1920x1080 -r 60 -g 120 \
+  -c:a aac -b:a 160k -ar 48000 \
+  -f hls -hls_time 2 -hls_list_size 5 \
+  -hls_flags delete_segments+append_list \
+  /tmp/hls/stream_key/index.m3u8
+</syntaxhighlight>
+
+----
+
+== CDN интеграция ==
+
+=== CloudFlare Stream ===
+
+<syntaxhighlight lang="javascript">
+// Конфигурация
+const CLOUDFLARE_ACCOUNT_ID = 'your_account_id';
+const CLOUDFLARE_API_TOKEN = 'your_api_token';
+
+// Загрузка VOD
+async function uploadVOD(videoPath) {
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream(videoPath));
+  
+  const response = await axios.post(
+    `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/stream`,
+    formData,
+    {
+      headers: {
+        'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
+      }
+    }
+  );
+  
+  return response.data.result.uid;
+}
+</syntaxhighlight>
+
+----
+
+== Мониторинг стримов ==
+
+=== Проверка статуса ===
+
+<syntaxhighlight lang="bash">
+# Проверка RTMP соединения
+curl http://localhost:8080/stat
+
+# Проверка HLS сегментов
+ls -lh /tmp/hls/stream_key/
+
+# Мониторинг битрейта
+ffprobe rtmp://localhost/live/stream_key
+</syntaxhighlight>
+
+=== Метрики ===
+
+* '''Viewer count''': Количество активных зрителей
+* '''Bitrate''': Текущий битрейт стрима
+* '''Frame drops''': Потерянные кадры
+* '''Buffer health''': Состояние буфера
+* '''Latency''': Задержка от стримера до зрителя
+
+----
+
+== Troubleshooting ==
+
+=== Проблема: "Failed to connect to server" ===
+
+'''Решение:'''
+# Проверьте firewall (порт 1935 должен быть открыт)
+# Убедитесь в правильности Stream Key
+# Проверьте RTMP URL: <code>rtmp://ingest.leams.com/live</code>
+
+=== Проблема: Высокая задержка ===
+
+'''Решение:'''
+# Уменьшите буфер в OBS: Advanced → Network Buffering → 400ms
+# Используйте WebRTC вместо HLS для просмотра
+# Оптимизируйте keyframe interval: 2 секунды
+
+=== Проблема: Низкое качество видео ===
+
+'''Решение:'''
+# Увеличьте битрейт
+# Проверьте скорость upload интернета
+# Измените preset на "faster" или "medium"
+# Используйте GPU encoding (NVENC/AMD)
+
+=== Проблема: Stream "лагает" у зрителей ===
+
+'''Решение:'''
+# Проверьте стабильность upload соединения
+# Включите CBR (Constant Bitrate) mode
+# Уменьшите разрешение или FPS
+# Проверьте логи сервера на packet loss
+
+----
+
+== Дополнительные ресурсы ==
+
+* [https://obsproject.com/wiki/ OBS Studio настройки]
+* [https://ffmpeg.org/documentation.html FFmpeg документация]
+* [https://datatracker.ietf.org/doc/html/rfc8216 HLS спецификация]
+* [https://webrtc.org/getting-started/overview WebRTC overview]
+
+[[Category:Documentation]]
+[[Category:Streaming]]

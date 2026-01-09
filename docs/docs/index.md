@@ -1,3 +1,5 @@
+<!-- TODO: In the future transfer from material mkdocs to Zensical -->
+<!-- https://zensical.org/ -->
 <style> h1:first-of-type { display:none } </style> 
 <a href="http://localhost:3000/">![](./LeamsLogo.png)</a>
 
@@ -65,6 +67,12 @@
 
 ## **Quick Installation**
 
+```console
+sudo pacman -S docker
+cd ~/
+git clone https://github.com/azlamire/Leams
+sudo docker compose up
+```
 
 ---
 
@@ -75,12 +83,15 @@ You’re welcome to contribute. Suggested ways to help:
 2. Submit PRs for small improvements (README, docs, UI fixes).
 3. Implement an outlined milestone (pick an issue labeled "help wanted" / "good first issue").
 
-- 📚 [Full API Reference (TypeDoc)](./docs/)
-- 🚀 [Setup & Installation](./setup.md)
+<!-- TODO: Make this  -->
+- 📚 [Full API Reference (TypeDoc)]()
+<!-- TODO: Make a full guide of installation and small structure of this one -->
+- 🚀 [Setup & Installation]()
 - 🐛 [Report a Bug](https://github.com/azlamire/Leams/issues)
 - 💡 [Request a Feature](https://github.com/Dambarioid/leams/issues/new?template=feature_request.md)
 - 💬 [Join our Discord](https://discord.gg/leams)
-- 🎨 [Design System](./design-system.md)
+<!-- TODO: Make this  -->
+- 🎨 [Design System]()
 
 ---
 

@@ -1,3 +1,5 @@
+## **Structure**
+
 ## **Tech Stack**
 
 | Category | Technology | Description |

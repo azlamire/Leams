@@ -1,4 +1,4 @@
-repo_url: https://github.com/azlamire/Leams
+repo_url: https://github.com/torvalds/linux
 repo_name: azlamire/Leams
 site_name: Leams
 theme:
@@ -70,13 +70,25 @@ markdown_extensions:
       guess_lang: false
 
 nav:
-  - Leams: index.md 
+  - Главная: index.md
+  - Начало работы:
+    - Установка: installation.md
+    - Архитектура: architecture.md
+    - FAQ: faq.md
   - Backend:
-    - Overview: backend/overview.md
+    - Обзор: backend/overview.md
     - Bugs: backend/bugs.md
     - Legacy: backend/legacy.md
   - Frontend:
-    - Overview: frontend/overview.md
+    - Обзор: frontend/overview.md
     - Bugs: frontend/bugs.md
     - Legacy: frontend/legacy.md
+  - API:
+    - Документация: api/overview.md
+  - Стриминг:
+    - Настройка: streaming/setup.md
+  - Разработка:
+    - Guidelines: development/guidelines.md
+    - Contributing: contributing.md
   - Features: features/features.md
+  - License: license.md

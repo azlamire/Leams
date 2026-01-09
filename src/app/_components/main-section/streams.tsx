@@ -25,7 +25,7 @@ export function MainStreams() {
 			api.get(MAIN.NEXT_PUBLIC_GET_STREAMS + i)
 				.then(data => data.data)
 				.then((data: string) => {
-					setLinks(prev => [...prev, data])
+					setLinks(prev => [...prev, data[1]])
 				})
 		}
 	}, [count]);
@@ -39,7 +39,7 @@ export function MainStreams() {
 
 	useEffect(() => {
 		console.log(links)
-		console.log()
+		console.log("this is links")
 	}, [links]);
 
 	useEffect(() => { console.log(count) }, [count])
@@ -51,8 +51,8 @@ export function MainStreams() {
 			{reg &&
 				<div className="flex flex-col">
 					{Array(Math.ceil(count / 5)).fill(1).map((_, i) =>
-						<div className="flex flex-row gap-5 w-full justify-between">
-							{links.slice(5 * i, (i + 1) * 5).map((link, idx) => (
+						<div className="flex flex-row gap-5 w-full justify-between" key={i}>
+							{links.slice(5 * i, (i + 1) * 5).map((link: string, idx) => (
 								<div className="h-[300px] w-[300px]">
 									<Link
 										href={"/category/" + link[0].replace(/\s+/g, "")}

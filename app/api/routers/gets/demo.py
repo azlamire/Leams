@@ -29,6 +29,7 @@ async def get_streams(id: int):
     with open("streams.json", "r") as testing:
         test = json.load(testing)
         try:
+            print(list(test.items())[id])
             return list(test.items())[id]
         except:
             return JSONResponse(status_code=404, content={"content": ""})

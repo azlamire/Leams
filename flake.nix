@@ -23,15 +23,6 @@
               UV_PYTHON = "${pkgs.python312}/bin/python";
             };
             
-            shellHook = ''
-              echo "🐍 Python:  $(python --version)"
-              echo "📦 uv: $(uv --version)"
-              echo ""
-              echo "Usage:"
-              echo "  uv init        # Initialize project"
-              echo "  uv add <pkg>   # Add dependency"
-              echo "  uv run <cmd>   # Run command"
-            '';
           };
         }
       );

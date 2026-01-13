@@ -23,6 +23,9 @@
               UV_PYTHON = "${pkgs.python312}/bin/python";
             };
             
+            shellHook = ''
+              source .venv/bin/activate
+            '';
           };
         }
       );

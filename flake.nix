@@ -14,17 +14,18 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               uv
-              python312  # Use Nix-provided Python
+              python312
             ];
             
             env = {
-              # Tell uv to use system Python, not download its own
+              LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
               UV_PYTHON_PREFERENCE = "only-system";
               UV_PYTHON = "${pkgs.python312}/bin/python";
             };
             
             shellHook = ''
               source .venv/bin/activate
+              export LD_LIBRARY_PATH=$NIX_LD_LIBRARY_PATH
             '';
           };
         }

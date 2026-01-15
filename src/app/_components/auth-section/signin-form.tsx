@@ -34,24 +34,38 @@ export function SignIn() {
 	// IDK: Do I need to make this reusabl think in future, OK?
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
+		const reg = await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
 			},
 			body: JSON.stringify(form)
 		})
-			.then(response => response.json())
-			.then(() => {
-				console.log("SIGN IN FORM")
-				localStorage.getItem("auth_token");
-				window.location.reload();
-			})
-			.catch((err) => {
-				alert(err);
-				console.log(err);
-			})
-	}
+    console.log(reg)
+    if (!reg.ok) {
+      throw new Error("Registration failed");
+    }
+    const registerData = await reg.json();
+    console.log("Registration successful:", registerData);
+    const formData = new URLSearchParams();
+    formData.append("grant_type", "password");
+    formData.append("username", form.email);
+    formData.append("password", form.password);
+    const loginResponse = await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: formData.toString()
+    });
+    if (!loginResponse.ok) {
+       console.log(loginResponse)
+       throw new Error("Login failed");
+	  }
+    const loginData = await loginResponse.json();
+    localStorage.setItem("access_token", loginData.access_token);
+    window.location.reload();
+  }
 	useEffect(() => {
 		console.log(nickValid, passValid, emailValid)
 	}, [nickValid, passValid, emailValid])

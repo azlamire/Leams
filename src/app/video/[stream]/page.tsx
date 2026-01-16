@@ -1,6 +1,6 @@
 "use client"
-import { Video } from "./(stream)/_video/video";
-import { Chat } from "./(stream)/chat";
+import { Video } from "./_video/video";
+import { Chat } from "./chat";
 export default function mainVideo() {
 	// TODO: Make here everything resizable with profiles
 	return (

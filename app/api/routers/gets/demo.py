@@ -11,10 +11,12 @@ router = APIRouter()
 
 @router.get("/main/categories{id}")
 async def get_categories(id: int):
-    content = await S3Client(bucket_name="testing").get_file(
-        name_file=" CategoriesPohoto/"
-    )
-    return content
+    with open("category.json", "r") as testing:
+        test = json.load(testing)
+        try:
+            return list(test.items())[id][1]
+        except:
+            return JSONResponse(status_code=404, content={"content": ""})
 
 
 @router.get("/main/subs{id}")

@@ -40,3 +40,40 @@ class S3Client:
     async def get_file(self, name_file: str):
         async with self.get_client() as client:
             return await client.get_object(Bucket=self.bucket_name, Key=name_file)  # type: ignore
+
+    async def list_files(self, prefix: str = ""):
+        """
+        List all objects in a folder/prefix.
+
+        Args:
+            prefix: The folder path, e.g., "folder/subfolder/"
+
+        Returns:
+            List of dicts with 'Key', 'Size', 'LastModified', etc.
+        """
+        async with self.get_client() as client:
+            response = await client.list_objects_v2(  # type: ignore
+                Bucket=self.bucket_name, Prefix="CategoriesPohoto/"
+            )
+            return response
+
+    async def generate_presigned_url(
+        self, name_file: str, expiration: int = 3600
+    ) -> str:
+        """
+        Generate a pre-signed URL for a file in S3.
+
+        Args:
+            name_file: The S3 key/path of the file
+            expiration:  Time in seconds until the URL expires (default: 1 hour)
+
+        Returns:
+            Pre-signed URL string
+        """
+        async with self.get_client() as client:
+            url = await client.generate_presigned_url(  # type: ignore
+                "get_object",
+                Params={"Bucket": self.bucket_name, "Key": name_file},
+                ExpiresIn=expiration,
+            )
+            return url

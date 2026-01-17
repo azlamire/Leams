@@ -10,16 +10,25 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     pass
 
 
-class ChatMessages(Base):
-    __tablename__ = "messages"
-    id = Column(Integer, primary_key=True, index=True)
-    nickname = relationship("user", back_populates="owner")
-    date = Column(Date, default=True)
-    stream = Column(String, default=False)
+class StreamList(Base):
+    __tablename__ = "streams"
+    id = Column(Integer, primary_key=True)
+    stream = Column(String, nullable=False)
+    date = Column(Date, nullable=False)  # required field!
 
 
-class Moderators(Base):
-    __tablename__ = "moderators"
-    id = Column(Integer, primary_key=True, index=True)
-    nickname = relationship("users", back_populates="owner")
-    peered_to = Column(String, default=False)
+#
+#
+# class ChatMessages(Base):
+#     __tablename__ = "messages"
+#     id = Column(Integer, primary_key=True, index=True)
+#     nickname = relationship("user", back_populates="owner")
+#     date = Column(Date, default=True)
+#     stream = Column(String, default=False)
+#
+#
+# class Moderators(Base):
+#     __tablename__ = "moderators"
+#     id = Column(Integer, primary_key=True, index=True)
+#     nickname = relationship("users", back_populates="owner")
+#     peered_to = Column(String, default=False)

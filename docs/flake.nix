@@ -13,12 +13,26 @@
         in {
           default = pkgs.mkShell {
             packages = with pkgs; [
-              mkdocs
-              mkdocs-material
+              uv
+              python312
             ];
             
+            env = {
+              UV_PYTHON_PREFERENCE = "only-system";
+              UV_PYTHON = "${pkgs. python312}/bin/python";
+            };
+            
+            NIX_LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc
+              pkgs.zlib
+              pkgs.openssl
+            ];
+            NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
+            
             shellHook = ''
-              zsh
+              export LD_LIBRARY_PATH=$NIX_LD_LIBRARY_PATH
+              source .venv/bin/activate
+              nvim 
             '';
           };
         }

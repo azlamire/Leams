@@ -11,7 +11,7 @@ export function MainCategory() {
 		threshold: 0.5,
 	});
 	useEffect(() => {
-		for (let i = 0; i <= 10; i++) {
+		for (let i = 0; i <= 9; i++) {
 			api.get(MAIN.NEXT_PUBLIC_GET_CATEGORIES + i)
 				.then(data => data.data)
 				.then((data: string) => {
@@ -28,12 +28,12 @@ export function MainCategory() {
 				<Link
 					key={ind}
 					className="flex flex-col g-1"
-					href={"/category/" + category[0].replace(/\s+/g, "")}>
+					href={category}>
 					<div className="w-[120px] h-[160px]">
-						<img src={category[1]} />
+						<img src={category} />
 					</div>
 					<div>
-						<h2 className="text-xs">{category[0]}</h2>
+						<h2 className="text-xs">{category}</h2>
 						<h2 className="text-xs">0 viewers</h2>
 					</div>
 				</Link>

@@ -24,7 +24,7 @@ export const AUTH = {
 } as const
 
 export const MAIN = {
-	NEXT_PUBLIC_GET_USER: process.env.NEXT_PUBLIC_GET_USER as string,
+	NEXT_PUBLIC_GET_USER_INFO: process.env.NEXT_PUBLIC_GET_USER_INFO as string,
 	NEXT_PUBLIC_GET_SUBS: process.env.NEXT_PUBLIC_GET_SUBS as string,
 	NEXT_PUBLIC_GET_CATEGORIES: process.env.NEXT_PUBLIC_GET_CATEGORIES as string,
 	NEXT_PUBLIC_GET_STREAMS: process.env.NEXT_PUBLIC_GET_STREAMS as string

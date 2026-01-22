@@ -10,7 +10,7 @@ import { MainCategory } from "./_components/main-section/category";
 import { MainStreams } from "./_components/main-section/streams";
 export default function MainPage() {
 	return (
-		<main className="w-full z-9">
+		<main className="w-full z-0">
 			<MainStreams />
 		</main>
 	)

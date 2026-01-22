@@ -1,10 +1,15 @@
+"use client"
 import { motion } from "motion/react";
-
-import VideoPlayer from "./video-player";
+import ReactPlayer from 'react-player'
+import { useEffect } from "react";
+import { useParams } from 'next/navigation';
 export function Video() {
+	const params = useParams();
+	const slug = params.stream as string;
+	useEffect(() => { console.log(slug) }, [])
 	return (
 		<motion.div>
-			<VideoPlayer src="http://localhost:80/hls/test.m3u8" height={800} width={1300} />
+			<ReactPlayer playing controls src={`http://localhost:80/hls/${slug}`} height={800} width={1300} />
 		</motion.div>
 
 

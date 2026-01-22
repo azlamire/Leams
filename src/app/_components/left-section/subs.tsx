@@ -5,38 +5,4 @@ import { useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 
 export function Subs() {
-	const [links, setLinks] = useState<string[]>([])
-	const { ref, inView } = useInView({
-		threshold: 0.5, // процент видимости элемента
-	});
-	useEffect(() => {
-		for (let i = 0; i <= 10; i++) {
-			api.get(MAIN.NEXT_PUBLIC_GET_SUBS + i)
-				.then(data => data.data)
-				.then((data: string) => {
-					setLinks(prev => [...prev, data])
-				})
-		}
-	}, []);
-
-	// const info = useQuery({ queryKey: ['todos'], queryFn: () => api.get(MAIN.NEXT_PUBLIC_GET_CATEGORIES) })
-
-	return (
-		<div ref={ref} className="pt-5 pb-5 border-b-1 border-t-1 border-solid">
-			<div className="flex flex-col gap-1">
-				{links.map((category, ind) => (
-					<div key={ind} className="flex flex-row">
-						<div className="w-7 h-7 rounded-full">
-							<img src={category[1][0]} />
-						</div>
-						<div className="ml-2">
-							<p className="text-sm font-medium">{category[0]}</p>
-							<p className="text-xs">{category[1][1]}</p>
-						</div>
-					</div>
-				))}
-
-			</div>
-		</div>
-	)
 }

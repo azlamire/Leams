@@ -1,0 +1,322 @@
+\subsection{Мобильное приложение}
+\subsubsection{Архитектура мобильного приложения}
+
+Мобильное приложение Leams разработано с использованием \textbf{React Native} и \textbf{Expo}, что позволяет создать кроссплатформенное решение для iOS и Android на основе единой кодовой базы. Это существенно сокращает время разработки и упрощает поддержку приложения.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.8\linewidth}{!}{
+  \begin{tikzpicture}[
+      node distance=1.2cm and 1.5cm,
+      every node/.style={draw, rectangle, rounded corners, align=center, font=\footnotesize},
+      thick
+  ]
+  
+  \node (mobile) {React Native\\(iOS/Android)};
+  \node[below=0.8cm of mobile] (asyncstorage) [fill=blue!10] {AsyncStorage\\(Локальное хранилище)};
+  \node[right=1.5cm of mobile] (api) {API Backend\\(FastAPI)};
+  \node[above=0.8cm of api] (jwt) [fill=green!10] {JWT токены};
+  \node[below=1.2cm of api] (streaming) [fill=orange!10] {Video Streaming\\(expo-av)};
+  \node[below=1.2cm of asyncstorage] (chat) [fill=purple!10] {WebSocket\\(Real-time чат)};
+  
+  \draw[->,very thick] (mobile) -- node[above]{HTTP(S)} (api);
+  \draw[->,very thick] (api) -- (mobile);
+  \draw[->,thick] (mobile) -- (asyncstorage);
+  \draw[->,thick] (asyncstorage) -- (mobile);
+  \draw[->,thick] (jwt) -- (api);
+  \draw[->,thick] (api) -- (streaming);
+  \draw[->,thick] (streaming) -- (mobile);
+  \draw[->,thick] (mobile) -- (chat);
+  \draw[->,thick] (chat) -- (api);
+  
+  \end{tikzpicture}
+  }
+  \caption{Архитектура мобильного приложения}
+\end{figure}
+
+\subsubsection{Технологический стек мобильного приложения}
+
+\begin{itemize}
+    \item \textbf{React Native} - кроссплатформенный фреймворк для разработки нативных мобильных приложений на JavaScript
+    \item \textbf{Expo} - платформа и набор инструментов для упрощения разработки React Native приложений
+    \item \textbf{Expo Router} - файловая маршрутизация для навигации в приложении (аналог Next.js для мобильных)
+    \item \textbf{NativeWind} - Tailwind CSS для React Native, позволяющий использовать utility-first подход к стилизации
+    \item \textbf{Expo AV} - библиотека для воспроизведения видео и аудио потоков
+    \item \textbf{AsyncStorage} - асинхронное хранилище данных для сохранения токенов и настроек пользователя
+    \item \textbf{Axios} - HTTP-клиент для взаимодействия с backend API
+\end{itemize}
+
+\subsubsection{Структура приложения}
+
+Приложение организовано по принципу файловой маршрутизации Expo Router:
+
+\begin{minted}[fontsize=\footnotesize]{text}
+app/
+├── (auth)/              # Экраны авторизации
+│   ├── login.tsx       # Экран входа
+│   └── register.tsx    # Экран регистрации
+├── (tabs)/             # Главные экраны с навигацией
+│   ├── _layout.tsx     # Layout для tab navigation
+│   ├── index.tsx       # Список стримов (главная)
+│   └── create.tsx      # Создание стрима
+├── stream/
+│   └── [id].tsx        # Просмотр стрима с чатом
+├── _layout.tsx         # Корневой layout
+└── index.tsx           # Точка входа с проверкой авторизации
+\end{minted}
+
+\subsubsection{Ключевые особенности реализации}
+
+\paragraph{1. Авторизация и безопасность}
+
+Мобильное приложение использует тот же механизм авторизации, что и веб-версия - JWT токены. Однако вместо \texttt{localStorage} (недоступного в React Native) используется \textbf{AsyncStorage}:
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+// Сохранение токена после успешной авторизации
+await AsyncStorage.setItem('authToken', loginData.access_token);
+await AsyncStorage.setItem('user', JSON.stringify({ username, email }));
+
+// Получение токена для запросов
+const token = await AsyncStorage.getItem('authToken');
+if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+}
+\end{minted}
+
+\paragraph{2. Взаимодействие с Backend}
+
+Для подключения мобильного приложения к backend используется локальный IP-адрес компьютера в сети, а не \texttt{localhost}:
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+// Конфигурация API
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL 
+    || 'http://192.168.0.103:8000';
+
+// Для Android эмулятора используется специальный адрес:
+// http://10.0.2.2:8000 (указывает на localhost хост-машины)
+\end{minted}
+
+Это критически важно, так как \texttt{0.0.0.0} или \texttt{localhost} в мобильном приложении указывает на само устройство, а не на компьютер разработчика.
+
+\paragraph{3. Tab Navigation}
+
+Приложение использует нижнюю tab-навигацию с двумя основными экранами:
+
+\begin{itemize}
+    \item \textbf{Стримы} - главная страница со списком активных трансляций
+    \item \textbf{Создать} - страница создания нового стрима (требует авторизации)
+\end{itemize}
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+<Tabs
+  screenOptions={{
+    tabBarActiveTintColor: '#9333EA',    // Фиолетовый цвет
+    tabBarInactiveTintColor: '#6B7280', // Серый цвет
+    tabBarStyle: {
+      backgroundColor: '#1F2937',        // Темный фон
+    },
+  }}
+>
+  <Tabs.Screen name="index" options={{ title: 'Стримы' }} />
+  <Tabs.Screen name="create" options={{ title: 'Создать' }} />
+</Tabs>
+\end{minted}
+
+\paragraph{4. Экран просмотра стрима}
+
+Экран просмотра включает:
+
+\begin{itemize}
+    \item Видеоплеер с использованием \texttt{expo-av}
+    \item Информацию о стриме (название, автор, количество зрителей)
+    \item Real-time чат с возможностью отправки сообщений
+    \item Индикатор "LIVE" для активных трансляций
+\end{itemize}
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+<Video
+  ref={videoRef}
+  source={{ uri: stream.streamUrl }}
+  useNativeControls
+  resizeMode={ResizeMode.CONTAIN}
+  shouldPlay
+  onError={(error) => {
+    Alert.alert('Ошибка', 'Не удалось загрузить видео');
+  }}
+/>
+\end{minted}
+
+Чат обновляется каждые 3 секунды через polling (в будущем планируется переход на WebSocket):
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+useEffect(() => {
+    loadMessages();
+    const interval = setInterval(loadMessages, 3000);
+    return () => clearInterval(interval);
+}, [streamId]);
+\end{minted}
+
+\subsubsection{Стилизация с NativeWind}
+
+Приложение использует NativeWind для стилизации - это Tailwind CSS адаптированный для React Native:
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+<View className="flex-1 bg-gray-900 justify-center px-6">
+  <Text className="text-4xl font-bold text-white text-center mb-8">
+    Регистрация
+  </Text>
+  <TextInput
+    className="bg-gray-800 text-white px-4 py-3 rounded-lg"
+    placeholder="Email"
+    placeholderTextColor="#9CA3AF"
+  />
+  <TouchableOpacity className="bg-purple-600 py-4 rounded-lg">
+    <Text className="text-white text-center font-semibold">
+      Зарегистрироваться
+    </Text>
+  </TouchableOpacity>
+</View>
+\end{minted}
+
+Это обеспечивает:
+\begin{itemize}
+    \item Единый стиль с веб-версией
+    \item Быструю разработку UI
+    \item Легкую поддержку темной темы
+\end{itemize}
+
+\subsubsection{Процесс регистрации в мобильном приложении}
+
+\begin{enumerate}
+    \item Пользователь заполняет форму регистрации (username, email, password)
+    \item Данные отправляются на \texttt{/auth/register} endpoint
+    \item Backend создает пользователя в PostgreSQL
+    \item Автоматически выполняется вход через \texttt{/auth/jwt/login}
+    \item JWT токен сохраняется в AsyncStorage
+    \item Пользователь перенаправляется на главный экран
+\end{enumerate}
+
+\begin{minted}[fontsize=\footnotesize]{typescript}
+const handleRegister = async () => {
+    // 1. Регистрация
+    const regResponse = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        body: JSON.stringify({ username, email, password })
+    });
+    
+    // 2. Автоматический логин
+    const formData = new URLSearchParams();
+    formData.append("username", email);
+    formData.append("password", password);
+    
+    const loginResponse = await fetch(`${API_BASE_URL}/auth/jwt/login`, {
+        method: "POST",
+        body: formData.toString()
+    });
+    
+    // 3. Сохранение токена
+    const loginData = await loginResponse.json();
+    await AsyncStorage.setItem("access_token", loginData.access_token);
+    
+    // 4. Навигация
+    router.replace('/(tabs)');
+};
+\end{minted}
+
+\subsubsection{Особенности тестирования мобильного приложения}
+
+Для тестирования мобильного приложения существует несколько способов:
+
+\paragraph{1. Expo Go (рекомендуется для разработки)}
+\begin{itemize}
+    \item Установить Expo Go на телефон из App Store или Google Play
+    \item Запустить \texttt{bun start} на компьютере
+    \item Отсканировать QR-код через Expo Go
+    \item Телефон и компьютер должны быть в одной Wi-Fi сети
+\end{itemize}
+
+\paragraph{2. Android эмулятор}
+\begin{itemize}
+    \item Установить Android Studio
+    \item Создать виртуальное устройство (AVD)
+    \item Запустить \texttt{bun run android}
+    \item Использовать \texttt{http://10.0.2.2:8000} для обращения к localhost
+\end{itemize}
+
+\paragraph{3. iOS симулятор (только на macOS)}
+\begin{itemize}
+    \item Установить Xcode
+    \item Запустить \texttt{bun run ios}
+    \item Использовать \texttt{http://localhost:8000} для обращения к backend
+\end{itemize}
+
+\subsubsection{Проблемы и решения}
+
+\paragraph{Проблема: Network Error при запросах}
+\begin{itemize}
+    \item \textbf{Причина}: Использование \texttt{localhost} или \texttt{0.0.0.0}
+    \item \textbf{Решение}: Использовать локальный IP (например, \texttt{192.168.0.103})
+    \item \textbf{Как узнать IP}: \texttt{ip addr show | grep "inet "}
+\end{itemize}
+
+\paragraph{Проблема: localStorage is not defined}
+\begin{itemize}
+    \item \textbf{Причина}: \texttt{localStorage} недоступен в React Native
+    \item \textbf{Решение}: Использовать \texttt{AsyncStorage} вместо \texttt{localStorage}
+\end{itemize}
+
+\paragraph{Проблема: Navigation before mounting}
+\begin{itemize}
+    \item \textbf{Причина}: Попытка навигации до полной загрузки Root Layout
+    \item \textbf{Решение}: Использовать \texttt{setTimeout} с небольшой задержкой (100ms)
+\end{itemize}
+
+\subsubsection{Планы развития мобильного приложения}
+
+\begin{enumerate}
+    \item \textbf{Push-уведомления}
+    \begin{itemize}
+        \item Уведомления о начале стримов подписок
+        \item Уведомления о новых сообщениях в чате
+    \end{itemize}
+    
+    \item \textbf{Улучшение видеоплеера}
+    \begin{itemize}
+        \item Поддержка различных качеств видео
+        \item Picture-in-Picture режим
+        \item Landscape ориентация для полноэкранного просмотра
+    \end{itemize}
+    
+    \item \textbf{WebSocket для чата}
+    \begin{itemize}
+        \item Замена polling на real-time соединение
+        \item Уменьшение задержки сообщений
+        \item Снижение нагрузки на сервер
+    \end{itemize}
+    
+    \item \textbf{Офлайн режим}
+    \begin{itemize}
+        \item Кеширование списка стримов
+        \item Возможность просмотра сохраненных трансляций
+    \end{itemize}
+    
+    \item \textbf{Production build}
+    \begin{itemize}
+        \item Подготовка для публикации в App Store и Google Play
+        \item Использование EAS Build для создания нативных сборок
+        \item Настройка CI/CD для автоматического деплоя
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Выводы по мобильному приложению}
+
+Мобильное приложение Leams демонстрирует возможность создания полнофункционального кроссплатформенного решения с использованием современного стека технологий. Использование React Native и Expo позволяет:
+
+\begin{itemize}
+    \item Разрабатывать одновременно для iOS и Android
+    \item Переиспользовать логику с веб-версии
+    \item Быстро итерироваться и тестировать изменения
+    \item Обеспечить единый пользовательский опыт на всех платформах
+\end{itemize}
+
+Интеграция с существующим FastAPI backend через REST API обеспечивает надежное и безопасное взаимодействие, а использование JWT токенов гарантирует защиту пользовательских данных.

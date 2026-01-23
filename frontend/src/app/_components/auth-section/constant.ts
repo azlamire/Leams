@@ -7,7 +7,7 @@ import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.
 
 // PERF: Yep, it's for perfomance but unreusable
 export const logInForm: FormLoginType[] = [
-	{ name: "user_email", label: "Username", type: "text", },
+	{ name: "username", label: "Username", type: "text", },
 	{ name: "password", label: "Password", type: "password" },
 ];
 
@@ -15,14 +15,21 @@ export const logInForm: FormLoginType[] = [
 export const butRegLog: RegLogButtsType[] = [
 	{
 		name: "Log In",
-		active: store.state.isLogin,
-		onClick: () => store.setState(prev => ({ ...prev, isReg: false, isLogin: true })),
+		active: !store.state.openReg,
+		onClick: () => {
+			console.log(store.state.openReg)
+			store.setState(prev => ({ ...prev, openReg: false }))
+		},
 		className: "cursor-pointer"
 	},
 	{
 		name: "Sign Up",
-		active: !store.state.isLogin,
-		onClick: () => store.setState(prev => ({ ...prev, isReg: true, isLogin: false })),
+		active: store.state.openReg,
+		onClick: () => {
+
+			console.log(store.state.openReg)
+			store.setState(prev => ({ ...prev, openReg: true }))
+		},
 		className: "cursor-pointer"
 	}
 ]
@@ -36,8 +43,9 @@ export const GitHubAuth = async (router: AppRouterInstance) => {
 		},
 	})
 	const Content = await response.json();
-	router.push(Content)
+	router.push(Content.authorization_url)
 }
+
 
 
 // TODO: I really don't like this remake in future when will work under this

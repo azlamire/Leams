@@ -1,4 +1,6 @@
-import { BACKEND } from "@/shared/constants";
+"use client"
+import { BACKEND, AUTH } from "@/shared/constants";
+import { LoginButton } from '@telegram-auth/react';
 import clsx from "clsx";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -32,24 +34,38 @@ export function SignIn() {
 	// IDK: Do I need to make this reusabl think in future, OK?
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
-		await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
+		const reg = await fetch(BACKEND.NEXT_PUBLIC_REGISTER, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
 			},
 			body: JSON.stringify(form)
 		})
-			// .then((resp) => localStorage.setItem("authToken", resp.json()))
-			.then(response => response.json())
-			.then(data => {
-				localStorage.setItem("auth_token", data.content);
-
-			})
-			.catch((err) => {
-				alert(err);
-				console.log(err);
-			})
-	}
+    console.log(reg)
+    if (!reg.ok) {
+      throw new Error("Registration failed");
+    }
+    const registerData = await reg.json();
+    console.log("Registration successful:", registerData);
+    const formData = new URLSearchParams();
+    formData.append("grant_type", "password");
+    formData.append("username", form.email);
+    formData.append("password", form.password);
+    const loginResponse = await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: formData.toString()
+    });
+    if (!loginResponse.ok) {
+       console.log(loginResponse)
+       throw new Error("Login failed");
+	  }
+    const loginData = await loginResponse.json();
+    localStorage.setItem("access_token", loginData.access_token);
+    window.location.reload();
+  }
 	useEffect(() => {
 		console.log(nickValid, passValid, emailValid)
 	}, [nickValid, passValid, emailValid])
@@ -61,7 +77,7 @@ export function SignIn() {
 					signInForm.map((item) => (
 						<div key={item.name} className={
 							clsx(
-								"relative flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
+								"flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]", {
 								// For appearing a line when hovering
 								"hover:[--d:100%]": form[item.name as keyof typeof form] === "",
 								// Line sticks when something written
@@ -78,11 +94,11 @@ export function SignIn() {
 								} >
 								{item.label}
 							</label>
-							<div className="flex flex-row">
+							<div className="flex flex-row z-15">
 								{/* BUG: JSON.parse: unexpected character at line 1 column 1 of the JSON data*/
 								}
 								<input
-									className="outline-none w-full h-full z-10"
+									className="outline-none w-full h-full z-20"
 									type={
 										item.name === "password"
 											? passType
@@ -163,13 +179,6 @@ export function SignIn() {
 					onClick={() => GitHubAuth(router)}
 				>
 					<FaGithub size="30px" />
-				</button>
-
-				<button
-					className="cursor-pointer shadow-sm h-[50px] w-[50px] rounded-xl flex items-center justify-center hover:bg-[#efe6de] duration-300 active:shadow-md"
-					onClick={() => GitHubAuth(router)}
-				>
-					<FcGoogle size="30px" />
 				</button>
 			</div>
 		</>

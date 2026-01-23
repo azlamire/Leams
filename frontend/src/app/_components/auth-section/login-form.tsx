@@ -13,21 +13,28 @@ const roboto = Roboto({
 
 export function Login() {
 	const [form, setForm] = useState<FormLoginStateType>({
-		user_email: "",
+		username: "",
 		password: "",
 	})
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		console.log("Form submitted", form);
 		e.preventDefault();
+		console.log(new URLSearchParams({
+			"username": form.username,
+			"password": form.password
+		}).toString())
 		const response = await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json"
+				"Accept": "application/json",
+				"Content-Type": "application/x-www-form-urlencoded"
 			},
-			body: JSON.stringify(form)
+			body: new URLSearchParams({
+				"username": form.username,
+				"password": form.password
+			}).toString()
 		})
-			// .then((resp) => localStorage.setItem("authToken", resp.json()))
 			.then((resp) => console.log(resp))
 	}
 
@@ -35,17 +42,17 @@ export function Login() {
 	return (
 		<form className="align-top flex flex-col rounded-xl w-full h-[65%] gap-7 mt-10" onSubmit={handleSubmit}>
 			{logInForm.map((item) => (
-				<div key={item.name} className="relative border-2 flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]">
+				<div key={item.name} className=" flex gap-2 flex-col w-full mb-5 group border-b-0 [background:linear-gradient(#3b82f6_0_0)_bottom/var(--d,0)_3px_no-repeat] transition-all duration-500 [--d:0]">
 					<label
 						htmlFor=""
 						//form[item.name as keyof FormStateType]
 						className={form[item.name as keyof typeof form] === "" && item.name != "birthday"
-							? "absolute duration-300 group-focus-within:-translate-y-6 z-0"
-							: "absolute duration-300 -translate-y-6 z-0 "}>
+							? "absolute duration-300 group-focus-within:-translate-y-6 z-25"
+							: "absolute duration-300 -translate-y-6 z-25 "}>
 						{item.label}
 					</label>
 					<input
-						className="outline-none w-full h-full z-10"
+						className="outline-none w-full h-full z-30"
 						required
 						type={item.type}
 						id=""

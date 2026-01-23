@@ -1,11 +1,11 @@
 from bcrypt import hashpw
-from core.jwt_fin import login
-from db.core import get_session
+from app.services.auth.jwt_fin import login
+from app.db.db_core import get_session
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from core.hash_pas import hash_password
+from app.utils.hash_pas import hash_password
 from passlib.hash import bcrypt
-from models.models import Users, UserLogin
+from app.models.models import Users, UserLogin
 from sqlmodel import Session
 
 
@@ -25,4 +25,10 @@ async def register(request: Users, session: Session = Depends(get_session)):
         UserLogin(user_email=request.username, password=plain_password),
         session=session,
     )
-    return token
+    if token == "":
+        return JSONResponse(status_code=401, content={"content": "error"})
+    response = JSONResponse(
+        status_code=200, content={"content": "Come to the dark side, we have cookies"}
+    )
+    response.set_cookie(key="auth_token", value=token)
+    return response

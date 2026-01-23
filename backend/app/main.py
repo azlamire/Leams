@@ -1,29 +1,24 @@
-"""
-.. note::
-   Это основной модуль проекта.
-
-.. todo::
-   Добавить обработку ошибок при вводе данных.
-"""
-
-from api.routers.checks import check
-from core import register_test, oauth
-
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from app.db.db_core import create_db_and_tables
 from fastapi.middleware.cors import CORSMiddleware
-from db.core import create_db_and_tables
-from schemas.settings import links
+from app.core.settings import get_links_settings
+from app.models import auth
 import uvicorn
+from app.routers import router
+
+
+links = get_links_settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    await create_db_and_tables()
     yield
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,9 +28,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(register_test.router)
-app.include_router(oauth.router)
-app.include_router(check.router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

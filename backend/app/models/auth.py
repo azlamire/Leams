@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date
+from sqlalchemy.orm import Mapped, mapped_column
 
 from sqlalchemy.orm import relationship
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
@@ -16,9 +17,12 @@ class StreamList(Base):
     stream = Column(String, nullable=False)
     date = Column(Date, nullable=False)  # required field!
 
+class UserStreamSettings(Base):
+    __tablename__ = "user_stream_settings"
+    user_id: Mapped[str] = mapped_column(ForeignKey('user.id'), primary_key=True)
+    stream_id: Mapped[str]
+    user = relationship("User")
 
-#
-#
 # class ChatMessages(Base):
 #     __tablename__ = "messages"
 #     id = Column(Integer, primary_key=True, index=True)

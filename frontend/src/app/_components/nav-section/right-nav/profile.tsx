@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { MAIN } from "@/shared/constants";
+import { useRouter } from "next/navigation";
 
 interface UserInfo {
 	email: string;
 }
 
 export function ProfileUser() {
+  const router = useRouter();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [token, setToken] = useState<string | null>(null)
 	useEffect(() => setToken(localStorage.getItem("access_token")), [])
@@ -71,6 +73,7 @@ export function ProfileUser() {
 									onClick={() => {
 										setIsModalOpen(false);
 										const userInput = prompt("Please enter your name:");
+                    router.push("http://localhost:3000/settings/")
 									}}
 									className="w-full cursor-pointer text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
 								>

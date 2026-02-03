@@ -1,10 +1,8 @@
 "use client"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { UpSide } from "./_components/nav-section//UpSide";
-import { MainLogin } from "./_components/auth-section/auth-block";
-import { LeftSide } from "./_components/left-section/left-main";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MainLogin } from "./_components/auth-section/auth-block";
 import { useState } from "react";
 import { Rubik } from 'next/font/google'
 
@@ -33,13 +31,7 @@ export default function RootLayout({
 			<html lang="en">
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased ${rubik.className}`}>
 					<MainLogin />
-					<div className="h-screen">
-						<UpSide />
-						<div className="inline-flex h-full w-full">
-							<LeftSide />
-							{children}
-						</div>
-					</div>
+          {children}
 				</body>
 			</html>
 		</QueryClientProvider>

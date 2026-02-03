@@ -9,7 +9,7 @@ export function Video() {
 	useEffect(() => { console.log(slug) }, [])
 	return (
 		<motion.div>
-			<ReactPlayer playing controls src={`http://localhost:80/hls/${slug}`} height={800} width={1300} />
+			<ReactPlayer playing controls src={`http://localhost:8001/hls/${slug}`} height={800} width={1300} />
 		</motion.div>
 
 

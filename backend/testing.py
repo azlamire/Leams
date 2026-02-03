@@ -1,9 +1,6 @@
-from app.db.db_core import Base
-from sqlalchemy import Column, Integer
-from sqlalchemy.orm import relationship
+import random
+import string
 
-
-class Testing(Base):
-    __tablename__ = "testing"
-    id = Column(Integer, primary_key=True, index=True)
-    nickname = relationship("user", back_populates="owner")
+length = 64
+random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+print(random_string)

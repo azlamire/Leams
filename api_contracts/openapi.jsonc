@@ -142,6 +142,46 @@
 					}
 				}
 			}
-  	}
+  	},
+    "/user_stream_gen": { 
+      "post": {
+        "tags": ["user", "settings"],
+        "description": "Stream key generation and adding one to database for stream validation",
+        // TODO: Add here the link of mkdocs
+        "externalDocs": {
+          "description": "",
+          "url": ""
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "Id of a user",
+            "required": true,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ], 
+        "requestBody": {
+          "description": "Just user id",
+          // NOTE: IDK about content 
+          "content": {
+            "application/json": {
+              
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Generated, added to database, sent to frontend",
+            // NOTE: About content
+            "content": {},
+          }
+        }
+      }
+    }
 	}
 }

@@ -29,3 +29,7 @@ export const MAIN = {
 	NEXT_PUBLIC_GET_CATEGORIES: process.env.NEXT_PUBLIC_GET_CATEGORIES as string,
 	NEXT_PUBLIC_GET_STREAMS: process.env.NEXT_PUBLIC_GET_STREAMS as string
 } as const 
+
+export const USER_SETTINGS = {
+  NEXT_PUBLIC_GEN_USER_STREAM: process.env.NEXT_PUBLIC_GEN_USER_STREAM as string
+}

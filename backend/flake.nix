@@ -14,7 +14,7 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               uv
-              python313
+              python314
             ];
             
             env = {

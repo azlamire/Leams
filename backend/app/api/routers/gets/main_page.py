@@ -8,10 +8,12 @@ from sqlalchemy import select
 # TODO: Make something with this func and Depends
 from typing import Annotated
 import json, jwt
+import warnings
 
 router = APIRouter()
 
-
+# TODO: When finish everythign delete this
+@warnings.deprecated("Multiple usage made universal func decode_jwt")
 @router.post("/main/user_info")
 async def get_user_info(
     access_token: str, session: AsyncSession = Depends(get_async_session)

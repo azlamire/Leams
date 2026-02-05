@@ -179,6 +179,7 @@
             "description": "Generated, added to database, sent to frontend",
             // NOTE: About content
             "content": {},
+            
           }
         }
       }

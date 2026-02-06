@@ -1,7 +1,7 @@
-/frontend
-/backend
-/mobile
 .env
+**/next-env.d.ts
+node_modules
+**/.next/
 jwt-*
 __pycache__/*
 __pycache__/

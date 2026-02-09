@@ -1,6 +1,6 @@
 from fastapi_users import schemas
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
-from sqlalchemy.orm import DeclarativeBase
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from sqlalchemy.orm import DeclarativeBase, relationship
 import uuid
 
 

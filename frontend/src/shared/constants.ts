@@ -9,6 +9,7 @@
 	* https://dev.to/schead/ensuring-environment-variable-integrity-with-zod-in-typescript-3di5/
 	*/
 
+
 // TODO: Make a function for checking on undefined, OK :)?
 export const BACKEND = {
 	NEXT_PUBLIC_HAS_USER_CHECK: process.env.NEXT_PUBLIC_HAS_USER_CHECK as string,
@@ -31,5 +32,6 @@ export const MAIN = {
 } as const 
 
 export const USER_SETTINGS = {
-  NEXT_PUBLIC_GEN_USER_STREAM: process.env.NEXT_PUBLIC_GEN_USER_STREAM as string
+  NEXT_PUBLIC_GEN_USER_STREAM: process.env.NEXT_PUBLIC_GEN_USER_STREAM as string,
+  NEXT_PUBLIC_GEN_USER_STREAM_FIRST_CHECK: process.env.NEXT_PUBLIC_GEN_USER_STREAM_FIRST_CHECK as string,
 }

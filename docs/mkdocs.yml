@@ -22,6 +22,7 @@ theme:
         name: Switch to light mode
 
   features:
+    - 
     - content.action.edit
     - content.action.view
     - content.code.copy
@@ -90,5 +91,5 @@ nav:
   - Разработка:
     - Guidelines: development/guidelines.md
     - Contributing: contributing.md
-  - Features: features/features.md
+  - Features: DELETETHIS.md
   - License: license.md

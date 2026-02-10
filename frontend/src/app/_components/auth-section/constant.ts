@@ -7,7 +7,7 @@ import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.
 
 // PERF: Yep, it's for perfomance but unreusable
 export const logInForm: FormLoginType[] = [
-	{ name: "username", label: "Username", type: "text", },
+	{ name: "nickname", label: "nickname", type: "text", },
 	{ name: "password", label: "Password", type: "password" },
 ];
 
@@ -51,7 +51,7 @@ export const GitHubAuth = async (router: AppRouterInstance) => {
 // TODO: I really don't like this remake in future when will work under this
 export const signInForm: FormType[] = [
 	{
-		name: "username", label: "Username", type: "text",
+		name: "nickname", label: "Nickname", type: "text",
 		on_change: async (value: string, hook: Dispatch<SetStateAction<boolean | undefined>>) => {
 			await fetch(BACKEND.NEXT_PUBLIC_HAS_USER_CHECK, {
 				method: "POST",

@@ -23,7 +23,7 @@ export function SignIn() {
 	const [passValid, setPassValid] = useState<boolean | undefined>(undefined)
 	const [passType, setPassType] = useState<boolean>(true)
 	const [form, setForm] = useState<FormStateType>({
-		username: "",
+		nickname: "",
 		password: "",
 		email: "",
 	})
@@ -119,7 +119,7 @@ export function SignIn() {
 													else setPassValid(false);
 												} else setPassValid(undefined);
 
-											case "username": case "email":
+											case "nickname": case "email":
 												const newValue = e.target.value;
 												setForm({ ...form, [item.name]: newValue });
 

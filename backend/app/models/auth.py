@@ -3,14 +3,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.utils.hash_pas import generate_stream_key
 from app.schemas.auth import User as Notuser
 
-from sqlalchemy.orm import relationship
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 
 from app.db.db_core import Base
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
-    pass
+    nickname: Mapped[str] = mapped_column(unique = True)
 
 
 class StreamList(Base):

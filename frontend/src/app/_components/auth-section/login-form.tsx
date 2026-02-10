@@ -13,7 +13,7 @@ const roboto = Roboto({
 
 export function Login() {
 	const [form, setForm] = useState<FormLoginStateType>({
-		username: "",
+		nickname: "",
 		password: "",
 	})
 
@@ -21,7 +21,7 @@ export function Login() {
 		console.log("Form submitted", form);
 		e.preventDefault();
 		console.log(new URLSearchParams({
-			"username": form.username,
+			"username": form.nickname,
 			"password": form.password
 		}).toString())
 		const response = await fetch(BACKEND.NEXT_PUBLIC_AUTH, {
@@ -31,7 +31,7 @@ export function Login() {
 				"Content-Type": "application/x-www-form-urlencoded"
 			},
 			body: new URLSearchParams({
-				"username": form.username,
+				"username": form.nickname,
 				"password": form.password
 			}).toString()
 		})

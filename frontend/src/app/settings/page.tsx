@@ -8,7 +8,6 @@ import { api } from '@/lib/api';
 import { USER_SETTINGS } from '@/shared/constants';
 import { Button } from '@mui/material';
 import { Done, Close, Visibility, VisibilityOff } from '@mui/icons-material';
-import { data } from 'motion/react-client';
 export default function settingsMain() {
   const [ show, setShow] = useState(false);
   const mutation = useMutation({
@@ -22,18 +21,7 @@ export default function settingsMain() {
         }
       })
     },
-    onError: () => {
-      setTimeout(() => mutation.reset(),3000)
-    },
-
-    onSuccess: (stream_id) => {
-      setTest(stream_id.data)
-      console.log(test)
-      setTimeout(() => mutation.reset(),3000)
-
-    },
   })
-
   const { data: streamData } = useQuery({
     queryKey: ['stram_id'],
     queryFn: () => {
@@ -51,8 +39,7 @@ export default function settingsMain() {
     retry: 5
   })
   const [ test, setTest] = useState("");
-  useEffect(() => console.log(streamData?.data, " STREAM DATA" ),[streamData])
-
+  const currentStreamId = mutation.data?.data || streamData?.data;
   return (
 		<div className="h-full w-full flex items-center justify-center p-5">
 			<div className="flex flex-row gap-5">
@@ -67,7 +54,7 @@ export default function settingsMain() {
               className='relative z-0'
               type={show ? "text" : "password"}
               color="neutral"
-              value={test}
+              value={currentStreamId}
               size="lg"
               variant="outlined"
               endDecorator={
@@ -80,7 +67,7 @@ export default function settingsMain() {
             />
             <Button 
               variant='outlined'
-              onClick={() => navigator.clipboard.writeText(test)}
+              onClick={() => navigator.clipboard.writeText(currentStreamId)}
             >
               Copy
             </Button>

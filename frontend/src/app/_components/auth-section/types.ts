@@ -15,14 +15,14 @@ type FormType = {
 }
 
 type FormStateType = {
-	username: string;
+	nickname: string;
 	password: string;
 	email: string
 }
 
 
 type FormLoginStateType = {
-	username: string
+	nickname: string
 	password: string;
 }
 

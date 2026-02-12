@@ -15,6 +15,7 @@
         "@tanstack/react-store": "^0.7.7",
         "@telegram-auth/react": "^1.0.4",
         "axios": "^1.13.2",
+        "bun.lock": "^0.0.0",
         "clsx": "^2.1.1",
         "dotenv": "^17.2.3",
         "hls.js": "^1.6.15",
@@ -367,6 +368,8 @@
     "brace-expansion": ["brace-expansion@2.0.2", "", { "dependencies": { "balanced-match": "^1.0.0" } }, "sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ=="],
 
     "buffer-crc32": ["buffer-crc32@0.2.13", "", {}, "sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ=="],
+
+    "bun.lock": ["bun.lock@0.0.0", "", { "peerDependencies": { "typescript": "^5" } }, "sha512-oLtVECqgbomqUMZRtSUrjD3IqtrrMir3OBaErHPwrNo7NlQ8Otre2s+zlv7D3+c+k4OvDVo2buHwdWgPiH5R2g=="],
 
     "cacheable-lookup": ["cacheable-lookup@5.0.4", "", {}, "sha512-2/kNscPhpcxrOigMZzbiWF7dz8ilhb/nIHU3EyZiXWXpeq/au8qJ8VhdftMkty3n7Gj6HIGalQG8oiBNB3AJgA=="],
 

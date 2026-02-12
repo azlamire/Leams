@@ -1,7 +1,7 @@
-FROM node:25.2
+FROM oven/bun:alpine
 WORKDIR /frontend
 COPY package.json ./
-RUN npm install 
+RUN bun install
 COPY . .
 EXPOSE 3000
-CMD ["npm","start"]
+CMD ["bun","run","dev"]

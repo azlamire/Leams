@@ -4,7 +4,7 @@ from app.services.s3 import S3Client
 from sqlalchemy import insert, select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.db_core import get_async_session
-from app.models.auth import StreamList
+from app.models.auth import StreamList, UserStreamSettings
 
 
 # TODO: Make something with this func and Depends
@@ -22,9 +22,7 @@ async def on_publish(
     addr: str = Form(None),
     session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = insert(StreamList).values(date=datetime.date.today(), stream=name)
-    await session.execute(stmt)
-    await session.commit()
+    return JSONResponse("OK",status_code=200)
 
 
 @router.post("/stream_ending")

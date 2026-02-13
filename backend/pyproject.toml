@@ -24,6 +24,7 @@ dependencies = [
     "loguru>=0.7.3",
     "m2r2>=0.3.4",
     "passlib[bcrypt]>=1.7.4",
+    "pipreqs>=0.4.13",
     "playwright>=1.57.0",
     "psycopg[binary,pool]>=3.2.9",
     "pydantic>=2.11.7",

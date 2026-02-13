@@ -1,7 +1,6 @@
-FROM python:3.12-slim
+FROM python:3.14-alpine
 WORKDIR /backend
-COPY package.json ./
-RUN source .venv/bin/activate
+COPY pyproject.toml ./
+RUN pip install
 COPY . .
-EXPOSE 3001
-CMD ["python","./app/main.py"]
+CMD ["uvicorn","app.main:app"]

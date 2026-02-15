@@ -9,9 +9,9 @@ networks:
     internal: false
   
 services:
-
   frontend:
     restart: always
+    container_name: frontend
     build: ./frontend/
     networks:
       - leams-net
@@ -25,12 +25,15 @@ services:
         - action: sync
           path: ./frontend/
           target: /frontend
-
+        - action: rebuild
+          path: ./frontend/Dockerfile
   backend:
     restart: always
     container_name: backend
     networks:
       - leams-net
+    depends_on:
+      - database
     develop: 
       watch:
         - action: sync
@@ -41,12 +44,15 @@ services:
       - 3001:3001
   database:
     restart: always
-    container_name: postgres
+    container_name: database
     image: "postgres:alpine"
+    environment:
+      - POSTGRES_PASSWORD=leams
   redis:
     restart: always
     container_name: redis
     image: "redis:8.6-alpine"
+
   nginx-rtmp:
     restart: always
     container_name: nginx-rtmp
@@ -57,7 +63,10 @@ services:
         - action: sync
           path: ./nginx.conf
           target: /etc/nginx/nginx.conf
+        # NOTE: This is for entire compose 
+        - action: rebuild
+          path: ./compose.yml
     build: .
     ports:
       - 1935:1935
-      - 8001:8001
+      - 8000:8001

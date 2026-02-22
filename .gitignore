@@ -3,8 +3,7 @@
 node_modules
 **/.next/
 jwt-*
-__pycache__/*
-__pycache__/
+**/__pycache__/
 *.py[oc]
 build/
 dist/

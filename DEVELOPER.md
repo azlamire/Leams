@@ -1,1 +1,3 @@
 Streamd id generations --> Chat --> Subscribers ---> UX/UI Improvements --> Code Improvements --> Testing andCI/CD --> Documentations --> ...
+
+Stream Creation FULL --> Simple elastic search and searching --> Roles --> Chat && Chnnels --> testing ---> OpenAPI --> CI/CD --> UX/UI --> http2/http3 --> Alembic  --> mkdocs --> mediawiki

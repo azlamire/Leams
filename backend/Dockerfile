@@ -1,6 +1,6 @@
-FROM python:3.14-alpine
+FROM python:3.14-slim
 WORKDIR /backend
 COPY pyproject.toml ./
-RUN pip install
 COPY . .
-CMD ["uvicorn","app.main:app"]
+CMD ["sleep", "infinity"]
+

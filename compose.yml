@@ -27,21 +27,26 @@ services:
           target: /frontend
         - action: rebuild
           path: ./frontend/Dockerfile
-  backend:
+  backend-python:
     restart: always
-    container_name: backend
+    container_name: backend-python
+    build: ./backend/
     networks:
       - leams-net
-    depends_on:
-      - database
+    ports:
+      - 3000:3000
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     develop: 
       watch:
         - action: sync
           path: ./backend/
           target: /backend
-    build: .
-    ports:
-      - 3001:3001
+        - action: rebuild
+          path: ./backend/Dockerfile
+    depends_on:
+      - database
   database:
     restart: always
     container_name: database
@@ -52,7 +57,7 @@ services:
     restart: always
     container_name: redis
     image: "redis:8.6-alpine"
-
+  # NOTE: This nginx's for streaming so better to use another container
   nginx-rtmp:
     restart: always
     container_name: nginx-rtmp
@@ -70,3 +75,10 @@ services:
     ports:
       - 1935:1935
       - 8000:8001
+  reverse-proxy:
+    restart: always
+    container_name: rerse
+    image: "nginx:1.29-alpine"
+  # backend-go:
+  # rabbitmq:
+

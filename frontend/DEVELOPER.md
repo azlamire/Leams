@@ -1,9 +1,8 @@
-main color: white, red, black. Alternatively: black, yellow  gray
+Dependencies for every folders:
 
-Remake everything when backend jwt authZ and authN will be ready as supposed to be in your mind for yourself :)
 
-## Future features
-- Make everything structurable and readable 
-- MainLogReg.tsx Must contain animation of svg(social networks) for neutrality of colors
-- After completing every steps for registrion o login will be green underline that ater completing all steps will flown as a luquid to Sign In button with animations of blobs that fly to somewhere (if a user changes something it wil bee blown up to small drops)
-
+- Python 3.10+ with pytest: `pip install pytest`
+- Bun: [bun.sh](https://bun.sh/)
+- Go: [golang.org](https://golang.org/)
+- Install JS deps: `bun install`
+- After cloning, run: `npm install && npx husky install`

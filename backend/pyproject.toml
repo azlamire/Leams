@@ -25,6 +25,7 @@ dependencies = [
     "passlib[bcrypt]>=1.7.4",
     "pipreqs>=0.4.13",
     "playwright>=1.58.0",
+    "pre-commit>=4.5.1",
     "psycopg[binary,pool]>=3.3.3",
     "pydantic>=2.11.7",
     "pyjwt==2.10.1",

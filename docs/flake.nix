@@ -14,12 +14,12 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               uv
-              python312
+              python314
             ];
             
             env = {
               UV_PYTHON_PREFERENCE = "only-system";
-              UV_PYTHON = "${pkgs. python312}/bin/python";
+              UV_PYTHON = "${pkgs. python314}/bin/python";
             };
             
             NIX_LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [

@@ -1,6 +1,6 @@
 FROM tiangolo/nginx-rtmp
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.rtmp.conf /etc/nginx/nginx.conf
 
 RUN mkdir /var/hls
 

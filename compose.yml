@@ -116,6 +116,9 @@ services:
     build: .
     ports:
       - 1935:1935
+
+    healthcheck:
+      <<: *check_http
   # TODO: MUST transfer to zestical because of the https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/
   docs:
     restart: always

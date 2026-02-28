@@ -2,9 +2,18 @@ name: testing
 
 on:
   push:
-    branches: [ "dev" ]
+    branches:
+      - '**'
+  pull_requests:
+
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run a one-line script
+        run: echo "Hello, GitHub Actions!"
   first-coverage:
     name: coverage
 

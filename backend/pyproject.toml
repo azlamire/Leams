@@ -30,6 +30,7 @@ dependencies = [
     "pydantic>=2.11.7",
     "pyjwt==2.10.1",
     "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
     "redis>=7.1.0",
     "selenium-driverless>=1.9.4",
     "setuptools==80.9.0",

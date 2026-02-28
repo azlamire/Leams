@@ -9,22 +9,22 @@ jobs:
     name: coverage
 
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
       - name: Testing
         uses: actions/setup-python@v6
         with:
-          python-version: '3.14' 
+          python-version: '3.14'
         run: |
           pip install pytest-cov
           pytest --cov=backend --cov-report xml
       - name: codecov-test
         uses: codecov/codecov-action@v5
         with:
-          fail_ci_if_error: true 
+          fail_ci_if_error: true
           files: ./coverage.xml
-          flags: unittests 
-          name: codecov-umbrella 
+          flags: unittests
+          name: codecov-umbrella
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true 
+          verbose: true

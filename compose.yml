@@ -63,6 +63,8 @@ services:
     build: ./backend/
     networks:
       - leams-net
+    ports:
+      - 6000:5000
     environment:
       - SYNC_PSQL=postgresql+psycopg://postgres:secret@database:5432/leams
     dns:

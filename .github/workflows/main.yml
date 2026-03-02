@@ -4,30 +4,26 @@ on:
   push:
     branches:
       - '**'
-  pull_requests:
-
+  pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Run a one-line script
-        run: echo "Hello, GitHub Actions!"
   first-coverage:
-    name: coverage
-
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
-      - name: Testing
-        uses: actions/setup-python@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: '3.14'
-        run: |
-          pip install pytest-cov
-          pytest --cov=backend --cov-report xml
+          enable-cache: true
+      - name: Test2
+        run: uv add pytest-cov pytest
+        working-directory: backend
+      - name: Test3
+        run: uv run pytest --cov=app --cov-report xml
+        working-directory: backend
+
       - name: codecov-test
         uses: codecov/codecov-action@v5
         with:
@@ -37,3 +33,14 @@ jobs:
           name: codecov-umbrella
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /path/to/project
+            git pull
+            docker compose down
+            docker compose up -d --build

@@ -1,0 +1,62 @@
+# WARN:Before read this read about certbot usage or just make 
+worker_processes  1;
+
+events {
+  worker_connections 1024;
+}
+
+
+http {
+  server {
+    listen ${SERVER_HTTP_PORT};
+    server_name         ${DOMAIN_NAME} www.${DOMAIN_NAME};
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+        allow all;
+    }
+
+  }
+  server {
+    listen ${SERVER_HTTP_PORT};
+    server_name         ${SUB_DOCS}.${DOMAIN_NAME};
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+        allow all;
+    }
+
+  }
+
+  server {
+    listen ${SERVER_HTTP_PORT};
+    server_name         ${SUB_BACKEND}.${DOMAIN_NAME};
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+        allow all;
+    }
+  }
+
+  server {
+    listen ${SERVER_HTTP_PORT};
+    server_name ${SUB_STREAM}.${DOMAIN_NAME};
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+        allow all;
+    }
+  }
+}

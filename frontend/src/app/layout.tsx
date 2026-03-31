@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MainLogin } from "./_components/auth-section/auth-block";
+import { Rubik } from "next/font/google";
 import { useState } from "react";
-import { Rubik } from 'next/font/google'
+import { MainLogin } from "./_components/auth-section/auth-block";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -17,21 +17,23 @@ const geistMono = Geist_Mono({
 });
 
 const rubik = Rubik({
-	subsets: ['latin'],
-})
+	subsets: ["latin"],
+});
 
 export default function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const [queryClient] = useState(() => new QueryClient())
+	const [queryClient] = useState(() => new QueryClient());
 	return (
 		<QueryClientProvider client={queryClient}>
 			<html lang="en">
-				<body className={`${geistSans.variable} ${geistMono.variable} antialiased ${rubik.className}`}>
+				<body
+					className={`${geistSans.variable} ${geistMono.variable} antialiased ${rubik.className}`}
+				>
 					<MainLogin />
-          {children}
+					{children}
 				</body>
 			</html>
 		</QueryClientProvider>

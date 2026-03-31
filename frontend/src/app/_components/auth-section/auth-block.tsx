@@ -1,13 +1,13 @@
 "use client";
-import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import Portal from "@/ui/next-portal";
-import { Login } from "./login-form";
-import { store } from "@/shared/store";
-import { SignIn } from "./signin-form";
-import { useModal } from "@/hooks/use-modal";
 import { useStore } from "@tanstack/react-store";
-import { butRegLog } from "./constant";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useEffect } from "react";
+import { useModal } from "@/hooks/use-modal";
+import { store } from "@/shared/store";
+import Portal from "@/ui/next-portal";
+import { butRegLog } from "./constant";
+import { Login } from "./login-form";
+import { SignIn } from "./signin-form";
 
 export function MainLogin() {
 	const isOpen: boolean = useStore(store, (state) => state.isOpen);
@@ -29,7 +29,9 @@ export function MainLogin() {
 								<div className="relative h-10 w-full">
 									<button
 										className="absolute bg-[#dd3a44] right-0 top-0 rounded-full h-[33px] w-[33px] shadow-sm flex flex-col justify-center items-center "
-										onClick={() => store.setState((prev) => ({ ...prev, isOpen: false }))}
+										onClick={() =>
+											store.setState((prev) => ({ ...prev, isOpen: false }))
+										}
 									>
 										<span className="absolute bg-white h-[2.6px] w-[55%] block transition-all rotate-45 "></span>
 										<span className="absolute bg-white h-[2.6px] w-[55%] block transition-all -rotate-45 "></span>
@@ -38,7 +40,10 @@ export function MainLogin() {
 								<div className="h-10 w-full flex flex-row shadow-sm-b gap-10 font-bold text-[20px] border-b-3 border-gray-500 z-0 mb-5">
 									<LayoutGroup>
 										{butRegLog.map((item) => (
-											<div key={item.name} className="relative w-[60%] flex flex-row z-20">
+											<div
+												key={item.name}
+												className="relative w-[60%] flex flex-row z-20"
+											>
 												<button
 													className={item.className}
 													onClick={item.onClick}

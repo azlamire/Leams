@@ -1,0 +1,226 @@
+# NOTE: I have to make makefile and envsubst 'cause services' names can't be dynamical
+# Why not static? If we have services name usage not only in compose.yml but for example
+# in frontend API or Nginx API and so on we need to change it with hands that's too long neither 
+# to put once in .env for working perfect
+x-common-healthcheck: &check_http
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+x-common-set: &common_set
+  dns:
+    - 1.1.1.1
+
+volumes:
+  database-data:
+
+networks:
+  leams-net:
+    external: false
+    internal: false
+
+services:
+  ${COMPOSE_NGINX_REVERSE_NAME}:
+    restart: always
+    container_name: nginx-reverse
+    image: "nginx:alpine"
+    <<: *common_set
+    networks:
+      - leams-net
+    volumes:
+      - ${NGINX_CONF_PATH}:/etc/nginx/templates/nginx.conf.template:ro
+      
+      # NOTE: Let’s Encrypt is for prod
+      - ${LETSENCRYPT_CERTS_PATH}:/etc/letsencrypt
+      - ${LETSENCRYPT_WWW_PATH}:/var/www/certbot
+      
+      # NOTE: This is for dev
+      # - ${SELFSIGNED_KEY_PATH:-}:/etc/nginx/nginx-selfsigned.key
+      # - ${SELFSIGNED_CERT_PATH:-}:/etc/nginx/nginx-selfsigned.crt
+    ports:
+      - ${NGINX_REVERSE_PORT_HTTP:-80}:${SERVER_HTTP_PORT:-80}
+      - ${NGINX_REVERSE_PORT_HTTPS:-443}:${SERVER_HTTPS_PORT:-443}
+    environment:
+      # NOTE: These 2 lines a vital 'cause have ${} in nginx
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
+      # NOTE: Idk about this NGINX_REVERSE_PORT_HTTP: ${NGINX_REVERSE_PORT_HTTP:-80}
+      NGINX_REVERSE_PORT_HTTPS: ${NGINX_REVERSE_PORT_HTTPS:-443}
+
+      #PORTS
+      SERVER_HTTP_PORT: ${SERVER_HTTP_PORT:-80}
+      SERVER_HTTPS_PORT: ${SERVER_HTTPS_PORT:-443}
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+      BACKEND_PORT: ${BACKEND_PORT:-8000}
+      DOCS_PORT: ${DOCS_PORT:-8000}
+      MOBILE_PORT: ${MOBILE_PORT:-8000}
+
+      #NAMES 
+      DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
+      FRONTEND_NAME: ${COMPOSE_FRONTEND_NAME:-frontend}
+      BACKEND_NAME: ${COMPOSE_BACKEND_NAME:-backend-python}
+      DOCS_NAME: ${COMPOSE_DOCS_NAME:-docs}
+      MOBILE_NAME: ${COMPOSE_MOBILE_NAME:-mobile}
+
+      # SUB DOMAINS
+      SUB_DOCS: ${SUB_DOCS}
+      SUB_BACKEND: ${SUB_BACKEND}
+
+      # SSL
+      NGINX_SSL_CERT_PATH: ${NGINX_SSL_CERT_PATH}
+      NGINX_SSL_KEY_PATH: ${NGINX_SSL_KEY_PATH}
+
+    # TODO: Make watchexec on nginx.rtmp.template and set volume to usual nginx.conf. It's for dev ain't prod
+    # BUG: Docker bug that I can't change volume in develop.
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./nginx/local/nginx.conf.template
+    #       target: /etc/nginx/templates/nginx.conf.template
+  
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status", "||", "exit", "1"]
+      <<: *check_http
+
+  ${COMPOSE_FRONTEND_NAME}:
+    restart: always
+    container_name: frontend
+    build: ./frontend/
+    <<: *common_set
+    networks:
+      - leams-net
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/
+          target: /frontend
+        - action: rebuild
+          path: ./frontend/Dockerfile
+        - action: rebuild
+          path: ./compose.yaml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://${COMPOSE_FRONTEND_NAME}:${FRONTEND_PORT}/health"]
+      <<: *check_http
+
+  ${COMPOSE_BACKEND_NAME}:
+    restart: always
+    container_name: backend-python
+    build: ./backend
+    <<: *common_set
+    networks:
+      - leams-net
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /backend
+        - action: rebuild
+          path: ./backend/Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://${COMPOSE_BACKEND_NAME}:${BACKEND_PORT}/health"]
+      <<: *check_http
+
+  ${COMPOSE_DATABASE_NAME}:
+    restart: always
+    container_name: database
+    image: "postgres:alpine"
+    <<: *common_set
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - leams-net
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PORT=${DATABASE_PORT:-5432}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      <<: *check_http
+
+  ${COMPOSE_NGINX_RTMP_NAME}:
+    restart: always
+    container_name: nginx-rtmp
+    image: "tiangolo/nginx-rtmp:latest"
+    <<: *common_set
+    networks:
+      - leams-net
+    ports:
+      - ${NGINX_RTMP_PORT:-1935}:${NGINX_RTMP_PORT:-1935}
+    volumes:
+      - ./nginx/deploy/nginx.rtmp.conf:/etc/nginx/nginx.conf
+      - ${LETSENCRYPT_CERTS_PATH}:/etc/letsencrypt
+      - ${LETSENCRYPT_WWW_PATH}:/var/www/certbot
+
+    # TODO: Make watchexec on nginx.rtmp.template and set volume to usual nginx.conf. It's for dev ain't prod
+    # BUG: Docker bug that I can't change volume in develop.
+    # develop:
+    #   watch:
+    #     - action: sync+restart
+    #       path: ./nginx/local/nginx.rtmp.conf.template
+    #       target: /etc/nginx/templates/nginx.conf.template
+    healthcheck: 
+      test: ["CMD-SHELL","curl -f https://${COMPOSE_NGINX_RTMP_NAME}/stat"]
+      <<: *check_http
+
+  stunnel:
+    image: "alpine:latest"
+    command: ["stunnel", "/etc/stunnel/stunnel.conf"]
+    <<: *common_set
+    container_name: stunnel
+    networks:
+      - leams-net
+    ports:
+      - :
+    depends_on:
+      - ${COMPOSE_NGINX_RTMP_NAME}
+    volumes:
+      - ./infra/rtmps.conf:/etc/stunnel/stunnel.conf
+      - ${LETSENCRYPT_CERTS_PATH}:/etc/letsencrypt
+      - ${LETSENCRYPT_WWW_PATH}:/var/www/certbot
+    entrypoint: >
+      sh -c "apk add --no-cache stunnel && stunnel /etc/stunnel/stunnel.conf"
+    healthcheck: 
+      test: ["CMD-SHELL","(ss -tulnp | grep '443') || exit 1"]
+      <<: *check_http
+
+  # TODO: MUST transfer to zestical because of the 
+  # https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/
+  docs:
+    restart: always
+    container_name: docs
+    networks:
+      - leams-net
+    <<: *common_set
+    develop:
+      watch:
+        - action: sync
+          path: ./docs/
+          target: /docs
+    build: ./docs/
+    healthcheck: 
+      test: ["CMD-SHELL","curl -f http://${COMPOSE_DOCS_NAME}:${DOCS_PORT}"]
+      <<: *check_http
+
+  redis:
+    restart: always
+    container_name: redis
+    <<: *common_set
+    image: "redis:8.6-alpine"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      <<: *check_http
+
+  prometheus:
+    image: "prom/prometheus"
+    volumes:
+      - ./infra/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    ports:
+      - 9090:9090
+# grafana
+# backend-go:
+# rabbitmq:

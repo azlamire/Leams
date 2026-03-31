@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from app.db.db_core import get_async_session
 
 from app.schemas.auth import User, UserRead
@@ -6,11 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 # TODO: Make something with this func and Depends
-from typing import Annotated
-import json, jwt
+import jwt
 import warnings
 
 router = APIRouter()
+
 
 # TODO: When finish everythign delete this
 @warnings.deprecated("Multiple usage made universal func decode_jwt")

@@ -1,5 +1,5 @@
 export interface Stream {
-    longliness: string
-    author: string
-    viewers: number
+	longliness: string;
+	author: string;
+	viewers: number;
 }

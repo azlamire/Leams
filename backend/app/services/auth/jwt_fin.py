@@ -13,7 +13,6 @@ from app.core.settings import get_git_settings
 from app.models.auth import User
 from app.db.db_core import get_user_db
 from httpx_oauth.clients.github import GitHubOAuth2
-import os
 
 SECRET = "SECRET"
 

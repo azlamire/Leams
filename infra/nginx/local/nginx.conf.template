@@ -1,0 +1,72 @@
+worker_processes  1;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  server {
+    listen ${SERVER_HTTPS_PORT} ssl;
+    listen [::]:${SERVER_HTTPS_PORT} ssl;
+    http2 on;
+    # NOTE: For local developing localhost is DOMAIN_NAME
+    # WARN: In Nginx you can't name like DOMAIN_NAME:-localhost localhost as default value
+    server_name ${DOMAIN_NAME};
+    ssl_certificate nginx-selfsigned.crt;
+    ssl_certificate_key nginx-selfsigned.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    add_header Access-Control-Allow-Origin *;
+    location / {
+      proxy_pass http://${FRONTEND_NAME}:${FRONTEND_PORT};
+    }
+  }
+
+  server {
+    listen ${SERVER_HTTP_PORT};
+    server_name ${DOMAIN_NAME};
+    return 301 https://$host:${NGINX_REVERSE_PORT_HTTPS};
+  }
+  #
+  # server {
+  #   listen ${SERVER_HTTPS_PORT} ssl;
+  #   listen [::]:${SERVER_HTTPS_PORT} ssl;
+  #   http2 on;
+  #   server_name ${SUB_DOCS}.${DOMAIN_NAME};
+  #   ssl_certificate nginx-selfsigned.crt;
+  #   ssl_certificate_key nginx-selfsigned.key;
+  #   ssl_protocols TLSv1.2 TLSv1.3;
+  #   ssl_ciphers HIGH:!aNULL:!MD5;
+  #   add_header Access-Control-Allow-Origin *;
+  #   location / {
+  #     proxy_pass http://${DOCS_NAME}:${DOCS_PORT};
+  #   }
+  # }
+  server {
+    listen ${SERVER_HTTPS_PORT} ssl;
+    listen [::]:${SERVER_HTTPS_PORT} ssl;
+    server_name ${SUB_BACKEND}.${DOMAIN_NAME};
+    ssl_certificate nginx-selfsigned.crt;
+    ssl_certificate_key nginx-selfsigned.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    add_header Access-Control-Allow-Origin *;
+    location / {
+      proxy_pass http://${BACKEND_NAME}:${BACKEND_PORT};
+    }
+  }
+  #
+  # server {
+  #   listen ${SERVER_HTTPS_PORT} ssl;
+  #   http2 on;
+  #   server_name ${SUB_MOBILE}.${DOMAIN_NAME};
+  #   ssl_certificate nginx-selfsigned.crt;
+  #   ssl_certificate_key nginx-selfsigned.key;
+  #   ssl_protocols TLSv1.2 TLSv1.3;
+  #   ssl_ciphers HIGH:!aNULL:!MD5;
+  #   add_header Access-Control-Allow-Origin *;
+  #   location / {
+  #     proxy_pass http://${MOBILE_NAME}:${MOBILE_PORT};
+  #   }
+  # }
+}

@@ -1,0 +1,139 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - dev
+  pull_requests:
+    branches:
+      - dev
+
+jobs:
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repo to runner
+        uses: actions/checkout@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+
+      - name: Installing ruff for linting
+        run: uv sync
+        working-directory: backend
+
+      - name: Linting with ruff
+        run: uv run ruff check
+        working-directory: backend
+
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Cloning repo to runner
+        uses: actions/checkout@v6
+
+      - name: Setup bun for ts lint
+        uses: oven-sh/setup-bun@v2
+
+      - name: Installing dependencies
+        run: bun install
+        working-directory: frontend
+
+      - name: Linting with biome
+        run: bunx --bun @biomejs/biome check src
+        working-directory: frontend
+
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Cloning repo to runner
+  #       uses: actions/checkout@v6
+  #
+  #     - name: Install the latest version of uv
+  #       uses: astral-sh/setup-uv@v7
+  #       with:
+  #         enable-cache: true
+  #
+  #     - name: Setup bun for ts lint
+  #       uses: oven-sh/setup-bun@v2
+  #
+  #     # Add your test steps here
+  #     - name: Run backend tests
+  #       run: uv run pytest
+  #       working-directory: backend
+  #
+  #     - name: Run frontend tests
+  #       run: bun test
+  #       working-directory: frontend
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint-backend, lint-frontend]
+    steps:
+      - name: Cloning repo to runner
+        uses: actions/checkout@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install backend dependencies
+        run: uv sync
+        working-directory: backend
+
+      - name: Install frontend dependencies
+        run: bun install
+        working-directory: frontend
+
+      - name: Build backend
+        run: uv build
+        working-directory: backend
+
+      - name: Build frontend
+        run: bun run build
+        working-directory: frontend
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repo to runner
+        uses: actions/checkout@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Installing coverage dependency via uv
+        run: uv add pytest-cov pytest
+        working-directory: backend
+
+      - name: Running coverage lib on uv
+        run: uv run pytest --cov=app --cov-report=xml
+        working-directory: backend
+
+      - name: Running coverage lib on bun
+        run: bun test --coverage-reporter=lcov
+        working-directory: frontend
+
+      - name: Uploading coverage result to codecov
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          files: backend/coverage.xml,frontend/coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true

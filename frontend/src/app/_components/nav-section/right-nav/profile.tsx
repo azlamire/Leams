@@ -1,26 +1,34 @@
-"use client"
-import { useState, useEffect } from "react";
+"use client";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { MAIN } from "@/shared/constants";
-import { useRouter } from "next/navigation";
 
 interface UserInfo {
 	email: string;
 }
 
 export function ProfileUser() {
-  const router = useRouter();
+	const router = useRouter();
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [token, setToken] = useState<string | null>(null)
-	useEffect(() => setToken(localStorage.getItem("access_token")), [])
+	const [token, setToken] = useState<string | null>(null);
+	useEffect(() => setToken(localStorage.getItem("access_token")), []);
 
-	const { data: userInfo, isLoading, isError } = useQuery<UserInfo>({
-		queryKey: ['user-profile'],
+	const {
+		data: userInfo,
+		isLoading,
+		isError,
+	} = useQuery<UserInfo>({
+		queryKey: ["user-profile"],
 		queryFn: async () => {
-			const response = await api.post('http://127.0.0.1:8000/main/user_info', {}, {
-				params: { access_token: token }
-			});
+			const response = await api.post(
+				"http://127.0.0.1:8000/main/user_info",
+				{},
+				{
+					params: { access_token: token },
+				},
+			);
 			return response.data;
 		},
 		retry: 1,
@@ -28,20 +36,19 @@ export function ProfileUser() {
 	});
 
 	if (isLoading) {
-		return (
-			<div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
-		);
+		return <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />;
 	}
 	if (isError || !userInfo) {
 		return null;
 	}
-	const avatarUrl = userInfo.email ||
+	const avatarUrl =
+		userInfo.email ||
 		`https://ui-avatars.com/api/?name=${encodeURIComponent(userInfo.email)}&background=0D8ABC&color=fff&bold=true&size=200`;
 
 	return (
 		<div className="relative overflow-visible">
 			<button
-				onClick={() => setIsModalOpen(prev => !prev)}
+				onClick={() => setIsModalOpen((prev) => !prev)}
 				className="flex items-center justify-center rounded-full hover:opacity-80 transition-opacity overflow-visible"
 				aria-label="User profile"
 			>
@@ -56,8 +63,10 @@ export function ProfileUser() {
 
 			{isModalOpen && (
 				<>
-					<div className="absolute right-0 mt-2 w-48 bg-black rounded-lg shadow-lg border border-gray-200 z-40 overflow-visible"
-						style={{ overflow: "visible" }}>
+					<div
+						className="absolute right-0 mt-2 w-48 bg-black rounded-lg shadow-lg border border-gray-200 z-40 overflow-visible"
+						style={{ overflow: "visible" }}
+					>
 						<ul className="py-2">
 							<li className="px-4 py-2 border-b border-gray-100">
 								<p className="text-sm font-medium text-gray-900">
@@ -73,7 +82,7 @@ export function ProfileUser() {
 									onClick={() => {
 										setIsModalOpen(false);
 										const userInput = prompt("Please enter your name:");
-                    router.push("http://localhost:3000/settings/")
+										router.push("http://localhost:3000/settings/");
 									}}
 									className="w-full cursor-pointer text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
 								>

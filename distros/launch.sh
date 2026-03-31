@@ -33,6 +33,7 @@ if [[ $OSTYPE == "linux-gnu" ]]; then
           ;;
         esac
         ;;
+    make not with distros but with package manager
       arch | manjaro | garuda | endevouros)
         sudo pacman -S $container_cmd
         ;;

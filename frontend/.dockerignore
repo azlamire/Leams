@@ -1,1 +1,15 @@
 node_modules
+.next
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.gitignore
+README.md
+LICENSE
+Makefile
+helm-charts
+.env
+.editorconfig
+.idea
+coverage*

@@ -44,25 +44,24 @@ class LinksSettings(BaseSettings):
     """This class include all links stuff from .env"""
 
     MAIN_PAGE: str
-    SYNC_PSQL: str
+    DATABASE_URL: str
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
 
-# NOTE: Idk but GitSettings doesn't work here's the solution but no answers why https://github.com/pydantic/pydantic/issues/3753, they said about dataclass_transform but link was deleted though their solution is workable 1.git_settings = GitSettings.model_validate({})
+# NOTE: Idk but GitSettings doesn't work here's the solution but no answers why https://github.com/pydantic/pydantic/issues/3753, they said about dataclass_transform but link was deleted though their solution is workable 1.git_settings = GitSettings()
 # BUG: With field and lru_cache doesn't work properly so remain like this
 def get_git_settings():
-    return JWTSettings.model_validate({})
-
+    return JWTSettings()
 
 def get_links_settings():
-    return LinksSettings.model_validate({})
+    return LinksSettings()
 
 
 def get_s3_settings():
-    return S3Settings.model_validate({})
+    return S3Settings()
 
 
 def get_redis_settings():
-    return RedisSettings.model_validate({})
+    return RedisSettings()

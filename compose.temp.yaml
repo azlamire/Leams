@@ -221,6 +221,24 @@ services:
       - ./infra/prometheus.yaml:/etc/prometheus/prometheus.yaml
     ports:
       - 9090:9090
+
+  vault:
+    image: "hashicorp/vault:alpine"
+    ports: 
+      - 8200:8200
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+      VAULT_ADDR: http://0.0.0.0:8200
+    volumes:
+      - vault-data:/vault/file
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 # grafana
 # backend-go:
 # rabbitmq:

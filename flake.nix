@@ -28,7 +28,7 @@
               envsubst
 
               # uv very handy for python implementation it contains a lot like poetry pip python and so on
-              # uv
+              uv
               # https://docs.astral.sh/uv/
               
               # ssh that mount to your filesystem and you can control vps from your pc it includes also IDE 

@@ -1,0 +1,50 @@
+- name: Server configuration1
+  hosts: all
+  vars_files:
+    - config.yaml
+  become: true
+  tasks:
+
+    - name: Update packages
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Dependencies installation
+      ansible.builtin.import_tasks: tasks/deps.yaml
+
+    - name: Cloning Leams
+      ansible.builtin.git:
+        repo: "https://github.com/azlamire/Leams"
+        dest: ./ 
+        version: dev
+
+    - name: Ufw configuration
+      ansible.builtin.import_tasks: tasks/ufw.yaml
+        
+    - name: fail2ban configuration
+      ansible.builtin.copy:
+        src: fail2ban.conf
+        dest: /etc/fail2ban/jail.local
+
+    - name: Testing
+      domain:
+        name: example.com
+
+    - name: Deploy
+      community.general.make:
+        target: deploy
+
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - git
+          - watchexec
+          - envsubst
+          - ca-certificates
+          - curl
+          - ufw
+          - fail2ban
+          - flarectl
+        state: present
+        update_cache: yes
+

@@ -1,0 +1,7 @@
+sudo apt install -y nix-setup-systemd && \
+sudo usermod -aG nix-users $(whoami) && \
+newgrp nix-users 
+nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs && \
+nix-channel --update && \
+newgrp -
+

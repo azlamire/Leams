@@ -1,0 +1,12 @@
+all:
+  vars:
+    ansible_user: root
+    ansible_ssh_private_key_file: ~/.ssh/leams
+    timezone: Europe/Helsinki
+  children:
+    webservers:
+      hosts:
+        144.31.19.248
+    
+
+

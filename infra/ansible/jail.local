@@ -1,0 +1,16 @@
+[DEFAULT]
+bantime = 3600
+findtime = 600
+maxretry = 5
+# Email notifications
+destemail = juchiLee@proton.me
+sender = fail2ban@example.com
+mta = sendmail
+action = %(action_mw)s
+
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3

@@ -1,0 +1,54 @@
+# WARN: For some distros >1024 is privileged and can't be used for example NixOS
+project:
+  dir: "/root/Leams"
+  domain: "leams.tech"
+  ip_vps: "144.31.19.248"
+  email: "juchiLee@proton.me"
+
+server:
+  http: 80
+  https: 443
+
+services:
+  frontend:
+    port: 3000
+  backend:
+    port: 8000
+    sub: "api"
+  database:
+    port: 5432
+    settings:
+      - user: "postgres"
+      - pass: "secret"
+      - host: "database"
+      - db: "leams"
+  redis:
+    port: 6379
+  docs:
+    port: 8000
+    sub: "docs"
+  mobile:
+    port: 3000
+  stream:
+    port: 1935
+    sub: "stream"
+  reverse-proxy:
+    port:
+
+
+NGINX_REVERSE_PORT_HTTP=80
+NGINX_REVERSE_PORT_HTTPS=443
+# WARN: Make sure that in compose.yaml u don't have rtmp and rtmps with THIS var
+NGINX_CONF_PATH=./infra/nginx/deploy/nginx.conf.template
+LETSENCRYPT_CERTS_PATH=./infra/nginx/deploy/data/certbot/letsencrypt
+LETSENCRYPT_WWW_PATH=./infra/nginx/deploy/data/certbot/www
+NGINX_SSL_CERT_PATH=/etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem;
+NGINX_SSL_KEY_PATH=/etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem;
+
+# WARN: Update sub domain in domain seller sites
+
+
+DOMAIN_EMAIL=
+
+#DATABASE
+

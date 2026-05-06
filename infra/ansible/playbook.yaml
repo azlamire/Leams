@@ -1,7 +1,7 @@
 - name: Server configuration1
   hosts: all
   vars_files:
-    - config.yaml
+    - ../../config.deploy.yaml
   become: true
   tasks:
 
@@ -18,6 +18,43 @@
         dest: ./ 
         version: dev
 
+    # List of domains:
+    # https://www.namecheap.com/
+    # www.reg.ru/
+    # Ensure that domain isn't bought
+#
+    - name: Email Registration
+      email:
+        provider: "proton"
+      when: project.accounts.domain.set is false
+    - name: Domain buying
+      # TODO: Make not only for reg_ru, OK?
+      domain:
+        provider: "reg_ru"
+        email: "{{ project.accounts.domain.email | default(project.accounts.mail.email) }}"
+        password: "{{ project.accounts.domain.password }}"
+        domain: "leams.ru"
+      delegate_to: 127.0.0.1
+      vars:
+        ansible_python_interpreter: "{{ playbook_dir }}/library/.venv/bin/python"
+      tags: 
+        - buy_domain
+      when: project.accounts.domain.set is false
+      become: false
+
+    - name: VPS buying
+      vps:      
+        email: "{{ project.accounts.mail.email | default(project.accounts.mail.email) }}"
+        password: "{{ project.accounts.vps.password }}"
+      when: project.settings.vps is none
+
+    - name: Cloudflare configuration
+      cdflare:
+        email: "{{ project.accounts.email | default(project.accounts.mail.email) }}"
+        password: "{{ project.accounts.vps.password }}"
+      when: project.settings.cloudflare is false
+
+    
     - name: Ufw configuration
       ansible.builtin.import_tasks: tasks/ufw.yaml
         

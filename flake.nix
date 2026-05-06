@@ -1,20 +1,34 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    backend.url = "path:./backend";
+    frontend.url = "path:./frontend";
+    ansible.url = "path:./infra/ansible";
   };
 
-  outputs = { nixpkgs, ... }: 
+  outputs = { 
+    nixpkgs,
+    ansible,
+    backend,
+    frontend,
+    ...
+  }@inputs: 
     let
-      forAllSystems = nixpkgs.lib. genAttrs [ "x86_64-linux" "aarch64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
     in {
       devShells = forAllSystems (system: 
         let
           pkgs = nixpkgs.legacyPackages.${system};
         in {
           default = pkgs.mkShell {
+            # inputsFrom = map (flake: flake.devShells.${system}.default) dependencies;
+            # TODO: Find the way to make it more pretty and handy PLS 
+            inputsFrom = [
+              backend.devShells.${system}.default
+              ansible.devShells.${system}.default
+              frontend.devShells.${system}.default
+            ];
             packages = with pkgs; [
-              # Docker, watchexec, envsubst are vital for this project
-
               # docker for conterization and handy local/deploy usage
               docker
               # https://www.docker.com/
@@ -27,28 +41,17 @@
               # used in Makefile with watchexec
               envsubst
 
-              # uv very handy for python implementation it contains a lot like poetry pip python and so on
-              uv
-              # https://docs.astral.sh/uv/
-              
-              # ssh that mount to your filesystem and you can control vps from your pc it includes also IDE 
-              # sshfs
-              # https://github.com/winfsp/sshfs-win
-              
               # act for testing and making ci/cd. Githu actions but local
-              # act
+              act
               # https://github.com/nektos/act
 
-              # openssl for making selfsigned key and certificates for https. It's local usually
-              # openssl
-              # https://github.com/openssl/openssl
-              
-              # nging reverse proxy server
-              # nginx
-              # https://nginx.org/en/
+              gnumake
+
+              prometheus
             ];
           };
         }
       );
     };
 }
+

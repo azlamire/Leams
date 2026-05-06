@@ -13,7 +13,8 @@ endef
 proj_path:
 	@path_in=$$(grep 'PROJ_DIR' $(ENVFILE) | sed -e 's/\//\\\//g'); \
 	path_now=$$(pwd | sed -e 's/\//\\\//g'); \
-	sed -i "s/$$path_in/PROJ_DIR=$$path_now/" $(ENVFILE)
+	sed -i "s/$$path_in/PROJ_DIR=$$path_now/" $(ENVFILE); \
+	echo 'export SOME_ENV=someTest'
 
 nginx_cl:
 	@first=$$(grep "set_real_ip_from" $$PROJ_DIR/./infra/nginx/deploy/nginx.conf.template | \
@@ -44,6 +45,9 @@ encrypt: replace
 	docker compose -f compose.letsencrypt.yaml \
 		--env-file $(ENVFILE) \
 		up --force-recreate --build --abort-on-container-exit 
+
+pre_ansible:
+	docker compose -f ./infra/ansible/Dockerfile
 
 launch: replace 
 	@$(call check_bin,docker)

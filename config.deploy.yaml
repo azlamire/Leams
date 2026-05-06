@@ -1,9 +1,34 @@
 # WARN: For some distros >1024 is privileged and can't be used for example NixOS
 project:
   dir: "/root/Leams"
-  domain: "leams.tech"
-  ip_vps: "144.31.19.248"
-  email: "juchiLee@proton.me"
+  accounts:
+    # WARN: Mail is required until make captcha bypassing way to sign in a new mail
+    mail: 
+      email: "testtingdd@gmail.com"
+      # If password field in comment it's like None and that means that new account will be created
+      password: "MYPASSWORD" # WARN: This field will deleted after success
+    vps: 
+      # If email is empty than it will be replaced with mail_acc's
+      email: "testtingdd@gmail.com"
+      # If password field in comment it's like None and that means that new account will be created
+      password: "MYPASSWORD" # WARN: This field will deleted after success
+      set: false
+    domain: 
+      # If email is empty than it will be replaced with mail_acc's
+      email: "testtingdd@gmail.com"
+      # If password field in comment it's like None and that means that new account will be created
+      password: "MYPASSWORD" # WARN: This field will deleted after success
+      set: false
+    cloudflare:
+      # If email is empty than it will be replaced with mail_acc's
+      email: "testtingdd@gmail.com"
+      # If password field in comment it's like None and that means that new account will be created
+      password: "MYPASSWORD" # WARN: This field will deleted after success
+      set: false
+  settings: 
+    domain: "leams.tech"
+    cloudflare: true
+    ip_vps: "144.31.19.248"
 
 server:
   http: 80
@@ -36,19 +61,19 @@ services:
     port:
 
 
-NGINX_REVERSE_PORT_HTTP=80
-NGINX_REVERSE_PORT_HTTPS=443
-# WARN: Make sure that in compose.yaml u don't have rtmp and rtmps with THIS var
-NGINX_CONF_PATH=./infra/nginx/deploy/nginx.conf.template
-LETSENCRYPT_CERTS_PATH=./infra/nginx/deploy/data/certbot/letsencrypt
-LETSENCRYPT_WWW_PATH=./infra/nginx/deploy/data/certbot/www
-NGINX_SSL_CERT_PATH=/etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem;
-NGINX_SSL_KEY_PATH=/etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem;
-
-# WARN: Update sub domain in domain seller sites
-
-
-DOMAIN_EMAIL=
-
-#DATABASE
-
+# NGINX_REVERSE_PORT_HTTP=80
+# NGINX_REVERSE_PORT_HTTPS=443
+# # WARN: Make sure that in compose.yaml u don't have rtmp and rtmps with THIS var
+# NGINX_CONF_PATH=./infra/nginx/deploy/nginx.conf.template
+# LETSENCRYPT_CERTS_PATH=./infra/nginx/deploy/data/certbot/letsencrypt
+# LETSENCRYPT_WWW_PATH=./infra/nginx/deploy/data/certbot/www
+# NGINX_SSL_CERT_PATH=/etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem;
+# NGINX_SSL_KEY_PATH=/etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem;
+#
+# # WARN: Update sub domain in domain seller sites
+#
+#
+# DOMAIN_EMAIL=
+#
+# #DATABASE
+#

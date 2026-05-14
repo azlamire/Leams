@@ -7,9 +7,9 @@ from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
 from shutil import which
 import asyncio
-import yaml
 import base64
 import requests
+headless=False
 
 response = requests.get("https://randomuser.me/api/?nat=us")
 data = response.json()
@@ -19,8 +19,6 @@ location = data['results'][0]['location']
 
 crutch_path = "/home/yahal/Repos/Leams"
 
-with open(f"{crutch_path}/config.deploy.yaml", 'r') as file:
-    proj_set = yaml.safe_load(file)
 
 def download_base64_image(data_uri, output_filename="downloaded_image"):
     """
@@ -92,7 +90,7 @@ async def domain_site(
     user_agent_rotator = UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)
     user_agent = user_agent_rotator.get_random_user_agent()
     async with Stealth().use_async(async_playwright()) as p:
-        browser = await p.chromium.launch(executable_path=which("chromium"), headless=True)
+        browser = await p.chromium.launch(executable_path=which("chromium"), headless=headless)
         context = await browser.new_context(user_agent=user_agent)
         page = await context.new_page()
         try:

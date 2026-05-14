@@ -4,12 +4,14 @@
     backend.url = "path:./backend";
     frontend.url = "path:./frontend";
     ansible.url = "path:./infra/ansible";
+    test.url = "path:./test/";
   };
 
   outputs = { 
     nixpkgs,
     ansible,
     backend,
+    test,
     frontend,
     ...
   }@inputs: 
@@ -27,6 +29,7 @@
               backend.devShells.${system}.default
               ansible.devShells.${system}.default
               frontend.devShells.${system}.default
+              test.devShells.${system}.default
             ];
             packages = with pkgs; [
               # docker for conterization and handy local/deploy usage
@@ -39,16 +42,19 @@
 
               # envsubst for replacing ${} env varaibles where it can't be like compose.yaml or .envs.
               # used in Makefile with watchexec
-              envsubst
+              gomplate
 
               # act for testing and making ci/cd. Githu actions but local
               act
               # https://github.com/nektos/act
 
-              gnumake
+              go-task
 
-              prometheus
+              cue
             ];
+            env = {
+              COMPOSE_FILE="./compose.letsencrypt.yaml:./compose.yaml";
+            };
           };
         }
       );

@@ -20,6 +20,7 @@ dependencies = [
     "fastapi[all]>=0.115.14",
     "html5lib>=1.1",
     "httpx>=0.28.1",
+    "locust>=2.43.4",
     "loguru>=0.7.3",
     "m2r2>=0.3.4",
     "passlib[bcrypt]>=1.7.4",

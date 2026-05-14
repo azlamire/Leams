@@ -1,19 +1,18 @@
-ENVFILE ?= ./config.deploy.env
-SEC_ENVFILE ?= ./config.dev.env
-SERVICE_ENVS = $(shell find . -type f -name "*.temp*" ! -path "*node_modules*" ! -path "*.venv*" ! -path "*local*" ! -path "*nginx.conf*" ! -path "*nginx.ssl*")
+CONFIG ?= ./config.cue
+SEC_CONFIG ?= ./config.dev.env
+SERVICE_ENVS = $(shell find . -type f -name "*.tmpl*" ! -path "*node_modules*" ! -path "*.venv*" ! -path "*local*" ! -path "*nginx.conf*" ! -path "*nginx.ssl*")
 
 define check_bin
-	@command -v $(1) >/dev/null || { echo '$(1) not found. Please download it.' >&2; exit 1; }
+  $(foreach dep,$(1),command -v $(dep) >/dev/null || { echo '$(dep) not found. Please download it.' >&2; exit 1; };)
 endef
-
 define loadenv
-	set -a && . $(ENVFILE) && set +a
+	set -a && . $(CONFIG) && set +a
 endef
 
 proj_path:
-	@path_in=$$(grep 'PROJ_DIR' $(ENVFILE) | sed -e 's/\//\\\//g'); \
+	@path_in=$$(grep 'PROJ_DIR' $(CONFIG) | sed -e 's/\//\\\//g'); \
 	path_now=$$(pwd | sed -e 's/\//\\\//g'); \
-	sed -i "s/$$path_in/PROJ_DIR=$$path_now/" $(ENVFILE); \
+	sed -i "s/$$path_in/PROJ_DIR=$$path_now/" $(CONFIG); \
 	echo 'export SOME_ENV=someTest'
 
 nginx_cl:
@@ -32,26 +31,27 @@ openssl: proj_path
 	$(loadenv) && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $$PROJ_DIR/infra/nginx/local/nginx-selfsigned.key -out $$PROJ_DIR/infra/nginx/local/nginx-selfsigned.crt
 
 # Replace *.temp file to their substituted versions
-replace: proj_path nginx_cl
-	$(call check_bin,envsubst)
+replace: proj_path
+	@$(call check_bin, gomplate cue)
 	@for file in $(SERVICE_ENVS); do \
-		dest=$$(echo $$file | sed 's/\.temp//'); \
-		$(loadenv) && envsubst < $$file > $$dest; \
+		dest=$$(echo $$file | sed 's/\.tmpl//'); \
+		cue export $(CONFIG) --out yaml | gomplate -d "config=stdin:///?type=application/yaml" -f $$file -o $$dest; \
 	done
 
 # Like openssl but creates official letsencrypt key and certficate. This for production
 encrypt: replace
 	@$(call check_bin,docker)
 	docker compose -f compose.letsencrypt.yaml \
-		--env-file $(ENVFILE) \
+		--env-file $(CONFIG) \
 		up --force-recreate --build --abort-on-container-exit 
 
-pre_ansible:
-	docker compose -f ./infra/ansible/Dockerfile
+pre_ansible: replace
+	cue export config.cue --out yaml > ./infra/ansible/config.yaml
+	docker compose up pre_ansible --force-recreate
 
 launch: replace 
 	@$(call check_bin,docker)
-	docker compose --env-file $(ENVFILE) up --force-recreate --build
+	docker compose --env-file $(CONFIG) up --force-recreate --build
 
 back_check:
 	# NOTE: Every new line new shell --> new env

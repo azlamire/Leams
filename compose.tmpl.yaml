@@ -1,3 +1,4 @@
+{{- $config := datasource "config" -}}
 # NOTE: I have to make makefile and envsubst 'cause services' names can't be dynamical
 # Why not static? If we have services name usage not only in compose.yml but for example
 # in frontend API or Nginx API and so on we need to change it with hands that's too long neither 
@@ -13,6 +14,7 @@ x-common-set: &common_set
 
 volumes:
   database-data:
+  vault-data:
 
 networks:
   leams-net:
@@ -20,7 +22,7 @@ networks:
     internal: false
 
 services:
-  ${COMPOSE_NGINX_REVERSE_NAME}:
+  {{ default "reverse_proxy" $config.services.reverse_proxy.name }}:
     restart: always
     container_name: nginx-reverse
     image: "nginx:alpine"
@@ -28,62 +30,53 @@ services:
     networks:
       - leams-net
     volumes:
-      - ${NGINX_CONF_PATH}:/etc/nginx/templates/nginx.conf.template:ro
+      - {{ $config.services.reverse_proxy.conf_path }}:/etc/nginx/templates/nginx.conf.template:ro
       
       # NOTE: Let’s Encrypt is for prod
-      - ${LETSENCRYPT_CERTS_PATH}:/etc/letsencrypt
-      - ${LETSENCRYPT_WWW_PATH}:/var/www/certbot
+      - {{ $config.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $config.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
       
       # NOTE: This is for dev
       # - ${SELFSIGNED_KEY_PATH:-}:/etc/nginx/nginx-selfsigned.key
       # - ${SELFSIGNED_CERT_PATH:-}:/etc/nginx/nginx-selfsigned.crt
     ports:
-      - ${NGINX_REVERSE_PORT_HTTP:-80}:${SERVER_HTTP_PORT:-80}
-      - ${NGINX_REVERSE_PORT_HTTPS:-443}:${SERVER_HTTPS_PORT:-443}
+      - {{ default 80 $config.services.reverse_proxy.port_http }}:{{ default 80 $config.server.http }}
+      - {{ default 443 $config.services.reverse_proxy.port_https }}:{{ default 443 $config.server.https }}
     environment:
       # NOTE: These 2 lines a vital 'cause have ${} in nginx
       NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
       NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
-      # NOTE: Idk about this NGINX_REVERSE_PORT_HTTP: ${NGINX_REVERSE_PORT_HTTP:-80}
-      NGINX_REVERSE_PORT_HTTPS: ${NGINX_REVERSE_PORT_HTTPS:-443}
+      NGINX_REVERSE_PORT_HTTPS: {{ default 443 $config.services.reverse_proxy.port_https }}
 
       #PORTS
-      SERVER_HTTP_PORT: ${SERVER_HTTP_PORT:-80}
-      SERVER_HTTPS_PORT: ${SERVER_HTTPS_PORT:-443}
-      SERVER_NAME: ${SERVER_NAME:-localhost}
-      FRONTEND_PORT: ${FRONTEND_PORT:-3000}
-      BACKEND_PORT: ${BACKEND_PORT:-8000}
-      DOCS_PORT: ${DOCS_PORT:-8000}
-      MOBILE_PORT: ${MOBILE_PORT:-8000}
+      SERVER_HTTP_PORT: {{ default 80 $config.server.http }}
+      SERVER_HTTPS_PORT: {{ default 443 $config.server.https }}
+      SERVER_NAME: {{ default "localhost" $config.project.settings.domain }}
+      FRONTEND_PORT: {{ default 3000 $config.services.frontend.port }}
+      BACKEND_PORT: {{ default 8000 $config.services.backend.port }}
+      DOCS_PORT: {{ default 8000 $config.services.docs.port }}
+      MOBILE_PORT: {{ default 3000 $config.services.mobile.port }}
 
       #NAMES 
-      DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
-      FRONTEND_NAME: ${COMPOSE_FRONTEND_NAME:-frontend}
-      BACKEND_NAME: ${COMPOSE_BACKEND_NAME:-backend-python}
-      DOCS_NAME: ${COMPOSE_DOCS_NAME:-docs}
-      MOBILE_NAME: ${COMPOSE_MOBILE_NAME:-mobile}
+      DOMAIN_NAME: {{ default "localhost" $config.project.settings.domain }}
+      FRONTEND_NAME: frontend
+      BACKEND_NAME: backend-python
+      DOCS_NAME: docs
+      MOBILE_NAME: mobile
 
       # SUB DOMAINS
-      SUB_DOCS: ${SUB_DOCS}
-      SUB_BACKEND: ${SUB_BACKEND}
+      SUB_DOCS: {{ $config.services.docs.sub }}
+      SUB_BACKEND: {{ $config.services.backend.sub }}
 
       # SSL
-      NGINX_SSL_CERT_PATH: ${NGINX_SSL_CERT_PATH}
-      NGINX_SSL_KEY_PATH: ${NGINX_SSL_KEY_PATH}
-
-    # TODO: Make watchexec on nginx.rtmp.template and set volume to usual nginx.conf. It's for dev ain't prod
-    # BUG: Docker bug that I can't change volume in develop.
-    # develop:
-    #   watch:
-    #     - action: sync
-    #       path: ./nginx/local/nginx.conf.template
-    #       target: /etc/nginx/templates/nginx.conf.template
+      NGINX_SSL_CERT_PATH: {{ $config.services.reverse_proxy.cert_path }}
+      NGINX_SSL_KEY_PATH: {{ $config.services.reverse_proxy.ssl_key_path }}
   
     healthcheck:
       test: ["CMD", "service", "nginx", "status", "||", "exit", "1"]
       <<: *check_http
 
-  ${COMPOSE_FRONTEND_NAME}:
+  {{ default "frontend" $config.services.frontend.name }}:
     restart: always
     container_name: frontend
     build: ./frontend/
@@ -100,10 +93,10 @@ services:
         - action: rebuild
           path: ./compose.yaml
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://${COMPOSE_FRONTEND_NAME}:${FRONTEND_PORT}/health"]
+      test: ["CMD-SHELL", "curl -f http://frontend:{{ default 3000 $config.services.frontend.port }}/health"]
       <<: *check_http
 
-  ${COMPOSE_BACKEND_NAME}:
+  {{ default "backend" $config.services.backend.name }}:
     restart: always
     container_name: backend-python
     build: ./backend
@@ -121,10 +114,10 @@ services:
       database:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://${COMPOSE_BACKEND_NAME}:${BACKEND_PORT}/health"]
+      test: ["CMD-SHELL", "curl -f http://backend-python:{{ default 8000 $config.services.backend.port }}/health"]
       <<: *check_http
 
-  ${COMPOSE_DATABASE_NAME}:
+  database:
     restart: always
     container_name: database
     image: "postgres:alpine"
@@ -134,15 +127,16 @@ services:
     networks:
       - leams-net
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PORT=${DATABASE_PORT:-5432}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      # Обращение к массиву settings (index 3 = db, index 0 = user, index 1 = pass)
+      - POSTGRES_DB={{ (index $config.services.database.settings 3).db }}
+      - POSTGRES_USER={{ (index $config.services.database.settings 0).user }}
+      - POSTGRES_PORT={{ default 5432 $config.services.database.port }}
+      - POSTGRES_PASSWORD={{ (index $config.services.database.settings 1).pass }}
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      test: ["CMD", "pg_isready", "-U", "{{ (index $config.services.database.settings 0).user }}", "-d", "{{ (index $config.services.database.settings 3).db }}"]
       <<: *check_http
 
-  ${COMPOSE_NGINX_RTMP_NAME}:
+  {{ default "nginx-rtmp" $config.services.stream.name }}:
     restart: always
     container_name: nginx-rtmp
     image: "tiangolo/nginx-rtmp:latest"
@@ -150,21 +144,13 @@ services:
     networks:
       - leams-net
     ports:
-      - ${NGINX_RTMP_PORT:-1935}:${NGINX_RTMP_PORT:-1935}
+      - {{ default 1935 $config.services.stream.port }}:{{ default 1935 $config.services.stream.port }}
     volumes:
       - ./nginx/deploy/nginx.rtmp.conf:/etc/nginx/nginx.conf
-      - ${LETSENCRYPT_CERTS_PATH}:/etc/letsencrypt
-      - ${LETSENCRYPT_WWW_PATH}:/var/www/certbot
-
-    # TODO: Make watchexec on nginx.rtmp.template and set volume to usual nginx.conf. It's for dev ain't prod
-    # BUG: Docker bug that I can't change volume in develop.
-    # develop:
-    #   watch:
-    #     - action: sync+restart
-    #       path: ./nginx/local/nginx.rtmp.conf.template
-    #       target: /etc/nginx/templates/nginx.conf.template
+      - {{ $config.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $config.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
     healthcheck: 
-      test: ["CMD-SHELL","curl -f https://${COMPOSE_NGINX_RTMP_NAME}/stat"]
+      test: ["CMD-SHELL","curl -f https://nginx-rtmp/stat"]
       <<: *check_http
 
   stunnel:
@@ -175,21 +161,19 @@ services:
     networks:
       - leams-net
     ports:
-      - :
+      - 8443:8443
     depends_on:
-      - ${COMPOSE_NGINX_RTMP_NAME}
+      - {{ default "nginx-rtmp" $config.services.stream.name }}
     volumes:
       - ./infra/rtmps.conf:/etc/stunnel/stunnel.conf
-      - ${LETSENCRYPT_CERTS_PATH}:/etc/letsencrypt
-      - ${LETSENCRYPT_WWW_PATH}:/var/www/certbot
+      - {{ $config.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $config.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
     entrypoint: >
       sh -c "apk add --no-cache stunnel && stunnel /etc/stunnel/stunnel.conf"
     healthcheck: 
       test: ["CMD-SHELL","(ss -tulnp | grep '443') || exit 1"]
       <<: *check_http
 
-  # TODO: MUST transfer to zestical because of the 
-  # https://squidfunk.github.io/mkdocs-material/blog/2026/02/18/mkdocs-2.0/
   docs:
     restart: always
     container_name: docs
@@ -203,7 +187,7 @@ services:
           target: /docs
     build: ./docs/
     healthcheck: 
-      test: ["CMD-SHELL","curl -f http://${COMPOSE_DOCS_NAME}:${DOCS_PORT}"]
+      test: ["CMD-SHELL","curl -f http://docs:{{ default 8000 $config.services.docs.port }}"]
       <<: *check_http
 
   redis:
@@ -211,6 +195,8 @@ services:
     container_name: redis
     <<: *common_set
     image: "redis:8.6-alpine"
+    ports:
+      - {{ default 6379 $config.services.redis.port }}:6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       <<: *check_http
@@ -238,7 +224,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
-# grafana
-# backend-go:
-# rabbitmq:

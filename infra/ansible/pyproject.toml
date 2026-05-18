@@ -1,0 +1,19 @@
+[project]
+name = "yahal"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "ansible>=13.5.0",
+    "beautifulsoup4>=4.14.3",
+    "fake-useragent>=2.2.0",
+    "faker>=40.13.0",
+    "pillow>=12.2.0",
+    "playwright>=1.58.0",
+    "playwright-stealth>=2.0.3",
+    "pydantic>=2.12.5",
+    "pytesseract>=0.3.13",
+    "pyzbar>=0.1.9",
+    "qrcode>=8.2",
+    "requests>=2.33.1",
+]

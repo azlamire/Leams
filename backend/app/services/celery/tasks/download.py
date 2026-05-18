@@ -2,7 +2,6 @@ from app.utils.parser import parse
 from app.services.celery.celery_main import celery
 from app.services.s3 import S3Client
 from typing import List, Tuple, Literal
-import json
 import asyncio
 import httpx
 

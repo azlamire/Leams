@@ -1,7 +1,6 @@
 # DEPRECATED:
 import asyncio
 import aiohttp
-import html5lib
 from bs4 import BeautifulSoup
 
 SELECTED_URL = "https://www.twitch.tv/"

@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request
 
 router = FastAPI()
 
 
 @router.middleware("http")
 async def token_check(request: Request):
-    has_token = request.headers.get("Authorization")
+    pass
     # return JSONResponse(status.HTTP_401_UNAUTHORIZED, content

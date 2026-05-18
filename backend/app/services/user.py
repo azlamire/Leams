@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Request, status, Depends
+from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordBearer
-import jwt, os
+import jwt
+import os
 from pydantic import BaseModel
 from typing import Annotated
 from jwt.exceptions import InvalidTokenError
-from sqlmodel import Session, select
+from sqlmodel import Session
 from db.core import get_session
 
 SECRET_KEY = open(os.path.abspath(".") + "./jwt-private.pem", "r").read()

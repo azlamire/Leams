@@ -1,16 +1,15 @@
 from collections.abc import AsyncGenerator
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import Session
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
+from fastapi_users.db import SQLAlchemyUserDatabase
 from sqlalchemy.ext.declarative import declarative_base
 from app.schemas.auth import User
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.core.settings import get_links_settings
 
 links = get_links_settings()
 
-engine_url = links.SYNC_PSQL
+engine_url = links.DATABASE_URL
 
 engine = create_async_engine(engine_url)
 

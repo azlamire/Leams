@@ -1,0 +1,102 @@
+{{- $c := (datasource "config") -}}
+# NOTE: I have to make makefile and envsubst 'cause services' names can't be dynamical
+# Why not static? If we have services name usage not only in compose.yml but for example
+# in frontend API or Nginx API and so on we need to change it with hands that's too long neither 
+# to put once in .env for working perfect
+x-common-healthcheck: &check_http
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+x-common-set: &common_set
+  dns:
+    - 1.1.1.1
+services:
+  {{ $c.services.reverse_proxy.name }}:
+    restart: always
+    container_name: nginx-reverse
+    image: "nginx:alpine"
+    <<: *common_set
+    volumes:
+      - ./nginx/deploy/nginx.ssl.conf.template:/etc/nginx/templates/nginx.conf.template
+      - {{ $c.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $c.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
+    ports:
+      - {{ $c.services.reverse_proxy.port_http }}:{{ $c.server.http }}
+      - {{ $c.services.reverse_proxy.port_https }}:{{ $c.server.https }}
+    environment:
+      # NOTE: These 2 lines a vital 'cause have ${} in nginx
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
+      # NOTE: Idk about this NGINX_REVERSE_PORT_HTTP: {{ $c.services.reverse_proxy.port_http }}
+      NGINX_REVERSE_PORT_HTTPS: {{ $c.services.reverse_proxy.port_https }}
+
+      #PORTS
+      SERVER_HTTP_PORT: {{ $c.server.http }}
+      SERVER_HTTPS_PORT: {{ $c.server.https }}
+      SERVER_NAME: {{ $c.project.settings.domain }}
+      FRONTEND_PORT: {{ $c.services.frontend.port }}
+      BACKEND_PORT: {{ $c.services.backend.port }}
+      DOCS_PORT: {{ $c.services.docs.port }}
+      MOBILE_PORT: {{ $c.services.mobile.port }}
+
+      #NAMES 
+      DOMAIN_NAME: {{ $c.project.settings.domain }}
+      FRONTEND_NAME: {{ $c.services.frontend.name }}
+      BACKEND_NAME: {{ $c.services.backend.name }}
+      DOCS_NAME: {{ $c.services.docs.name }}
+      MOBILE_NAME: {{ $c.services.mobile.name }}
+
+    # TODO: Make watchexec on nginx.rtmp.template and set volume to usual nginx.conf. It's for dev ain't prod
+    # BUG: Docker bug that I can't change volume in develop.
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./nginx/local/nginx.conf.template
+    #       target: /etc/nginx/templates/nginx.conf.template
+  
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://localhost:{{ $c.services.reverse_proxy.port_https }}/health", "||", "exit", "1"]
+      <<: *check_http
+  pre_ansible:
+    build: {{ $c.project.dir }}/infra/ansible/
+    container_name: pre_ansible
+    working_dir: /pre_ansible
+    environment:
+      - DISPLAY=:99
+    ports:
+      - 6080:5900
+    volumes:
+      - {{ $c.project.tmp_yaml }}:/tmp/tmp_config.yaml
+    # command: ["xvfb-run", "-a","uv", "run", "ansible-playbook", "-i", " inventory.yaml", "playbook.yaml", "--tags", "pre_ansible", "-e" , "@/tmp/tmp_config.yaml"]
+    command: ["sleep","infinity"]
+
+  ansible:
+    build: {{ $c.project.dir }}/infra/ansible/
+    container_name: pre_ansible
+    working_dir: ansible
+    volumes: 
+      - {{ $c.project.dir }}:/ansible
+    command: >-
+      ansible-playbook -i inventory.yaml playbook.yaml 
+
+  letsencrypt:
+    image: certbot/certbot:latest
+    container_name: certbot
+    depends_on:
+      - {{ $c.services.reverse_proxy.name }}
+    command: >-
+      certonly
+      --webroot
+      --webroot-path=/var/www/certbot
+      --email="{{ $c.project.accounts.domain.email }}"
+      --agree-tos
+      --no-eff-email
+      -d {{ $c.project.settings.domain }}
+      -d www.{{ $c.project.settings.domain }}
+      -d {{ $c.services.docs.sub }}.{{ $c.project.settings.domain }}
+      -d {{ $c.services.stream.sub }}.{{ $c.project.settings.domain }} 
+      -d {{ $c.services.backend.sub }}.{{ $c.project.settings.domain }} 
+    volumes:
+      - {{ $c.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $c.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot

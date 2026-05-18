@@ -1,0 +1,43 @@
+- name: Set default policy to deny incoming
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Set default policy to deny outgoing
+  community.general.ufw:
+    direction: outgoing
+    policy: deny
+
+- name: Firewall configuration
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: Allow HTTPS (443/tcp)
+  community.general.ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+    direction: out
+
+- name: Allow HTTPS (443/tcp)
+  community.general.ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+    direction: in
+    
+- name: Allow RTMP (1935/tcp)
+  ufw:
+    rule: allow
+    port: 1935
+    proto: tcp
+    direction: out
+
+- name: Allow RTMP (1935/tcp)
+  ufw:
+    rule: allow
+    port: 1935
+    proto: tcp
+    direction: in

@@ -1,17 +1,23 @@
-"use client"
+"use client";
 import { motion } from "motion/react";
-import ReactPlayer from 'react-player'
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
-import { useParams } from 'next/navigation';
+import ReactPlayer from "react-player";
 export function Video() {
 	const params = useParams();
 	const slug = params.stream as string;
-	useEffect(() => { console.log(slug) }, [])
+	useEffect(() => {
+		console.log(slug);
+	}, []);
 	return (
 		<motion.div>
-			<ReactPlayer playing controls src={`http://localhost:8001/hls/${slug}`} height={800} width={1300} />
+			<ReactPlayer
+				playing
+				controls
+				src={`http://localhost:8001/hls/${slug}`}
+				height={800}
+				width={1300}
+			/>
 		</motion.div>
-
-
-	)
+	);
 }

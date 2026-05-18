@@ -5,7 +5,6 @@ from playwright.async_api import async_playwright, Error as PlaywrightError
 from pydantic import TypeAdapter
 from pydantic_core import ValidationError
 from urllib.error import URLError
-from app.services.s3 import S3Client
 
 
 async def parse(
@@ -55,9 +54,11 @@ async def parse(
             try:
                 await page.goto(url, wait_until="load")
                 for i in range(10):
-                    await page.evaluate("""
+                    await page.evaluate(
+                        """
                         document.querySelector(".scrollable-area.root-scrollable.root-scrollable__content").scrollTo(0, (document.querySelector(".scrollable-area.root-scrollable.root-scrollable__content").scrollHeight - 600))
-                    """)
+                    """
+                    )
                     await page.wait_for_timeout(2000)
                 await page.screenshot(path="screenshot.png")
             except PlaywrightError as exc:

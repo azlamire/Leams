@@ -3,9 +3,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = { nixpkgs, ... }: 
+  outputs = { 
+    nixpkgs,
+    ...
+  }@inputs: 
     let
-      forAllSystems = nixpkgs.lib. genAttrs [ "x86_64-linux" "aarch64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
     in {
       devShells = forAllSystems (system: 
         let
@@ -14,27 +17,12 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               uv
-              python314
+              # Make packages also here
             ];
-            
-            env = {
-              UV_PYTHON_PREFERENCE = "only-system";
-              UV_PYTHON = "${pkgs.python313}/bin/python";
-            };
-            
-            NIX_LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-              pkgs.stdenv.cc.cc
-              pkgs.zlib
-              pkgs.openssl
-            ];
-            NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
-            
-            shellHook = ''
-              export LD_LIBRARY_PATH=$NIX_LD_LIBRARY_PATH
-              source .venv/bin/activate
-            '';
           };
         }
       );
     };
 }
+
+

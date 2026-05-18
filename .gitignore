@@ -1,8 +1,10 @@
 .env
+./deploy
 **/next-env.d.ts
 node_modules
 **/.next/
 jwt-*
+backend/.env.temp
 **/__pycache__/
 *.py[oc]
 build/
@@ -10,3 +12,10 @@ dist/
 wheels/
 *.egg-info
 .venv
+flake.lock
+.ruff_cache/
+compose.yaml
+compose.letsencrypt.yaml
+rtmps.conf
+.ideas
+**/nginx.rtmp.conf

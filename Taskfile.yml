@@ -1,0 +1,116 @@
+version: '3'
+
+vars:
+  CONFIG_FILE: 'config.cue'
+  TMP_CONFIG_YAML: ".tmp_config.yaml"
+  CONFIG:
+    sh: cue eval -t pwd="$(pwd)" -t tmp="{{.TMP_CONFIG_YAML}}" {{.CONFIG_FILE}}
+  USER_WORKING_DIR:
+    sh: pwd
+  COMPOSE_FILE: "/home/yahal/Repos/Leams/compose.letsencrypt.yaml:/home/yahal/Repos/Leams/compose.yaml"
+  SERVICE_ENVS:
+    sh: find . -type f -name "*.tmpl*" ! -path "*node_modules*" ! -path "*.venv*" ! -path "*local*" ! -path "*nginx.conf*" ! -path "*nginx.ssl*"
+
+tasks:
+  nginx_cl:
+    desc: https://www.cloudflare.com/ips/ 
+    cmds:
+      - |
+        set -a; . {{.CONFIG}}; set +a # Загружаем env, чтобы был доступен $PROJ_DIR
+        first=$(grep "set_real_ip_from" $PROJ_DIR/./infra/nginx/deploy/nginx.conf.template | \
+          sed -e 's/^[[:space:]]*//' \
+          -e "s/set_real_ip_from //" \
+          -e 's/\//\\\//g')
+        second=$(curl -s https://www.cloudflare.com/ips-v6 https://www.cloudflare.com/ips-v4 | \
+          sed -e 's/\//\\\//g' | \
+          tr '\n' ' ')
+        sed -i "s/$first/$second;/" ./infra/nginx/deploy/nginx.conf.template
+
+  openssl:
+    desc: Создает самоподписанный сертификат для dev-окружения
+    deps: [proj_path]
+    preconditions:
+      - sh: command -v openssl
+        msg: "openssl not found. Please download it."
+    cmds:
+      - |
+        set -a; . {{.CONFIG}}; set +a
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+          -keyout $PROJ_DIR/infra/nginx/local/nginx-selfsigned.key \
+          -out $PROJ_DIR/infra/nginx/local/nginx-selfsigned.crt
+
+  replace:
+    desc: Заменяет шаблоны файлов их сгенерированными версиями
+    cmds:
+      - cue export -t pwd="$(pwd)" -t tmp="{{.TMP_CONFIG_YAML}}" {{.CONFIG_FILE}} --out yaml > {{.TMP_CONFIG_YAML}}
+      - |
+        FILES="{{.SERVICE_ENVS}}"
+        for file in $FILES; do
+          if [ -z "$file" ]; then continue; fi
+          dest=$(echo "$file" | sed 's/\.tmpl//')
+          gomplate -d config={{.TMP_CONFIG_YAML}} -f "$file" -o "$dest"
+        done
+
+  encrypt:
+    desc: Создает официальный сертификат letsencrypt (production)
+    deps: [replace]
+    preconditions:
+      - sh: command -v docker
+        msg: "docker not found. Please download it."
+    cmds:
+      - docker compose -f compose.letsencrypt.yaml --env-file {{.CONFIG}} up --force-recreate --build --abort-on-container-exit
+
+  pre_ansible:
+    desc: Экспорт конфига и запуск pre_ansible
+    deps: [replace]
+    cmds:
+      - export COMPOSE_FILE={{.COMPOSE_FILE}} 
+      - docker compose up pre_ansible --force-recreate
+      - rm -f {{ .TMP_CONFIG_YAML }}
+
+  launch:
+    desc: Запускает проект локально
+    deps: [replace]
+    preconditions:
+      - sh: command -v docker
+        msg: "docker not found."
+    cmds:
+      - docker compose --env-file {{.CONFIG}} up --force-recreate --build
+
+  back_check:
+    desc: Запуск Ruff проверки бекенда
+    preconditions:
+      - sh: command -v docker
+        msg: "docker not found."
+    cmds:
+      - |
+        set -a; . {{.CONFIG}}; set +a
+        docker compose run --build $COMPOSE_BACKEND_NAME uv run ruff check .
+
+  front_check:
+    desc: Запуск проверок фронтенда (Bun/Biome)
+    deps: [proj_path]
+    preconditions:
+      - sh: command -v docker
+        msg: "docker not found."
+    cmds:
+      - |
+        set -a; . {{.CONFIG}}; set +a
+        docker run --rm \
+          -v $PROJ_DIR/frontend:/app \
+          -w /app \
+          oven/bun:alpine \
+          sh -c "bun install && bunx --bun @biomejs/biome check ./src/"
+
+  deploy:
+    desc: Полный цикл развертывания (nginx_cl -> encrypt -> launch)
+    cmds:
+      - task: nginx_cl
+      - task: encrypt
+      - task: launch
+
+  all_check:
+    desc: Запускает проверки и фронта, и бэка (ПАРАЛЛЕЛЬНО)
+    deps: [back_check, front_check]
+
+

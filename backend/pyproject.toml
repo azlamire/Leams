@@ -3,7 +3,7 @@ name = "backend"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "aiobotocore>=3.0.0",
     "aiodns>=3.6.1",
@@ -20,6 +20,7 @@ dependencies = [
     "fastapi[all]>=0.115.14",
     "html5lib>=1.1",
     "httpx>=0.28.1",
+    "locust>=2.43.4",
     "loguru>=0.7.3",
     "m2r2>=0.3.4",
     "passlib[bcrypt]>=1.7.4",
@@ -32,10 +33,11 @@ dependencies = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "redis>=7.1.0",
+    "ruff>=0.15.5",
     "selenium-driverless>=1.9.4",
     "setuptools==80.9.0",
     "sphinx>=8.2.3",
-    "sqlalchemy>=2.0.42",
+    "sqlalchemy>=2.0.46",
     "undetected-chromedriver>=3.5.5",
     "uvicorn>=0.35.0",
     "websockets>=15.0.1",

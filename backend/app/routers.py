@@ -5,13 +5,11 @@ from app.api.routers.gets.main_page import router as mains
 from app.api.routers.gets.nginx import router as start
 from app.api.routers.gets.user_set_stream import router as user_settings_stream
 from app.api.routers.gets.streams import router as streams
-from app.api.routers.gets.auth_social import router as oauth
 from app.schemas.auth import UserCreate, UserRead, UserUpdate
 from fastapi import APIRouter
 from app.services.auth.jwt_fin import (
     SECRET,
     auth_backend,
-    current_active_user,
     fastapi_users,
     github_oauth_client,
 )

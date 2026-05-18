@@ -1,0 +1,226 @@
+{{- $config := datasource "config" -}}
+# NOTE: I have to make makefile and envsubst 'cause services' names can't be dynamical
+# Why not static? If we have services name usage not only in compose.yml but for example
+# in frontend API or Nginx API and so on we need to change it with hands that's too long neither 
+# to put once in .env for working perfect
+x-common-healthcheck: &check_http
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+x-common-set: &common_set
+  dns:
+    - 1.1.1.1
+
+volumes:
+  database-data:
+  vault-data:
+
+networks:
+  leams-net:
+    external: false
+    internal: false
+
+services:
+  {{ default "reverse_proxy" $config.services.reverse_proxy.name }}:
+    restart: always
+    container_name: nginx-reverse
+    image: "nginx:alpine"
+    <<: *common_set
+    networks:
+      - leams-net
+    volumes:
+      - {{ $config.services.reverse_proxy.conf_path }}:/etc/nginx/templates/nginx.conf.template:ro
+      
+      # NOTE: Let’s Encrypt is for prod
+      - {{ $config.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $config.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
+      
+      # NOTE: This is for dev
+      # - ${SELFSIGNED_KEY_PATH:-}:/etc/nginx/nginx-selfsigned.key
+      # - ${SELFSIGNED_CERT_PATH:-}:/etc/nginx/nginx-selfsigned.crt
+    ports:
+      - {{ default 80 $config.services.reverse_proxy.port_http }}:{{ default 80 $config.server.http }}
+      - {{ default 443 $config.services.reverse_proxy.port_https }}:{{ default 443 $config.server.https }}
+    environment:
+      # NOTE: These 2 lines a vital 'cause have ${} in nginx
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
+      NGINX_REVERSE_PORT_HTTPS: {{ default 443 $config.services.reverse_proxy.port_https }}
+
+      #PORTS
+      SERVER_HTTP_PORT: {{ default 80 $config.server.http }}
+      SERVER_HTTPS_PORT: {{ default 443 $config.server.https }}
+      SERVER_NAME: {{ default "localhost" $config.project.settings.domain }}
+      FRONTEND_PORT: {{ default 3000 $config.services.frontend.port }}
+      BACKEND_PORT: {{ default 8000 $config.services.backend.port }}
+      DOCS_PORT: {{ default 8000 $config.services.docs.port }}
+      MOBILE_PORT: {{ default 3000 $config.services.mobile.port }}
+
+      #NAMES 
+      DOMAIN_NAME: {{ default "localhost" $config.project.settings.domain }}
+      FRONTEND_NAME: frontend
+      BACKEND_NAME: backend-python
+      DOCS_NAME: docs
+      MOBILE_NAME: mobile
+
+      # SUB DOMAINS
+      SUB_DOCS: {{ $config.services.docs.sub }}
+      SUB_BACKEND: {{ $config.services.backend.sub }}
+
+      # SSL
+      NGINX_SSL_CERT_PATH: {{ $config.services.reverse_proxy.cert_path }}
+      NGINX_SSL_KEY_PATH: {{ $config.services.reverse_proxy.ssl_key_path }}
+  
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status", "||", "exit", "1"]
+      <<: *check_http
+
+  {{ default "frontend" $config.services.frontend.name }}:
+    restart: always
+    container_name: frontend
+    build: ./frontend/
+    <<: *common_set
+    networks:
+      - leams-net
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/
+          target: /frontend
+        - action: rebuild
+          path: ./frontend/Dockerfile
+        - action: rebuild
+          path: ./compose.yaml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://frontend:{{ default 3000 $config.services.frontend.port }}/health"]
+      <<: *check_http
+
+  {{ default "backend" $config.services.backend.name }}:
+    restart: always
+    container_name: backend-python
+    build: ./backend
+    <<: *common_set
+    networks:
+      - leams-net
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /backend
+        - action: rebuild
+          path: ./backend/Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://backend-python:{{ default 8000 $config.services.backend.port }}/health"]
+      <<: *check_http
+
+  database:
+    restart: always
+    container_name: database
+    image: "postgres:alpine"
+    <<: *common_set
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - leams-net
+    environment:
+      # Обращение к массиву settings (index 3 = db, index 0 = user, index 1 = pass)
+      - POSTGRES_DB={{ (index $config.services.database.settings 3).db }}
+      - POSTGRES_USER={{ (index $config.services.database.settings 0).user }}
+      - POSTGRES_PORT={{ default 5432 $config.services.database.port }}
+      - POSTGRES_PASSWORD={{ (index $config.services.database.settings 1).pass }}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "{{ (index $config.services.database.settings 0).user }}", "-d", "{{ (index $config.services.database.settings 3).db }}"]
+      <<: *check_http
+
+  {{ default "nginx-rtmp" $config.services.stream.name }}:
+    restart: always
+    container_name: nginx-rtmp
+    image: "tiangolo/nginx-rtmp:latest"
+    <<: *common_set
+    networks:
+      - leams-net
+    ports:
+      - {{ default 1935 $config.services.stream.port }}:{{ default 1935 $config.services.stream.port }}
+    volumes:
+      - ./nginx/deploy/nginx.rtmp.conf:/etc/nginx/nginx.conf
+      - {{ $config.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $config.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
+    healthcheck: 
+      test: ["CMD-SHELL","curl -f https://nginx-rtmp/stat"]
+      <<: *check_http
+
+  stunnel:
+    image: "alpine:latest"
+    command: ["stunnel", "/etc/stunnel/stunnel.conf"]
+    <<: *common_set
+    container_name: stunnel
+    networks:
+      - leams-net
+    ports:
+      - 8443:8443
+    depends_on:
+      - {{ default "nginx-rtmp" $config.services.stream.name }}
+    volumes:
+      - ./infra/rtmps.conf:/etc/stunnel/stunnel.conf
+      - {{ $config.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
+      - {{ $config.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot
+    entrypoint: >
+      sh -c "apk add --no-cache stunnel && stunnel /etc/stunnel/stunnel.conf"
+    healthcheck: 
+      test: ["CMD-SHELL","(ss -tulnp | grep '443') || exit 1"]
+      <<: *check_http
+
+  docs:
+    restart: always
+    container_name: docs
+    networks:
+      - leams-net
+    <<: *common_set
+    develop:
+      watch:
+        - action: sync
+          path: ./docs/
+          target: /docs
+    build: ./docs/
+    healthcheck: 
+      test: ["CMD-SHELL","curl -f http://docs:{{ default 8000 $config.services.docs.port }}"]
+      <<: *check_http
+
+  redis:
+    restart: always
+    container_name: redis
+    <<: *common_set
+    image: "redis:8.6-alpine"
+    ports:
+      - {{ default 6379 $config.services.redis.port }}:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      <<: *check_http
+
+  prometheus:
+    image: "prom/prometheus"
+    volumes:
+      - ./infra/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    ports:
+      - 9090:9090
+
+  vault:
+    image: "hashicorp/vault:alpine"
+    ports: 
+      - 8200:8200
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+      VAULT_ADDR: http://0.0.0.0:8200
+    volumes:
+      - vault-data:/vault/file
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

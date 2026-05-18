@@ -1,0 +1,20 @@
+version: '3'
+
+vars:
+  ANSIBLE_CONFIG: "ansible.cfg"
+  ANSIBLE_FOLDER: "/home/yahal/Repos/Leams/infra/ansible"
+
+tasks:
+  pre_ansible:
+    desc: Экспорт конфига и запуск pre_ansible
+    deps: [replace]
+    sources:
+      - {{.CONFIG}}
+    generates:
+      - {{.ANSIBLE_FOLDER}}/config.yaml
+    cmds:
+      - cue export {{.CONFIG}} --out yaml > {{.ANSIBLE_FOLDER}}/config.yaml
+      - docker compose up pre_ansible --force-recreate
+
+
+

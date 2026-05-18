@@ -123,7 +123,7 @@ def start(func):
     return wrapper
 
 @start
-async def google(
+async def gmail(
     email: str,
     page: Page
 ):
@@ -255,7 +255,7 @@ PROVIDERS_MAP = {
     "proton": proton,
     "tuta": tuta,
     "outlook": outlook,
-    "google": google,
+    "gmail": gmail,
     "yandex": yandex,
     "mailru": mailru
 }

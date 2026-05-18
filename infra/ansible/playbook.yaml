@@ -10,7 +10,6 @@
         password: "{{ project.accounts.mail.password }}"
       when: project.accounts.mail.set is false
       delegate_to: localhost
-
     - name: VPS buying
       vps:      
         email: "{{ project.accounts.mail.email | default(project.accounts.mail.email) }}"
@@ -18,97 +17,97 @@
       when: project.accounts.vps.set is false
       delegate_to: localhost
 
-- name: Server configuration1
-  hosts: all
-  vars_files:
-    - ./config.yaml
-  become: true
-  tasks:
-    - name: Email Registration
-      email:
-        provider: "proton"
-      when: project.accounts.domain.set is false
-      delegate_to: localhost
-      tags:
-        - pre_ansible
+# - name: Server configuration1
+#   hosts: all
+#   vars_files:
+#     - ./config.yaml
+#   become: true
+#   tasks:
+#     - name: Email Registration
+#       email:
+#         provider: "proton"
+#       when: project.accounts.domain.set is false
+#       delegate_to: localhost
+#       tags:
+#         - pre_ansible
 
-    - name: VPS buying
-      vps:      
-        email: "{{ project.accounts.mail.email | default(project.accounts.mail.email) }}"
-        password: "{{ project.accounts.vps.password }}"
-      when: project.settings.vps is none
-      delegate_to: localhost
-      tags:
-        - pre_ansible
+#     - name: VPS buying
+#       vps:      
+#         email: "{{ project.accounts.mail.email | default(project.accounts.mail.email) }}"
+#         password: "{{ project.accounts.vps.password }}"
+#       when: project.settings.vps is none
+#       delegate_to: localhost
+#       tags:
+#         - pre_ansible
 
-    - name: Update packages
-      ansible.builtin.apt:
-        update_cache: yes
+#     - name: Update packages
+#       ansible.builtin.apt:
+#         update_cache: yes
 
-    - name: Dependencies installation
-      ansible.builtin.import_tasks: tasks/deps.yaml
+#     - name: Dependencies installation
+#       ansible.builtin.import_tasks: tasks/deps.yaml
 
-    - name: Cloning Leams
-      ansible.builtin.git:
-        repo: "https://github.com/azlamire/Leams"
-        dest: ./ 
-        version: dev
+#     - name: Cloning Leams
+#       ansible.builtin.git:
+#         repo: "https://github.com/azlamire/Leams"
+#         dest: ./ 
+#         version: dev
 
-    # List of domains:
-    # https://www.namecheap.com/
-    # www.reg.ru/
-    # Ensure that domain isn't bought
-#
-    - name: Domain buying
-      # TODO: Make not only for reg_ru, OK?
-      domain:
-        provider: "reg_ru"
-        email: "{{ project.accounts.domain.email | default(project.accounts.mail.email) }}"
-        password: "{{ project.accounts.domain.password }}"
-        domain: "leams.ru"
-      delegate_to: 127.0.0.1
-      vars:
-        ansible_python_interpreter: "{{ playbook_dir }}/library/.venv/bin/python"
-      tags: 
-        - buy_domain
-      when: project.accounts.domain.set is false
-      become: false
+#     # List of domains:
+#     # https://www.namecheap.com/
+#     # www.reg.ru/
+#     # Ensure that domain isn't bought
+# #
+#     - name: Domain buying
+#       # TODO: Make not only for reg_ru, OK?
+#       domain:
+#         provider: "reg_ru"
+#         email: "{{ project.accounts.domain.email | default(project.accounts.mail.email) }}"
+#         password: "{{ project.accounts.domain.password }}"
+#         domain: "leams.ru"
+#       delegate_to: 127.0.0.1
+#       vars:
+#         ansible_python_interpreter: "{{ playbook_dir }}/library/.venv/bin/python"
+#       tags: 
+#         - buy_domain
+#       when: project.accounts.domain.set is false
+#       become: false
 
-    - name: Cloudflare configuration
-      cdflare:
-        email: "{{ project.accounts.email | default(project.accounts.mail.email) }}"
-        password: "{{ project.accounts.vps.password }}"
-      when: project.settings.cloudflare is false
+#     - name: Cloudflare configuration
+#       cdflare:
+#         email: "{{ project.accounts.email | default(project.accounts.mail.email) }}"
+#         password: "{{ project.accounts.vps.password }}"
+#       when: project.settings.cloudflare is false
 
     
-    - name: Ufw configuration
-      ansible.builtin.import_tasks: tasks/ufw.yaml
+#     - name: Ufw configuration
+#       ansible.builtin.import_tasks: tasks/ufw.yaml
         
-    - name: fail2ban configuration
-      ansible.builtin.copy:
-        src: fail2ban.conf
-        dest: /etc/fail2ban/jail.local
+#     - name: fail2ban configuration
+#       ansible.builtin.copy:
+#         src: fail2ban.conf
+#         dest: /etc/fail2ban/jail.local
 
-    - name: Testing
-      domain:
-        name: example.com
+#     - name: Testing
+#       domain:
+#         name: example.com
 
-    - name: Deploy
-      community.general.make:
-        target: deploy
+#     - name: Deploy
+#       community.general.make:
+#         target: deploy
 
-    - name: Install dependencies
-      ansible.builtin.apt:
-        name:
-          - git
-          - watchexec
-          - envsubst
-          - ca-certificates
-          - curl
-          - ufw
-          - fail2ban
-          - flarectl
-        state: present
-        update_cache: yes
+#     - name: Install dependencies
+#       ansible.builtin.apt:
+#         name:
+#           - git
+#           - watchexec
+#           - envsubst
+#           - ca-certificates
+#           - curl
+#           - ufw
+#           - fail2ban
+#           - flarectl
+#         state: present
+#         update_cache: yes
 
 

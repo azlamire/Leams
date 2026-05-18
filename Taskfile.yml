@@ -1,27 +1,19 @@
 version: '3'
 
 vars:
-  CONFIG: '{{default "./config.cue" .CONFIG}}'
-  SEC_CONFIG: '{{default "./config.dev.env" .SEC_CONFIG}}'
+  CONFIG_FILE: 'config.cue'
+  TMP_CONFIG_YAML: ".tmp_config.yaml"
+  CONFIG:
+    sh: cue eval -t pwd="$(pwd)" -t tmp="{{.TMP_CONFIG_YAML}}" {{.CONFIG_FILE}}
+  USER_WORKING_DIR:
+    sh: pwd
   COMPOSE_FILE: "/home/yahal/Repos/Leams/compose.letsencrypt.yaml:/home/yahal/Repos/Leams/compose.yaml"
-  ANSIBLE_CONFIG: "/home/yahal/Repos/Leams/ansible.cfg"
-  ANSIBLE_FOLDER: "/home/yahal/Repos/Leams/infra/ansible"
   SERVICE_ENVS:
     sh: find . -type f -name "*.tmpl*" ! -path "*node_modules*" ! -path "*.venv*" ! -path "*local*" ! -path "*nginx.conf*" ! -path "*nginx.ssl*"
 
 tasks:
-  proj_path:
-    desc: Обновляет PROJ_DIR в конфигурационном файле
-    
-    cmds:
-      - |
-        path_in=$(grep 'PROJ_DIR' {{.CONFIG}} | sed -e 's/\//\\\//g')
-        path_now=$(pwd | sed -e 's/\//\\\//g')
-        sed -i "s/$path_in/PROJ_DIR=$path_now/" {{.CONFIG}}
-        echo 'export SOME_ENV=someTest'
-
   nginx_cl:
-    desc: Обновляет Cloudflare IPs в конфигурации Nginx
+    desc: https://www.cloudflare.com/ips/ 
     cmds:
       - |
         set -a; . {{.CONFIG}}; set +a # Загружаем env, чтобы был доступен $PROJ_DIR
@@ -49,17 +41,14 @@ tasks:
 
   replace:
     desc: Заменяет шаблоны файлов их сгенерированными версиями
-    deps: [proj_path]
-    preconditions:
-      - sh: command -v gomplate
-        msg: "gomplate not found. Please download it."
-      - sh: command -v cue
-        msg: "cue not found. Please download it."
     cmds:
+      - cue export -t pwd="$(pwd)" -t tmp="{{.TMP_CONFIG_YAML}}" {{.CONFIG_FILE}} --out yaml > {{.TMP_CONFIG_YAML}}
       - |
-        for file in {{.SERVICE_ENVS}}; do
-          dest=$(echo $file | sed 's/\.tmpl//')
-          cue export {{.CONFIG}} --out yaml | gomplate -d "config=stdin:///?type=application/yaml" -f $file -o $dest
+        FILES="{{.SERVICE_ENVS}}"
+        for file in $FILES; do
+          if [ -z "$file" ]; then continue; fi
+          dest=$(echo "$file" | sed 's/\.tmpl//')
+          gomplate -d config={{.TMP_CONFIG_YAML}} -f "$file" -o "$dest"
         done
 
   encrypt:
@@ -75,8 +64,9 @@ tasks:
     desc: Экспорт конфига и запуск pre_ansible
     deps: [replace]
     cmds:
-      - cue export {{.CONFIG}} --out yaml > ./config.yaml
+      - export COMPOSE_FILE={{.COMPOSE_FILE}} 
       - docker compose up pre_ansible --force-recreate
+      - rm -f {{ .TMP_CONFIG_YAML }}
 
   launch:
     desc: Запускает проект локально
@@ -122,4 +112,5 @@ tasks:
   all_check:
     desc: Запускает проверки и фронта, и бэка (ПАРАЛЛЕЛЬНО)
     deps: [back_check, front_check]
+
 

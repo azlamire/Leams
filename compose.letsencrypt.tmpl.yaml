@@ -62,10 +62,14 @@ services:
     build: {{ $c.project.dir }}/infra/ansible/
     container_name: pre_ansible
     working_dir: /pre_ansible
+    environment:
+      - DISPLAY=:99
+    ports:
+      - 6080:5900
     volumes:
-      - {{ $c.project.dir }}/infra/ansible:/pre_ansible
-    command: >-
-      uv run ansible-playbook -i inventory.yaml playbook.yaml --tags pre_ansible -e @"./config.cue
+      - {{ $c.project.tmp_yaml }}:/tmp/tmp_config.yaml
+    # command: ["xvfb-run", "-a","uv", "run", "ansible-playbook", "-i", " inventory.yaml", "playbook.yaml", "--tags", "pre_ansible", "-e" , "@/tmp/tmp_config.yaml"]
+    command: ["sleep","infinity"]
 
   ansible:
     build: {{ $c.project.dir }}/infra/ansible/

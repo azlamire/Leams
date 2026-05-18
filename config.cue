@@ -1,7 +1,4 @@
 // WARN: For some distros >1024 is privileged and can't be used for example NixOS
-
-// 1. ОПРЕДЕЛЯЕМ СХЕМУ (ШАБЛОН) ДЛЯ АККАУНТОВ
-// Это гарантирует, что мы не опечатаемся в ключах, и задает значения по умолчанию.
 #Account: {
 	email?:    string
 	password?: string // WARN: This field will be deleted after success
@@ -9,18 +6,17 @@
 }
 
 project: {
-	dir: "/root/Leams"
+	dir: string @tag(pwd)
+  tmp_yaml: string @tag(tmp)
 	
 	accounts: {
-		// WARN: Mail is required until make captcha bypassing way to sign in a new mail
 		mail: #Account & {
 			email: "testtingdd@gmail.com"
-			// If password field in comment it's like None and that means that new account will be created
 			password: "MYPASSWORD"
+      set: false
 		}
 		
 		vps: #Account & {
-			// If email is empty than it will be replaced with mail_acc's
 			email:    "testtingdd@gmail.com"
 			password: "MYPASSWORD"
 			set:      false

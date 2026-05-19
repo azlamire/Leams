@@ -65,10 +65,10 @@ services:
     environment:
       - DISPLAY=:99
     ports:
-      - 6080:5900
+      - 6080:6080
     volumes:
       - {{ $c.project.tmp_yaml }}:/tmp/tmp_config.yaml
-    # command: ["xvfb-run", "-a","uv", "run", "ansible-playbook", "-i", " inventory.yaml", "playbook.yaml", "--tags", "pre_ansible", "-e" , "@/tmp/tmp_config.yaml"]
+    # command: ["uv", "run", "ansible-playbook", "-i", " inventory.yaml", "playbook.yaml", "--tags", "pre_ansible", "-e" , "@/tmp/tmp_config.yaml"]
     command: ["sleep","infinity"]
 
   ansible:

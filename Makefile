@@ -1,3 +1,4 @@
+# DEPRECATED: Taskfile.yaml is more useful
 CONFIG ?= ./config.cue
 SEC_CONFIG ?= ./config.dev.env
 SERVICE_ENVS = $(shell find . -type f -name "*.tmpl*" ! -path "*node_modules*" ! -path "*.venv*" ! -path "*local*" ! -path "*nginx.conf*" ! -path "*nginx.ssl*")

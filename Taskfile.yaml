@@ -10,8 +10,9 @@ vars:
   COMPOSE_FILE: "/home/yahal/Repos/Leams/compose.letsencrypt.yaml:/home/yahal/Repos/Leams/compose.yaml"
   SERVICE_ENVS:
     sh: find . -type f -name "*.tmpl*" ! -path "*node_modules*" ! -path "*.venv*" ! -path "*local*" ! -path "*nginx.conf*" ! -path "*nginx.ssl*"
-
 tasks:
+  delete_this: 
+    env
   nginx_cl:
     desc: https://www.cloudflare.com/ips/ 
     cmds:
@@ -75,7 +76,7 @@ tasks:
       - sh: command -v docker
         msg: "docker not found."
     cmds:
-      - docker compose --env-file {{.CONFIG}} up --force-recreate --build
+      - docker compose -f compose.yaml up --force-recreate 
 
   back_check:
     desc: Запуск Ruff проверки бекенда

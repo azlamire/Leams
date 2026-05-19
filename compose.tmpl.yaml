@@ -121,9 +121,11 @@ services:
     restart: always
     container_name: database
     image: "postgres:alpine"
+    # image: "postgres:17-alpine"
     <<: *common_set
     volumes:
-      - database-data:/var/lib/postgresql/data
+      # - database-data:/var/lib/postgresql/data
+      - database-data:/var/lib/postgresql
     networks:
       - leams-net
     environment:
@@ -209,7 +211,7 @@ services:
       - 9090:9090
 
   vault:
-    image: "hashicorp/vault:alpine"
+    image: "hashicorp/vault:latest"
     ports: 
       - 8200:8200
     cap_add:

@@ -1,16 +1,18 @@
 {{- $c := (datasource "config") -}}
 # NOTE: I have to make makefile and envsubst 'cause services' names can't be dynamical
 # Why not static? If we have services name usage not only in compose.yml but for example
-# in frontend API or Nginx API and so on we need to change it with hands that's too long neither 
+# in frontend API or Nginx API and so on we need to change it with hands that's too long neither
 # to put once in .env for working perfect
 x-common-healthcheck: &check_http
   interval: 10s
   timeout: 5s
   retries: 3
   start_period: 10s
+
 x-common-set: &common_set
   dns:
     - 1.1.1.1
+
 services:
   {{ $c.services.reverse_proxy.name }}:
     restart: always
@@ -40,7 +42,7 @@ services:
       DOCS_PORT: {{ $c.services.docs.port }}
       MOBILE_PORT: {{ $c.services.mobile.port }}
 
-      #NAMES 
+      #NAMES
       DOMAIN_NAME: {{ $c.project.settings.domain }}
       FRONTEND_NAME: {{ $c.services.frontend.name }}
       BACKEND_NAME: {{ $c.services.backend.name }}
@@ -54,7 +56,7 @@ services:
     #     - action: sync
     #       path: ./nginx/local/nginx.conf.template
     #       target: /etc/nginx/templates/nginx.conf.template
-  
+
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://localhost:{{ $c.services.reverse_proxy.port_https }}/health", "||", "exit", "1"]
       <<: *check_http
@@ -75,10 +77,10 @@ services:
     build: {{ $c.project.dir }}/infra/ansible/
     container_name: pre_ansible
     working_dir: ansible
-    volumes: 
+    volumes:
       - {{ $c.project.dir }}:/ansible
     command: >-
-      ansible-playbook -i inventory.yaml playbook.yaml 
+      ansible-playbook -i inventory.yaml playbook.yaml
 
   letsencrypt:
     image: certbot/certbot:latest
@@ -95,8 +97,8 @@ services:
       -d {{ $c.project.settings.domain }}
       -d www.{{ $c.project.settings.domain }}
       -d {{ $c.services.docs.sub }}.{{ $c.project.settings.domain }}
-      -d {{ $c.services.stream.sub }}.{{ $c.project.settings.domain }} 
-      -d {{ $c.services.backend.sub }}.{{ $c.project.settings.domain }} 
+      -d {{ $c.services.stream.sub }}.{{ $c.project.settings.domain }}
+      -d {{ $c.services.backend.sub }}.{{ $c.project.settings.domain }}
     volumes:
       - {{ $c.services.reverse_proxy.letsencrypt_certs_path }}:/etc/letsencrypt
       - {{ $c.services.reverse_proxy.letsencrypt_www_path }}:/var/www/certbot

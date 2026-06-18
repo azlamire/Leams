@@ -1,12 +1,4 @@
-#NOTE: https://docs.astral.sh/uv/guides/integration/docker/#available-images
-# В качестве основы берем официальный образ Playwright для Python 
-# (версия v1.44.0 - можете поменять на нужную вам, если в uv.lock другая)
 FROM python:3.14-slim
-
-# Фиксируем версию uv для воспроизводимости
-COPY --from=ghcr.io/astral-sh/uv:0.6.15 /uv /uvx /bin/
-
-WORKDIR /pre_ansible
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb x11vnc procps xauth chromium git curl wget ca-certificates net-tools \
@@ -16,25 +8,28 @@ RUN git clone --branch v1.4.0 --depth 1 https://github.com/novnc/noVNC.git /opt/
     && git clone --branch v0.12.0 --depth 1 https://github.com/novnc/websockify /opt/novnc/utils/websockify \
     && ln -s /opt/novnc/vnc.html /opt/novnc/index.html
 
-COPY pyproject.toml uv.lock /pre_ansible/
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+ENV UV_PYTHON_PREFERENCE=only-system \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1 \
+    PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
 
-ENV UV_PYTHON_PREFERENCE=only-system
-ENV UV_PROJECT_ENVIRONMENT=/pre_ansible/.venv
-ENV UV_LINK_MODE=copy
+WORKDIR /app
 
+COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen
+    uv sync --locked --no-install-project --no-editable
 
-ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
+COPY . .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-editable
 
 RUN --mount=type=cache,target=/root/.cache/ms-playwright \
     uv run playwright install --with-deps chromium
 
-COPY . .
-
 COPY --chmod=755 execution_entrypoint.sh /pre_ansible/
-
 EXPOSE 6080
 
 ENTRYPOINT ["/pre_ansible/execution_entrypoint.sh"]

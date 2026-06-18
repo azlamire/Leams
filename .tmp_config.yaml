@@ -31,11 +31,13 @@ services:
     name: reverse_proxy
     port_http: 80
     port_https: 443
-    conf_path: /home/yahal/Repos/Leams/infra/nginx/deploy/nginx.conf.template
+    conf_path: /home/yahal/Repos/Leams/infra/nginx/local/nginx.conf.template
     letsencrypt_certs_path: /home/yahal/Repos/Leams/infra/nginx/deploy/data/certbot/letsencrypt
     letsencrypt_www_path: /home/yahal/Repos/Leams/infra/nginx/deploy/data/certbot/www
     cert_path: /etc/letsencrypt/live/leams.tech/fullchain.pem
     ssl_key_path: /etc/letsencrypt/live/leams.tech/privkey.pem
+    selfsigned_key_path: ./infra/nginx/local/nginx-selfsigned.key
+    selfsigned_cert_path: ./infra/nginx/local/nginx-selfsigned.crt
   frontend:
     name: frontend
     port: 3000

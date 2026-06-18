@@ -7,24 +7,24 @@
     test.url = "path:./test/";
   };
 
-  outputs = { 
+  outputs = {
     nixpkgs,
     ansible,
     backend,
     test,
     frontend,
     ...
-  }@inputs: 
+  }@inputs:
     let
       forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
     in {
-      devShells = forAllSystems (system: 
+      devShells = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
         in {
           default = pkgs.mkShell {
             # inputsFrom = map (flake: flake.devShells.${system}.default) dependencies;
-            # TODO: Find the way to make it more pretty and handy PLS 
+            # TODO: Find the way to make it more pretty and handy PLS
             inputsFrom = [
               backend.devShells.${system}.default
               ansible.devShells.${system}.default
@@ -51,6 +51,8 @@
               go-task
 
               cue
+
+              k3s
             ];
             env = {
               COMPOSE_FILE="./compose.letsencrypt.yaml:./compose.yaml";
@@ -60,4 +62,3 @@
       );
     };
 }
-
